@@ -166,7 +166,6 @@ fun SecondaryGraphCompose(
     val acceIsfData = if (SeriesType.ACCE_ISF in seriesTypes) viewModel.acceIsfGraphFlow.collectAsStateWithLifecycle().value else null
     val bgIsfData = if (SeriesType.BG_ISF in seriesTypes) viewModel.bgIsfGraphFlow.collectAsStateWithLifecycle().value else null
     val ppIsfData = if (SeriesType.PP_ISF in seriesTypes) viewModel.ppIsfGraphFlow.collectAsStateWithLifecycle().value else null
-    val driftIsfData = if (SeriesType.DRIFT_ISF in seriesTypes) viewModel.driftIsfGraphFlow.collectAsStateWithLifecycle().value else null
     val duraIsfData = if (SeriesType.DURA_ISF in seriesTypes) viewModel.duraIsfGraphFlow.collectAsStateWithLifecycle().value else null
     val finalIsfData = if (SeriesType.FINAL_ISF in seriesTypes) viewModel.finalIsfGraphFlow.collectAsStateWithLifecycle().value else null
     val iobThEffectiveData = if (SeriesType.IOB_TH_EFFECTIVE in seriesTypes) viewModel.iobThEffectiveGraphFlow.collectAsStateWithLifecycle().value else null
@@ -188,7 +187,7 @@ fun SecondaryGraphCompose(
     // Simple line series processing (excludes BASAL — it's a fixed flipped overlay on IOB)
     val processedSimpleSeries = remember(
         seriesTypes, stableTimeRange, absIobData, bgiData, ratioData, varSensData, devSlopeData, hrData, stepsData, activityData,
-        acceIsfData, bgIsfData, ppIsfData, driftIsfData, duraIsfData, finalIsfData, iobThEffectiveData
+        acceIsfData, bgIsfData, ppIsfData, duraIsfData, finalIsfData, iobThEffectiveData
     ) {
         if (!hasRealTimeRange) return@remember emptyList()
         buildList {
@@ -225,9 +224,6 @@ fun SecondaryGraphCompose(
             }
             ppIsfData?.ppIsf?.takeIf { it.isNotEmpty() }?.let {
                 add(SeriesType.PP_ISF to processPoints(it, minTimestamp, minX, maxX))
-            }
-            driftIsfData?.driftIsf?.takeIf { it.isNotEmpty() }?.let {
-                add(SeriesType.DRIFT_ISF to processPoints(it, minTimestamp, minX, maxX))
             }
             duraIsfData?.duraIsf?.takeIf { it.isNotEmpty() }?.let {
                 add(SeriesType.DURA_ISF to processPoints(it, minTimestamp, minX, maxX))
@@ -913,7 +909,6 @@ data class SeriesColors(
     val acceIsf: Color,
     val bgIsf: Color,
     val ppIsf: Color,
-    val driftIsf: Color,
     val duraIsf: Color,
     val finalIsf: Color,
     val iobThEffective: Color
@@ -935,7 +930,6 @@ data class SeriesColors(
         SeriesType.ACCE_ISF -> acceIsf
         SeriesType.BG_ISF -> bgIsf
         SeriesType.PP_ISF -> ppIsf
-        SeriesType.DRIFT_ISF -> driftIsf
         SeriesType.DURA_ISF -> duraIsf
         SeriesType.FINAL_ISF -> finalIsf
         SeriesType.IOB_TH_EFFECTIVE -> iobThEffective
@@ -963,7 +957,6 @@ fun rememberSeriesColors(): SeriesColors {
             acceIsf = Color(0xFF7FFF00),
             bgIsf = Color(0xFFFFA500),
             ppIsf = Color(0xFFFF69B4),
-            driftIsf = Color(0xFFBB86FC),
             duraIsf = Color(0xFF00FA9A),
             finalIsf = Color(0xFFFFD700),
             iobThEffective = Color(0xFF00BFFF)
@@ -993,7 +986,7 @@ fun createSeriesLine(type: SeriesType, colors: SeriesColors): LineCartesianLayer
         )
         // Line only, no fill
         SeriesType.DEV_SLOPE, SeriesType.SENSITIVITY, SeriesType.VAR_SENSITIVITY,
-        SeriesType.ACCE_ISF, SeriesType.BG_ISF, SeriesType.PP_ISF, SeriesType.DRIFT_ISF,
+        SeriesType.ACCE_ISF, SeriesType.BG_ISF, SeriesType.PP_ISF,
         SeriesType.DURA_ISF                                                      -> LineCartesianLayer.Line(
             fill = LineCartesianLayer.LineFill.single(Fill(color)),
             areaFill = null

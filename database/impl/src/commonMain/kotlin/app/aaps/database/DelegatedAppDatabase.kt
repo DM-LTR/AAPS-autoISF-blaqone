@@ -1,7 +1,6 @@
 package app.aaps.database
 
 import app.aaps.database.daos.APSResultDao
-import app.aaps.database.daos.AutoIsfValuesDao
 import app.aaps.database.daos.BolusCalculatorResultDao
 import app.aaps.database.daos.BolusDao
 import app.aaps.database.daos.CalibrationEntryDao
@@ -23,7 +22,6 @@ import app.aaps.database.daos.TotalDailyDoseDao
 import app.aaps.database.daos.UserEntryDao
 import app.aaps.database.daos.VersionChangeDao
 import app.aaps.database.daos.delegated.DelegatedAPSResultDao
-import app.aaps.database.daos.delegated.DelegatedAutoIsfValuesDao
 import app.aaps.database.daos.delegated.DelegatedBolusCalculatorResultDao
 import app.aaps.database.daos.delegated.DelegatedBolusDao
 import app.aaps.database.daos.delegated.DelegatedCalibrationEntryDao
@@ -60,7 +58,6 @@ internal class DelegatedAppDatabase(val changes: MutableList<DBEntry>, private v
     val effectiveProfileSwitchDao: EffectiveProfileSwitchDao = DelegatedEffectiveProfileSwitchDao(changes, database.effectiveProfileSwitchDao)
     val profileSwitchDao: ProfileSwitchDao = DelegatedProfileSwitchDao(changes, database.profileSwitchDao)
     val apsResultDao: APSResultDao = DelegatedAPSResultDao(changes, database.apsResultDao)
-    val autoIsfValuesDao: AutoIsfValuesDao = DelegatedAutoIsfValuesDao(changes, database.autoIsfValuesDao)
     val versionChangeDao: VersionChangeDao = DelegatedVersionChangeDao(changes, database.versionChangeDao)
     val userEntryDao: UserEntryDao = DelegatedUserEntryDao(changes, database.userEntryDao)
     val preferenceChangeDao: PreferenceChangeDao = DelegatedPreferenceChangeDao(changes, database.preferenceChangeDao)

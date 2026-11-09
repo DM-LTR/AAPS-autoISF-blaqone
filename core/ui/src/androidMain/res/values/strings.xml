@@ -1221,7 +1221,6 @@
     <string name="acceIsf_shortname">acISF</string>
     <string name="bgIsf_shortname">bgISF</string>
     <string name="ppIsf_shortname">ppISF</string>
-    <string name="driftIsf_shortname">drISF</string>
     <string name="duraIsf_shortname">duISF</string>
     <string name="finalIsf_shortname">fISF</string>
     <string name="iobThEffective_shortname">IOBth</string>

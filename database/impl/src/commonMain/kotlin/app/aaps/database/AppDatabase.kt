@@ -6,7 +6,6 @@ import androidx.room.RoomDatabase
 import androidx.room.RoomDatabaseConstructor
 import androidx.room.TypeConverters
 import app.aaps.database.daos.APSResultDao
-import app.aaps.database.daos.AutoIsfValuesDao
 import app.aaps.database.daos.BolusCalculatorResultDao
 import app.aaps.database.daos.BolusDao
 import app.aaps.database.daos.CalibrationEntryDao
@@ -27,7 +26,6 @@ import app.aaps.database.daos.TherapyEventDao
 import app.aaps.database.daos.TotalDailyDoseDao
 import app.aaps.database.daos.UserEntryDao
 import app.aaps.database.daos.VersionChangeDao
-import app.aaps.database.entities.AutoIsfValues
 import app.aaps.database.entities.Bolus
 import app.aaps.database.entities.BolusCalculatorResult
 import app.aaps.database.entities.CalibrationEntry
@@ -49,11 +47,11 @@ import app.aaps.database.entities.TotalDailyDose
 import app.aaps.database.entities.UserEntry
 import app.aaps.database.entities.VersionChange
 
-const val DATABASE_VERSION = 37
+const val DATABASE_VERSION = 36
 
 @Database(
     version = DATABASE_VERSION,
-    entities = [app.aaps.database.entities.APSResult::class, AutoIsfValues::class, Bolus::class, BolusCalculatorResult::class, Carbs::class,
+    entities = [app.aaps.database.entities.APSResult::class, Bolus::class, BolusCalculatorResult::class, Carbs::class,
         EffectiveProfileSwitch::class, ExtendedBolus::class, GlucoseValue::class, ProfileSwitch::class,
         TemporaryBasal::class, TemporaryTarget::class, TherapyEvent::class, TotalDailyDose::class,
         PreferenceChange::class, VersionChange::class, UserEntry::class,
@@ -90,8 +88,6 @@ internal abstract class AppDatabase : RoomDatabase(), AppDatabaseDaos {
     abstract override val profileSwitchDao: ProfileSwitchDao
 
     abstract override val apsResultDao: APSResultDao
-
-    abstract override val autoIsfValuesDao: AutoIsfValuesDao
 
     abstract override val versionChangeDao: VersionChangeDao
 

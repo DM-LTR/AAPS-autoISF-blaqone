@@ -228,13 +228,6 @@ data class PpIsfGraphData(
 )
 
 /**
- * Drift ISF adjustment graph data (AutoISF component).
- */
-data class DriftIsfGraphData(
-    val driftIsf: List<GraphDataPoint>
-)
-
-/**
  * Duration-based ISF adjustment graph data (AutoISF component).
  */
 data class DuraIsfGraphData(

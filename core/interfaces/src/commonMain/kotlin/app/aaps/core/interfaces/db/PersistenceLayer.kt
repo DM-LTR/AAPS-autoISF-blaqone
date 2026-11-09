@@ -1,6 +1,5 @@
 package app.aaps.core.interfaces.db
 
-import app.aaps.core.data.model.AIV
 import app.aaps.core.data.model.BCR
 import app.aaps.core.data.model.BS
 import app.aaps.core.data.model.CA
@@ -28,6 +27,7 @@ import app.aaps.core.data.ue.Action
 import app.aaps.core.data.ue.Sources
 import app.aaps.core.data.ue.ValueWithUnit
 import app.aaps.core.interfaces.aps.APSResult
+import app.aaps.core.interfaces.aps.AutoIsfFactors
 import kotlinx.coroutines.flow.Flow
 import kotlin.reflect.KClass
 import kotlin.time.Clock
@@ -1554,26 +1554,6 @@ interface PersistenceLayer {
      */
     suspend fun insertOrUpdateHeartRates(heartRates: List<HR>): TransactionResult<HR>
 
-    // AIV
-    /**
-     * Get AutoISF values in time interval
-     *
-     * @param startTime from
-     * @param endTime to
-     * @return List of AutoISF values
-     */
-    suspend fun getAutoIsfValuesFromTimeToTime(startTime: Long, endTime: Long): List<AIV>
-
-    /**
-     * Insert or update multiple AutoISF records in a single DB transaction. Emits one change event
-     * for the whole batch instead of one per row. Callers with a single row should pass
-     * `listOf(row)`.
-     *
-     * @param autoIsfValues records
-     * @return List of inserted/updated records
-     */
-    suspend fun insertOrUpdateAutoIsfValues(autoIsfValues: List<AIV>): TransactionResult<AIV>
-
     // FD
     /**
      * Get all food records
@@ -1817,6 +1797,21 @@ interface PersistenceLayer {
     data class LoopSensitivity(
         val timestamp: Long,
         val variableSensMgdl: Double?
+    )
+
+    /**
+     * AutoISF fork: the AutoISF factors of every AutoISF APSResult in an interval, oldest first. Reads only the
+     * time and the factors, like [getVariableSensitivities]. Results of other algorithms are left out.
+     *
+     * @param start from
+     * @param end to
+     * @return one row for every AutoISF result
+     */
+    suspend fun getAutoIsfFactors(start: Long, end: Long): List<AutoIsfFactorsAt>
+
+    data class AutoIsfFactorsAt(
+        val timestamp: Long,
+        val factors: AutoIsfFactors
     )
 
     /**

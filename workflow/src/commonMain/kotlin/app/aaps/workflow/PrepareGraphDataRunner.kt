@@ -28,7 +28,6 @@ import app.aaps.core.interfaces.overview.graph.DevSlopeGraphData
 import app.aaps.core.interfaces.overview.graph.DeviationDataPoint
 import app.aaps.core.interfaces.overview.graph.DeviationType
 import app.aaps.core.interfaces.overview.graph.DeviationsGraphData
-import app.aaps.core.interfaces.overview.graph.DriftIsfGraphData
 import app.aaps.core.interfaces.overview.graph.DuraIsfGraphData
 import app.aaps.core.interfaces.overview.graph.FinalIsfGraphData
 import app.aaps.core.interfaces.overview.graph.GraphDataPoint
@@ -841,22 +840,21 @@ class PrepareGraphDataRunner(
         val varSensListCompose = persistenceLayer.getVariableSensitivities(fromTime, endTime)
             .map { GraphDataPoint(it.timestamp, profileUtil.fromMgdlToUnits(it.valueMgdl)) }
 
-        // AutoISF subgraph values (ISF component breakdown)
+        // AutoISF factors, read from the AutoISF APS results (RT.autoIsf). Only time and values, like varSens.
         val acceIsfListCompose: MutableList<GraphDataPoint> = ArrayList()
         val bgIsfListCompose: MutableList<GraphDataPoint> = ArrayList()
         val ppIsfListCompose: MutableList<GraphDataPoint> = ArrayList()
-        val driftIsfListCompose: MutableList<GraphDataPoint> = ArrayList()
         val duraIsfListCompose: MutableList<GraphDataPoint> = ArrayList()
         val finalIsfListCompose: MutableList<GraphDataPoint> = ArrayList()
         val iobThEffectiveListCompose: MutableList<GraphDataPoint> = ArrayList()
-        persistenceLayer.getAutoIsfValuesFromTimeToTime(fromTime, endTime).forEach {
-            acceIsfListCompose.add(GraphDataPoint(it.timestamp, it.acceIsf))
-            bgIsfListCompose.add(GraphDataPoint(it.timestamp, it.bgIsf))
-            ppIsfListCompose.add(GraphDataPoint(it.timestamp, it.ppIsf))
-            driftIsfListCompose.add(GraphDataPoint(it.timestamp, it.driftIsf))
-            duraIsfListCompose.add(GraphDataPoint(it.timestamp, it.duraIsf))
-            finalIsfListCompose.add(GraphDataPoint(it.timestamp, it.finalIsf))
-            iobThEffectiveListCompose.add(GraphDataPoint(it.timestamp, it.iobThEffective))
+        persistenceLayer.getAutoIsfFactors(fromTime, endTime).forEach { row ->
+            val f = row.factors
+            f.acceIsf?.let { acceIsfListCompose.add(GraphDataPoint(row.timestamp, it)) }
+            f.bgIsf?.let { bgIsfListCompose.add(GraphDataPoint(row.timestamp, it)) }
+            f.ppIsf?.let { ppIsfListCompose.add(GraphDataPoint(row.timestamp, it)) }
+            f.duraIsf?.let { duraIsfListCompose.add(GraphDataPoint(row.timestamp, it)) }
+            f.finalIsf?.let { finalIsfListCompose.add(GraphDataPoint(row.timestamp, it)) }
+            f.iobThEffective?.let { iobThEffectiveListCompose.add(GraphDataPoint(row.timestamp, it)) }
         }
 
         data.cache.updateIobGraph(IobGraphData(iob = iobListCompose, predictions = iobPredictionsListCompose))
@@ -876,7 +874,6 @@ class PrepareGraphDataRunner(
         data.cache.updateAcceIsfGraph(AcceIsfGraphData(acceIsf = acceIsfListCompose))
         data.cache.updateBgIsfGraph(BgIsfGraphData(bgIsf = bgIsfListCompose))
         data.cache.updatePpIsfGraph(PpIsfGraphData(ppIsf = ppIsfListCompose))
-        data.cache.updateDriftIsfGraph(DriftIsfGraphData(driftIsf = driftIsfListCompose))
         data.cache.updateDuraIsfGraph(DuraIsfGraphData(duraIsf = duraIsfListCompose))
         data.cache.updateFinalIsfGraph(FinalIsfGraphData(finalIsf = finalIsfListCompose))
         data.cache.updateIobThEffectiveGraph(IobThEffectiveGraphData(iobThEffective = iobThEffectiveListCompose))

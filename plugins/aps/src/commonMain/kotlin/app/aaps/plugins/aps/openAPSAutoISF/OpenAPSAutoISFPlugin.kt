@@ -2,7 +2,6 @@ package app.aaps.plugins.aps.openAPSAutoISF
 
 import app.aaps.core.data.aps.SMBDefaults
 import app.aaps.core.data.configuration.Constants
-import app.aaps.core.data.model.AIV
 import app.aaps.core.data.model.GlucoseUnit
 import app.aaps.core.data.model.getPassedDurationToTimeInMinutes
 import app.aaps.core.data.plugin.PluginType
@@ -10,6 +9,7 @@ import app.aaps.core.data.time.T
 import app.aaps.core.interfaces.InterfacesStrings
 import app.aaps.core.interfaces.aps.APS
 import app.aaps.core.interfaces.aps.APSResult
+import app.aaps.core.interfaces.aps.AutoIsfFactors
 import app.aaps.core.interfaces.aps.AutosensResult
 import app.aaps.core.interfaces.aps.CurrentTemp
 import app.aaps.core.interfaces.aps.GlucoseStatus
@@ -163,16 +163,8 @@ open class OpenAPSAutoISFPlugin(
     private val recentSteps60Minutes; get() = StepService.getRecentStepCount60Min()
     private val phone_moved; get() = PhoneMovementDetector.phoneMoved()
     val normalTarget = Constants.NORMAL_TARGET_MGDL
-    private var autoIsfValues = AIV(
-        timestamp = 0L,
-        acceIsf = 1.0,
-        bgIsf = 1.0,
-        ppIsf = 1.0,
-        driftIsf = 1.0,
-        duraIsf = 1.0,
-        finalIsf = 1.0,
-        iobThEffective = 0.0
-    )
+    /** Factors of the current run. Filled while the run is calculated, then stored in the result (RT.autoIsf). */
+    private var autoIsfFactors = AutoIsfFactors()
 
     override fun usingDynamicIsf() = true //: Boolean = preferences.get(BooleanKey.ApsUseAutoIsf)
 
@@ -228,16 +220,7 @@ open class OpenAPSAutoISFPlugin(
         val advancedFiltering = constraintsChecker.isAdvancedFilteringEnabled().also { inputConstraints.copyReasons(it) }.value()
 
         val now = dateUtil.now()
-        autoIsfValues = AIV(
-            timestamp = now,
-            acceIsf = 1.0,
-            bgIsf = 1.0,
-            ppIsf = 1.0,
-            driftIsf = 1.0,
-            duraIsf = 1.0,
-            finalIsf = 1.0,
-            iobThEffective = 0.0
-        )
+        autoIsfFactors = AutoIsfFactors(acceIsf = 1.0, bgIsf = 1.0, ppIsf = 1.0, duraIsf = 1.0, finalIsf = 1.0)
         val tb = processedTbrEbData.getTempBasalIncludingConvertedExtended(now)
         val currentTemp = CurrentTemp(
             duration = tb?.plannedRemainingMinutes ?: 0,
@@ -475,6 +458,7 @@ open class OpenAPSAutoISFPlugin(
             auto_isf_consoleError = consoleError,
             auto_isf_consoleLog = consoleLog
         ).also {
+            it.autoIsf = autoIsfFactors.finiteOnly()
             val determineBasalResult = apsResultProvider().with(it)
             // Preserve input data
             determineBasalResult.inputConstraints = inputConstraints
@@ -489,8 +473,6 @@ open class OpenAPSAutoISFPlugin(
             aapsLogger.debug(LTag.APS, "Result: $it")
             rxBus.send(EventAPSCalculationFinished())
         }
-        autoIsfValues.timestamp = now
-        persistenceLayer.insertOrUpdateAutoIsfValues(listOf(autoIsfValues))
 
         rxBus.send(EventOpenAPSUpdateGui())
     }
@@ -767,11 +749,11 @@ open class OpenAPSAutoISFPlugin(
                 sens_modified = true
             }
         }
-        autoIsfValues.acceIsf = acce_ISF
+        autoIsfFactors.acceIsf = acce_ISF
 
         val bg_ISF = 1 + interpolate(100 - bg_off)
         consoleError.add("bg_ISF adaptation is ${round(bg_ISF, 2)}")
-        autoIsfValues.bgIsf = bg_ISF
+        autoIsfFactors.bgIsf = bg_ISF
         var liftISF: Double
         var final_ISF: Double
         if (bg_ISF < 1.0) {
@@ -806,7 +788,7 @@ open class OpenAPSAutoISFPlugin(
 
             }
         }
-        autoIsfValues.ppIsf = pp_ISF
+        autoIsfFactors.ppIsf = pp_ISF
 
         var dura_ISF = 1.0
         val weightISF: Double = dura_ISF_weight
@@ -828,7 +810,7 @@ open class OpenAPSAutoISFPlugin(
                 consoleError.add("dura_ISF adaptation is ${round(dura_ISF, 2)} because ISF ${round(sens, 1)} did not do it for ${round(dura05, 1)}m")
             }
         }
-        autoIsfValues.duraIsf = dura_ISF
+        autoIsfFactors.duraIsf = dura_ISF
         if (sens_modified) {
             liftISF = max(dura_ISF, max(bg_ISF, max(acce_ISF, pp_ISF)))
             if (acce_ISF < 1.0) {
@@ -955,7 +937,7 @@ open class OpenAPSAutoISFPlugin(
         consoleError.add("----------------------------------")
         consoleError.add("end AutoISF")
         consoleError.add("----------------------------------")
-        autoIsfValues.finalIsf = finalISF
+        autoIsfFactors.finalIsf = finalISF
         return finalISF
     }
 
@@ -978,7 +960,7 @@ open class OpenAPSAutoISFPlugin(
         } else {
             consoleLog.add("User setting iobTH=100% disables iobTH method")
         }
-        autoIsfValues.iobThEffective = if (useIobTh) iobThEffective else profile.max_iob
+        autoIsfFactors.iobThEffective = if (useIobTh) iobThEffective else profile.max_iob
 
         if (!microBolusAllowed) {
             return "AAPS"                                                 // see message in enable_smb

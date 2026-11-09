@@ -29,7 +29,6 @@ enum class SeriesType {
     ACCE_ISF,
     BG_ISF,
     PP_ISF,
-    DRIFT_ISF,
     DURA_ISF,
     FINAL_ISF,
     IOB_TH_EFFECTIVE
@@ -82,20 +81,21 @@ data class GraphConfig(
         const val MAX_GRAPH_HEIGHT_DP = 250
 
         /**
-         * AutoISF ISF-factor component types — all share the same y-scale (multiplier ~0.5–2.5)
-         * and can be grouped together on a single graph axis without normalization.
-         * When all selected series in a panel belong to this set, they render on the primary
-         * axis together (no dual-axis) regardless of series count.
+         * AutoISF factors. They are all multipliers around 1.0, so they share one axis (the left one).
          */
-        val ISF_COMPANION_TYPES = setOf(
+        val ISF_FACTOR_TYPES = setOf(
             SeriesType.ACCE_ISF,
             SeriesType.BG_ISF,
             SeriesType.PP_ISF,
-            SeriesType.DRIFT_ISF,
             SeriesType.DURA_ISF,
-            SeriesType.FINAL_ISF,
-            SeriesType.IOB_TH_EFFECTIVE
+            SeriesType.FINAL_ISF
         )
+
+        /**
+         * AutoISF series that may share one panel, any number of them: the factors plus the effective IOB
+         * threshold. IOBth is in U, not a factor, so it is drawn against its own axis on the right.
+         */
+        val ISF_COMPANION_TYPES = ISF_FACTOR_TYPES + SeriesType.IOB_TH_EFFECTIVE
     }
 }
 

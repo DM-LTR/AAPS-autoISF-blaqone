@@ -1,6 +1,5 @@
 package app.aaps.database.persistence
 
-import app.aaps.core.data.model.AIV
 import app.aaps.core.data.model.BCR
 import app.aaps.core.data.model.BS
 import app.aaps.core.data.model.CA
@@ -27,6 +26,7 @@ import app.aaps.core.data.ue.Action
 import app.aaps.core.data.ue.Sources
 import app.aaps.core.data.ue.ValueWithUnit
 import app.aaps.core.interfaces.aps.APSResult
+import app.aaps.core.interfaces.aps.AutoIsfFactors
 import app.aaps.core.interfaces.concurrent.aapsIoDispatcher
 import app.aaps.core.interfaces.configuration.Config
 import app.aaps.core.interfaces.db.DatabaseMaintenanceInfo
@@ -38,7 +38,6 @@ import app.aaps.core.interfaces.utils.DateUtil
 import app.aaps.core.interfaces.utils.fabric.FabricPrivacy
 import app.aaps.database.AppRepository
 import app.aaps.database.VacuumOutcome
-import app.aaps.database.entities.AutoIsfValues
 import app.aaps.database.entities.Bolus
 import app.aaps.database.entities.BolusCalculatorResult
 import app.aaps.database.entities.CalibrationEntry
@@ -78,7 +77,6 @@ import app.aaps.database.transactions.InsertOrUpdateCalibrationEntryTransaction
 import app.aaps.database.transactions.InsertOrUpdateCarbsTransaction
 import app.aaps.database.transactions.InsertOrUpdateEffectiveProfileSwitchTransaction
 import app.aaps.database.transactions.InsertOrUpdateFoodTransaction
-import app.aaps.database.transactions.InsertOrUpdateAutoIsfValuesTransaction
 import app.aaps.database.transactions.InsertOrUpdateHeartRatesTransaction
 import app.aaps.database.transactions.InsertOrUpdateProfileSwitchTransaction
 import app.aaps.database.transactions.InsertOrUpdateRunningModeTransaction
@@ -239,9 +237,6 @@ class PersistenceLayerImpl(
             HR::class  -> repository.changesOfType<HeartRate>()
                 .map { list -> list.map { it.fromDb() } }
 
-            AIV::class -> repository.changesOfType<AutoIsfValues>()
-                .map { list -> list.map { it.fromDb() } }
-
             SC::class  -> repository.changesOfType<StepsCount>()
                 .map { list -> list.map { it.fromDb() } }
 
@@ -272,7 +267,6 @@ class PersistenceLayerImpl(
                         is RunningMode            -> RM::class
                         is DeviceStatus           -> DS::class
                         is HeartRate              -> HR::class
-                        is AutoIsfValues          -> AIV::class
                         is StepsCount             -> SC::class
                         else                      -> null
                     }
@@ -2417,30 +2411,6 @@ class PersistenceLayerImpl(
         }
     }
 
-    override suspend fun getAutoIsfValuesFromTimeToTime(startTime: Long, endTime: Long): List<AIV> = withContext(aapsIoDispatcher) {
-        repository.getAutoIsfValuesFromTimeToTime(startTime, endTime).map { it.fromDb() }
-    }
-
-    override suspend fun insertOrUpdateAutoIsfValues(autoIsfValues: List<AIV>): PersistenceLayer.TransactionResult<AIV> = withContext(aapsIoDispatcher) {
-        if (autoIsfValues.isEmpty()) return@withContext PersistenceLayer.TransactionResult<AIV>()
-        try {
-            val result = repository.runTransactionForResultSuspend(InsertOrUpdateAutoIsfValuesTransaction(autoIsfValues.map { it.toDb() }))
-            val transactionResult = PersistenceLayer.TransactionResult<AIV>()
-            result.inserted.forEach {
-                aapsLogger.debug(LTag.DATABASE, "Inserted AutoIsfValues $it")
-                transactionResult.inserted.add(it.fromDb())
-            }
-            result.updated.forEach {
-                aapsLogger.debug(LTag.DATABASE, "Updated AutoIsfValues $it")
-                transactionResult.updated.add(it.fromDb())
-            }
-            transactionResult
-        } catch (e: Exception) {
-            aapsLogger.error(LTag.DATABASE, "Error while saving AutoIsfValues batch", e)
-            throw e
-        }
-    }
-
     override suspend fun getFoods(): List<FD> = withContext(aapsIoDispatcher) {
         repository.getFoodData().map { it.fromDb() }
     }
@@ -2681,6 +2651,22 @@ class PersistenceLayerImpl(
 
     override suspend fun getLoopSensitivities(start: Long, end: Long): List<PersistenceLayer.LoopSensitivity> = withContext(aapsIoDispatcher) {
         repository.getApsResultVariableSens(start, end).map { row -> PersistenceLayer.LoopSensitivity(row.timestamp, row.variableSens) }
+    }
+
+    override suspend fun getAutoIsfFactors(start: Long, end: Long): List<PersistenceLayer.AutoIsfFactorsAt> = withContext(aapsIoDispatcher) {
+        repository.getApsResultAutoIsfFactors(start, end).map { row ->
+            PersistenceLayer.AutoIsfFactorsAt(
+                timestamp = row.timestamp,
+                factors = AutoIsfFactors(
+                    acceIsf = row.acceIsf,
+                    bgIsf = row.bgIsf,
+                    ppIsf = row.ppIsf,
+                    duraIsf = row.duraIsf,
+                    finalIsf = row.finalIsf,
+                    iobThEffective = row.iobThEffective
+                ).finiteOnly()
+            )
+        }
     }
 
     private val nonFiniteFieldRegex = Regex("(\\w+)=(NaN|Infinity|-Infinity)\\b")

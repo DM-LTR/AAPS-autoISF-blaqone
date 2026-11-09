@@ -1,7 +1,6 @@
 package app.aaps.database.entities
 
 const val TABLE_APS_RESULTS = "apsResults"
-const val TABLE_AUTOISF_VALUES = "autoIsfValues"
 const val TABLE_BOLUSES = "boluses"
 const val TABLE_BOLUS_CALCULATOR_RESULTS = "bolusCalculatorResults"
 const val TABLE_CARBS = "carbs"

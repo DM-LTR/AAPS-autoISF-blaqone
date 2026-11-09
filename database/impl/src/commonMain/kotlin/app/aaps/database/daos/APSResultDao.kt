@@ -39,7 +39,36 @@ internal interface APSResultDao : TraceableDao<APSResult> {
      */
     @Query("SELECT timestamp, json_extract(resultJson, '\$.variable_sens') AS variableSens FROM $TABLE_APS_RESULTS WHERE timestamp >= :start AND timestamp <= :end ORDER BY timestamp ASC")
     suspend fun getVariableSens(start: Long, end: Long): List<ApsResultVariableSens>
+
+    /**
+     * AutoISF fork: only the time and the AutoISF factors of each result, for the overview graphs. Read with
+     * `json_extract` for the same reason as [getVariableSens]. Results that are not from AutoISF have no
+     * `autoIsf` object and are left out.
+     */
+    @Query(
+        "SELECT timestamp, " +
+            "json_extract(resultJson, '\$.autoIsf.acceIsf') AS acceIsf, " +
+            "json_extract(resultJson, '\$.autoIsf.bgIsf') AS bgIsf, " +
+            "json_extract(resultJson, '\$.autoIsf.ppIsf') AS ppIsf, " +
+            "json_extract(resultJson, '\$.autoIsf.duraIsf') AS duraIsf, " +
+            "json_extract(resultJson, '\$.autoIsf.finalIsf') AS finalIsf, " +
+            "json_extract(resultJson, '\$.autoIsf.iobThEffective') AS iobThEffective " +
+            "FROM $TABLE_APS_RESULTS WHERE timestamp >= :start AND timestamp <= :end " +
+            "AND json_extract(resultJson, '\$.autoIsf') IS NOT NULL ORDER BY timestamp ASC"
+    )
+    suspend fun getAutoIsfFactors(start: Long, end: Long): List<ApsResultAutoIsfFactors>
 }
+
+/** One row of [APSResultDao.getAutoIsfFactors]. A value is null when the result has none. */
+data class ApsResultAutoIsfFactors(
+    val timestamp: Long,
+    val acceIsf: Double?,
+    val bgIsf: Double?,
+    val ppIsf: Double?,
+    val duraIsf: Double?,
+    val finalIsf: Double?,
+    val iobThEffective: Double?
+)
 
 /** One row of [APSResultDao.getVariableSens]. [variableSens] is in mg/dL, null when the result has no value. */
 data class ApsResultVariableSens(

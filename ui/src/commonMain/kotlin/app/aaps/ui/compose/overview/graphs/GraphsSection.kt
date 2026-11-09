@@ -915,7 +915,6 @@ private fun seriesShortNameId(type: SeriesType): TextRef = when (type) {
     SeriesType.ACCE_ISF         -> CoreUiStrings.acceIsf_shortname
     SeriesType.BG_ISF           -> CoreUiStrings.bgIsf_shortname
     SeriesType.PP_ISF           -> CoreUiStrings.ppIsf_shortname
-    SeriesType.DRIFT_ISF        -> CoreUiStrings.driftIsf_shortname
     SeriesType.DURA_ISF         -> CoreUiStrings.duraIsf_shortname
     SeriesType.FINAL_ISF        -> CoreUiStrings.finalIsf_shortname
     SeriesType.IOB_TH_EFFECTIVE -> CoreUiStrings.iobThEffective_shortname
@@ -939,7 +938,6 @@ private fun seriesNameId(type: SeriesType): TextRef = when (type) {
     SeriesType.ACCE_ISF         -> CoreUiStrings.acceIsf_shortname
     SeriesType.BG_ISF           -> CoreUiStrings.bgIsf_shortname
     SeriesType.PP_ISF           -> CoreUiStrings.ppIsf_shortname
-    SeriesType.DRIFT_ISF        -> CoreUiStrings.driftIsf_shortname
     SeriesType.DURA_ISF         -> CoreUiStrings.duraIsf_shortname
     SeriesType.FINAL_ISF        -> CoreUiStrings.finalIsf_shortname
     SeriesType.IOB_TH_EFFECTIVE -> CoreUiStrings.iobThEffective_shortname

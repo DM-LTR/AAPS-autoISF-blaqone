@@ -112,10 +112,6 @@ interface OverviewDataCache {
     val ppIsfGraphFlow: StateFlow<PpIsfGraphData>
     fun updatePpIsfGraph(data: PpIsfGraphData)
 
-    // Drift ISF adjustment graph (AutoISF component)
-    val driftIsfGraphFlow: StateFlow<DriftIsfGraphData>
-    fun updateDriftIsfGraph(data: DriftIsfGraphData)
-
     // Duration-based ISF adjustment graph (AutoISF component)
     val duraIsfGraphFlow: StateFlow<DuraIsfGraphData>
     fun updateDuraIsfGraph(data: DuraIsfGraphData)

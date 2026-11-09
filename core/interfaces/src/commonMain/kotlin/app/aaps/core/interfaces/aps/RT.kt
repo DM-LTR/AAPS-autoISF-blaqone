@@ -43,6 +43,7 @@ data class RT(
     var IOB: Double? = null,
     var variable_sens: Double? = null,
     var isfMgdlForCarbs: Double? = null, // used to pass to AAPS client
+    var autoIsf: AutoIsfFactors? = null, // AutoISF fork: factors of this run, for the overview graphs
 
     var consoleLog: MutableList<String>? = null,
     var consoleError: MutableList<String>? = null

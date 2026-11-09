@@ -48,7 +48,6 @@ import app.aaps.core.interfaces.overview.graph.CarbsGraphPoint
 import app.aaps.core.interfaces.overview.graph.CobGraphData
 import app.aaps.core.interfaces.overview.graph.DevSlopeGraphData
 import app.aaps.core.interfaces.overview.graph.DeviationsGraphData
-import app.aaps.core.interfaces.overview.graph.DriftIsfGraphData
 import app.aaps.core.interfaces.overview.graph.DuraIsfGraphData
 import app.aaps.core.interfaces.overview.graph.EpsGraphPoint
 import app.aaps.core.interfaces.overview.graph.ExtendedBolusGraphPoint
@@ -289,8 +288,6 @@ class OverviewDataCacheImpl(
     override val bgIsfGraphFlow: StateFlow<BgIsfGraphData> = _bgIsfGraphFlow.asStateFlow()
     private val _ppIsfGraphFlow = MutableStateFlow(PpIsfGraphData(emptyList()))
     override val ppIsfGraphFlow: StateFlow<PpIsfGraphData> = _ppIsfGraphFlow.asStateFlow()
-    private val _driftIsfGraphFlow = MutableStateFlow(DriftIsfGraphData(emptyList()))
-    override val driftIsfGraphFlow: StateFlow<DriftIsfGraphData> = _driftIsfGraphFlow.asStateFlow()
     private val _duraIsfGraphFlow = MutableStateFlow(DuraIsfGraphData(emptyList()))
     override val duraIsfGraphFlow: StateFlow<DuraIsfGraphData> = _duraIsfGraphFlow.asStateFlow()
     private val _finalIsfGraphFlow = MutableStateFlow(FinalIsfGraphData(emptyList()))
@@ -886,10 +883,6 @@ class OverviewDataCacheImpl(
         _ppIsfGraphFlow.value = data
     }
 
-    override fun updateDriftIsfGraph(data: DriftIsfGraphData) {
-        _driftIsfGraphFlow.value = data
-    }
-
     override fun updateDuraIsfGraph(data: DuraIsfGraphData) {
         _duraIsfGraphFlow.value = data
     }
@@ -1334,7 +1327,6 @@ class OverviewDataCacheImpl(
         _acceIsfGraphFlow.value = AcceIsfGraphData(emptyList())
         _bgIsfGraphFlow.value = BgIsfGraphData(emptyList())
         _ppIsfGraphFlow.value = PpIsfGraphData(emptyList())
-        _driftIsfGraphFlow.value = DriftIsfGraphData(emptyList())
         _duraIsfGraphFlow.value = DuraIsfGraphData(emptyList())
         _finalIsfGraphFlow.value = FinalIsfGraphData(emptyList())
         _iobThEffectiveGraphFlow.value = IobThEffectiveGraphData(emptyList())

@@ -257,6 +257,20 @@ internal class SecondaryGraphScaleHelpersTest {
         }
 
         @Test
+        fun `AutoISF factors share the left axis and IOBth gets the right one`() {
+            assertThat(graphSides(listOf(SeriesType.FINAL_ISF, SeriesType.ACCE_ISF, SeriesType.IOB_TH_EFFECTIVE, SeriesType.BG_ISF)))
+                .isEqualTo(GraphSides(listOf(SeriesType.FINAL_ISF, SeriesType.ACCE_ISF, SeriesType.BG_ISF), listOf(SeriesType.IOB_TH_EFFECTIVE)))
+            assertThat(graphSides(listOf(SeriesType.IOB_TH_EFFECTIVE, SeriesType.FINAL_ISF)))
+                .isEqualTo(GraphSides(listOf(SeriesType.IOB_TH_EFFECTIVE), listOf(SeriesType.FINAL_ISF)))
+        }
+
+        @Test
+        fun `IOBth shares the axis with IOB`() {
+            assertThat(graphSides(listOf(SeriesType.IOB, SeriesType.IOB_TH_EFFECTIVE)))
+                .isEqualTo(GraphSides(listOf(SeriesType.IOB, SeriesType.IOB_TH_EFFECTIVE), emptyList()))
+        }
+
+        @Test
         fun `one series takes the left axis`() {
             assertThat(graphSides(listOf(SeriesType.IOB))).isEqualTo(GraphSides(listOf(SeriesType.IOB), emptyList()))
         }

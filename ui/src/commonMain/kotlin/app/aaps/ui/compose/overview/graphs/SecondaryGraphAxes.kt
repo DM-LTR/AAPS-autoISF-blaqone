@@ -28,13 +28,13 @@ internal fun axisRuleOf(type: SeriesType): AxisRule = when (type) {
     SeriesType.DEV_SLOPE                              -> AxisRule.Pivot(0.0)
     SeriesType.VAR_SENSITIVITY, SeriesType.HEART_RATE -> AxisRule.Free
     // AutoISF factors sit around 1.0, so a zero floor would squash them
-    in GraphConfig.ISF_COMPANION_TYPES                -> AxisRule.Free
+    in GraphConfig.ISF_FACTOR_TYPES                   -> AxisRule.Free
     else                                              -> AxisRule.ZeroFloor
 }
 
 /** The series that are measured in the same unit, and so are drawn against one axis. */
 private val SHARED_UNITS = listOf(
-    setOf(SeriesType.IOB, SeriesType.ABS_IOB),
+    setOf(SeriesType.IOB, SeriesType.ABS_IOB, SeriesType.IOB_TH_EFFECTIVE),
     setOf(SeriesType.BGI, SeriesType.DEVIATIONS)
 )
 
@@ -44,8 +44,13 @@ internal data class GraphSides(val left: List<SeriesType>, val right: List<Serie
 /** The first series on the left axis, the second on the right one, or on the left as well when the two have the same unit. */
 internal fun graphSides(types: List<SeriesType>): GraphSides {
     val first = types.firstOrNull() ?: return GraphSides(emptyList(), emptyList())
-    // AutoISF factor companions (any number) share one y-scale: all on the left axis
-    if (types.all { it in GraphConfig.ISF_COMPANION_TYPES }) return GraphSides(types, emptyList())
+    // AutoISF series (any number): the factors share one axis, IOBth is in U and gets the other one.
+    // The series with the same unit as the first one go on the left.
+    if (types.all { it in GraphConfig.ISF_COMPANION_TYPES }) {
+        val firstIsFactor = first in GraphConfig.ISF_FACTOR_TYPES
+        val (sameAsFirst, other) = types.partition { (it in GraphConfig.ISF_FACTOR_TYPES) == firstIsFactor }
+        return GraphSides(sameAsFirst, other)
+    }
     val second = types.getOrNull(1) ?: return GraphSides(listOf(first), emptyList())
     val sameUnit = SHARED_UNITS.any { first in it && second in it }
     return if (sameUnit) GraphSides(listOf(first, second), emptyList()) else GraphSides(listOf(first), listOf(second))
