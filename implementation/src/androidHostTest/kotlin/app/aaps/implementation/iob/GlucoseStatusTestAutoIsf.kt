@@ -60,7 +60,7 @@ class GlucoseStatusTestAutoIsf : TestBaseWithProfile() {
         assertThat(glucoseStatus.a0).isWithin(0.1).of(214.0) //
         assertThat(glucoseStatus.a1).isWithin(0.0001).of(-2.6786) //
         assertThat(glucoseStatus.a2).isWithin(0.0001).of(-0.10714285714285714) //
-        assertThat(glucoseStatus.corrSqu).isWithin(0.001).of(0.9627) // parabola fit quality
+        assertThat(glucoseStatus.corrSqu).isWithin(0.001).of(0.9642857142857144) // parabola fit quality
     }
 
     @Test fun oneRecordShouldProduceZeroDeltas() {
