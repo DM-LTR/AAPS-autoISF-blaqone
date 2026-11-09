@@ -1,7 +1,8 @@
 package app.aaps.plugins.automationstate.services
 
 import app.aaps.core.interfaces.automation.AutomationStateInterface
-import app.aaps.core.interfaces.sharedPreferences.KeyValueStore
+import app.aaps.core.keys.StringNonKey
+import app.aaps.core.keys.interfaces.Preferences
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesBinding
 import dev.zacsweers.metro.Inject
@@ -11,24 +12,22 @@ import kotlinx.serialization.json.Json
 @SingleIn(AppScope::class)
 @ContributesBinding(AppScope::class)
 class AutomationStateService @Inject constructor(
-    private val sp: KeyValueStore
+    private val preferences: Preferences
 ) : AutomationStateInterface {
 
     private var automationStates: HashMap<String, String> = HashMap()
     var stateValues: HashMap<String, List<String>> = HashMap()
         private set
-    private val spKey = "automation_state_service"
-    private val stateValuesKey = "automation_state_values"
 
     init {
-        val string = sp.getString(spKey, "{}")
+        val string = preferences.get(StringNonKey.AutomationStateCurrent)
         try {
             automationStates = Json.decodeFromString(string)
         } catch (e: Exception) {
             automationStates = HashMap()
         }
 
-        val valuesString = sp.getString(stateValuesKey, "{}")
+        val valuesString = preferences.get(StringNonKey.AutomationStateValues)
         try {
             stateValues = Json.decodeFromString(valuesString)
         } catch (e: Exception) {
@@ -52,7 +51,7 @@ class AutomationStateService @Inject constructor(
         require(stateValues[trimmedName]!!.contains(trimmedState)) { "Invalid state value: $trimmedState" }
 
         automationStates[trimmedName] = trimmedState
-        sp.putString(spKey, Json.encodeToString(automationStates))
+        preferences.put(StringNonKey.AutomationStateCurrent, Json.encodeToString(automationStates))
     }
 
     override fun getState(stateName: String):String {
@@ -72,7 +71,7 @@ class AutomationStateService @Inject constructor(
 
     fun clearStates() {
         automationStates.clear()
-        sp.putString(spKey, "{}")
+        preferences.put(StringNonKey.AutomationStateCurrent, "{}")
     }
 
    override fun getStateValues(stateName: String): List<String> {
@@ -88,11 +87,11 @@ class AutomationStateService @Inject constructor(
         val currentState = automationStates[trimmedName]
         if (currentState != null && !trimmedValues.contains(currentState)) {
             automationStates.remove(trimmedName)
-            sp.putString(spKey, Json.encodeToString(automationStates))
+            preferences.put(StringNonKey.AutomationStateCurrent, Json.encodeToString(automationStates))
         }
         
         stateValues[trimmedName] = trimmedValues
-        sp.putString(stateValuesKey, Json.encodeToString(stateValues))
+        preferences.put(StringNonKey.AutomationStateValues, Json.encodeToString(stateValues))
     }
 
    override fun hasStateValues(stateName: String): Boolean {
@@ -103,7 +102,7 @@ class AutomationStateService @Inject constructor(
         val trimmedName = stateName.trim()
         automationStates.remove(trimmedName)
         stateValues.remove(trimmedName)
-        sp.putString(spKey, Json.encodeToString(automationStates))
-        sp.putString(stateValuesKey, Json.encodeToString(stateValues))
+        preferences.put(StringNonKey.AutomationStateCurrent, Json.encodeToString(automationStates))
+        preferences.put(StringNonKey.AutomationStateValues, Json.encodeToString(stateValues))
     }
 }
