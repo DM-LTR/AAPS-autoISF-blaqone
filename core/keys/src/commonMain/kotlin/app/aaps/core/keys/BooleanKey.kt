@@ -202,6 +202,46 @@ enum class BooleanKey(
         sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
     ),
 
+    // AutoISF 3.2 activity monitor
+    ActivityMonitorDetection("activity_detection", false, KeysStrings.pref_title_aps_activity_detection, defaultedBySM = true, sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)),
+    ActivityMonitorOvernight(
+        "ignore_inactivity_overnight",
+        true,
+        KeysStrings.ignore_inactivity_overnight_title,
+        KeysStrings.ignore_inactivity_overnight_summary,
+        defaultedBySM = true,
+        dependency = ActivityMonitorDetection,
+        sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
+    ),
+    ActivityMonitorStepsActive("steps_activity_detected", false, KeysStrings.steps_activity_detected_title, defaultedBySM = true),
+    ActivityMonitorStepsInactive("steps_inactivity_detected", false, KeysStrings.steps_inactivity_detected_title, defaultedBySM = true),
+    ActivityMonitorShowStepsFromSmartphone(
+        "steps_graph_from_smartphone",
+        true,
+        KeysStrings.steps_graph_from_smartphone_title,
+        KeysStrings.steps_graph_from_smartphone_summary,
+        defaultedBySM = true,
+        sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
+    ),
+
+    // FSL calibration suppresses SMB/AutoISF weights for a short window
+    FslCalibrationTrigger(
+        "calibration_stops_SMB",
+        false,
+        KeysStrings.calibration_stops_smb_title,
+        KeysStrings.calibration_stops_smb_summary,
+        defaultedBySM = true,
+        sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
+    ),
+    FslCalibrationEnd(
+        "calibration_end",
+        false,
+        KeysStrings.calibration_enable_smb_title,
+        KeysStrings.calibration_enable_smb_summary,
+        defaultedBySM = true,
+        sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
+    ),
+
     MaintenanceEnableFabric("enable_fabric2", true, KeysStrings.pref_title_maintenance_enable_fabric, defaultedBySM = true, hideParentScreenIfHidden = true),
 
     // Master-only (not a follower client): unattended settings export backs up the local config, which on a

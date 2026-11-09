@@ -416,6 +416,31 @@
     <string name="pref_title_smb_max_range_extension">SMB max range extension</string>
     <string name="openapsama_smb_max_range_extension_summary">Default value: 1 This is another key OpenAPS safety cap, and specifies by what factor you can exceed the regular 120 maxSMB/maxUAM minutes. Increase this experimental value slowly and with caution.</string>
 
+    <!-- AutoISF 3.2 activity monitor -->
+    <string name="pref_title_aps_activity_detection">Activity monitor (steps)</string>
+    <string name="steps_activity_detected_title">Steps activity detected</string>
+    <string name="steps_inactivity_detected_title">Steps inactivity detected</string>
+    <string name="steps_graph_from_smartphone_title">Steps graph from smartphone sensor</string>
+    <string name="steps_graph_from_smartphone_summary">Default: true\notherwise from watch sensor</string>
+    <string name="activity_ratio_title">Activity sensitivity ratio</string>
+    <string name="activity_scale_factor_title">Scale factor for final activity sensitivity</string>
+    <string name="activity_scale_factor_summary" formatted="false">Default: 1.0\nIf activity is detected then its default contribution of 15% or 30% is scaled up or down by this ratio\nA value of 0.0 disables activity contribution to sensitivity</string>
+    <string name="inactivity_scale_factor_title">Scale factor for final inactivity sensitivity</string>
+    <string name="inactivity_scale_factor_summary" formatted="false">Default: 1.0\nIf inactivity is detected then its default contribution of 10% or 20% is scaled up or down by this ratio\nA value of 0.0 disables inactivity contribution to sensitivity</string>
+    <string name="ignore_inactivity_overnight_title">Disable inactivity detection during sleep</string>
+    <string name="ignore_inactivity_overnight_summary">Stop inactivity adaptation during sleeping hours\nDefault is true, i.e. adaptation is off\n\nIf false, leave phone beside bed during short breaks to keep monitoring disabled</string>
+    <string name="inactivity_idle_start_title">Start hour for disabling inactivity monitoring</string>
+    <string name="inactivity_idle_start_summary">Start hour when inactivity monitoring is disabled for sleep\nDefault in 24h notation is 22</string>
+    <string name="inactivity_idle_end_title">End hour for disabling inactivity monitoring</string>
+    <string name="inactivity_idle_end_summary">End hour of sleep when inactivity monitoring is re-enabled again\nDefault in 24h notation is 6</string>
+
+    <!-- FSL/Libre calibration -->
+    <string name="calibration_stops_smb_title" translatable="false">Disable SMB and AutoISF weights for 20m after fresh calibration</string>
+    <string name="calibration_stops_smb_summary" translatable="false">Trigger this once before changing calibration settings</string>
+    <string name="calibration_enable_smb_title" translatable="false">Re-enable SMB and AutoISF weights earlier anyway</string>
+    <string name="calibration_enable_smb_summary" translatable="false">Activate this when suppressing is no longer required because calibration transition was smooth</string>
+    <string name="calibration_duration_title">Calibration window duration (minutes)</string>
+
     <!-- UnitDoubleKey: Overview preferences -->
     <string name="pref_title_low_mark">Low BG mark</string>
     <string name="pref_title_high_mark">High BG mark</string>

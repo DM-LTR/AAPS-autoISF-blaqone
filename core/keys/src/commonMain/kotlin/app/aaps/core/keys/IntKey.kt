@@ -370,6 +370,36 @@ enum class IntKey(
         unitType = UnitType.PERCENT,
         sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
     ),
+    ActivityMonitorIdleStart(
+        key = "inactivity_idle_start",
+        defaultValue = 22,
+        min = 0,
+        max = 23,
+        title = KeysStrings.inactivity_idle_start_title,
+        summary = KeysStrings.inactivity_idle_start_summary,
+        defaultedBySM = true,
+        dependency = BooleanKey.ActivityMonitorOvernight,
+        sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
+    ),
+    ActivityMonitorIdleEnd(
+        key = "inactivity_idle_end",
+        defaultValue = 6,
+        min = 0,
+        max = 23,
+        title = KeysStrings.inactivity_idle_end_title,
+        summary = KeysStrings.inactivity_idle_end_summary,
+        defaultedBySM = true,
+        dependency = BooleanKey.ActivityMonitorOvernight,
+        sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
+    ),
+    FslCalibrationDuration(
+        key = "Calibration_Duration",
+        defaultValue = 20,
+        min = 20,
+        max = 20,
+        title = KeysStrings.calibration_duration_title,
+        defaultedBySM = true
+    ),
     ApsDynIsfAdjustmentFactor(
         key = "DynISFAdjust",
         defaultValue = 100,

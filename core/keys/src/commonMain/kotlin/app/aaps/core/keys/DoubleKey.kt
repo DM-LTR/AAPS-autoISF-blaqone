@@ -351,6 +351,39 @@ enum class DoubleKey(
         unitType = UnitType.DOUBLE,
         sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
     ),
+    ActivityMonitorRatio(
+        key = "activity_ratio",
+        defaultValue = 1.0,
+        min = 0.0,
+        max = 2.0,
+        title = KeysStrings.activity_ratio_title,
+        defaultedBySM = true,
+        unitType = UnitType.DOUBLE_2
+    ),
+    ActivityScaleFactor(
+        key = "activity_scale_factor",
+        defaultValue = 1.0,
+        min = 0.0,
+        max = 1.5,
+        title = KeysStrings.activity_scale_factor_title,
+        summary = KeysStrings.activity_scale_factor_summary,
+        defaultedBySM = true,
+        dependency = BooleanKey.ActivityMonitorDetection,
+        unitType = UnitType.DOUBLE_2,
+        sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
+    ),
+    InactivityScaleFactor(
+        key = "inactivity_scale_factor",
+        defaultValue = 1.0,
+        min = 0.0,
+        max = 1.5,
+        title = KeysStrings.inactivity_scale_factor_title,
+        summary = KeysStrings.inactivity_scale_factor_summary,
+        defaultedBySM = true,
+        dependency = BooleanKey.ActivityMonitorDetection,
+        unitType = UnitType.DOUBLE_2,
+        sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
+    ),
 
     ;
 
