@@ -280,8 +280,8 @@ open class OpenAPSAutoISFPlugin(
         consoleLog = mutableListOf()
         val hourOfDay = Instant.fromEpochMilliseconds(dateUtil.now()).toLocalDateTime(TimeZone.currentSystemDefault()).hour
         val hour = max(1, hourOfDay)
-        val activityRatio = activityMonitor(isTempTarget, glucoseStatus.glucose, targetBg, hour)
-        val activityLog = if (consoleLog.size == 0) "Activity Monitor skipped" else consoleLog[0]
+        var activityRatio = activityMonitor(isTempTarget, glucoseStatus.glucose, targetBg, hour)
+        var activityLog = if (consoleLog.size == 0) "Activity Monitor skipped" else consoleLog[0]
         consoleLog.clear()
 
         val stepActivityDetected: Boolean
@@ -304,9 +304,16 @@ open class OpenAPSAutoISFPlugin(
                 maxBg = (maxBg + activityClass.targetBgOffsetMgdl).coerceAtMost(180.0)
             }
 
-            stepActivityDetected = activityClass == ActivityClass.AEROBIC
-            stepInactivityDetected = activityClass == ActivityClass.REST && activityRatio > 1
+            // Activity if the classifier or the step monitor sees it. When only the classifier sees it, use the
+            // same ratio as full step activity. The ratio is then capped by autosens (activitySensitivityRatio).
+            stepActivityDetected = activityClass == ActivityClass.AEROBIC || activityRatio < 1
+            stepInactivityDetected = !stepActivityDetected && activityClass == ActivityClass.REST && activityRatio > 1
+            if (activityClass == ActivityClass.AEROBIC && activityRatio >= 1) {
+                activityRatio = defaultActivityRatio(preferences.get(DoubleKey.ActivityScaleFactor))
+                preferences.put(DoubleKey.ActivityMonitorRatio, activityRatio)
+            }
             smbCapFactor = activityClass.smbCapFactor
+            activityLog += "; ActivityClassifier: $activityClass, activity ratio: $activityRatio, SMB cap factor: $smbCapFactor"
         } else {
             stepActivityDetected = activityRatio < 1
             stepInactivityDetected = activityRatio > 1
@@ -361,7 +368,7 @@ open class OpenAPSAutoISFPlugin(
             enableSMB_always = smbEnabled && preferences.get(BooleanKey.ApsUseSmbAlways) && advancedFiltering,
             enableSMB_after_carbs = smbEnabled && preferences.get(BooleanKey.ApsUseSmbAfterCarbs) && advancedFiltering,
             maxSMBBasalMinutes = (preferences.get(IntKey.ApsMaxMinutesOfBasalToLimitSmb) * smbCapFactor).toInt(),
-            maxUAMSMBBasalMinutes = preferences.get(IntKey.ApsUamMaxMinutesOfBasalToLimitSmb),
+            maxUAMSMBBasalMinutes = (preferences.get(IntKey.ApsUamMaxMinutesOfBasalToLimitSmb) * smbCapFactor).toInt(),
             bolus_increment = pump.pumpDescription.bolusStep,
             carbsReqThreshold = preferences.get(IntKey.ApsCarbsRequestThreshold),
             current_basal = ch.fromPump(activePlugin.activePump.baseBasalRate),
@@ -422,7 +429,7 @@ open class OpenAPSAutoISFPlugin(
                     sensitivityRatio = round(sensitivityRatio, 2)
                 }
             } else {
-                sensitivityRatio = activityRatio
+                sensitivityRatio = activitySensitivityRatio(autosensResult.ratio, activityRatio, stepActivityDetected)
             }
         }
         var iobTH_reduction_ratio = 1.0
@@ -563,6 +570,12 @@ open class OpenAPSAutoISFPlugin(
     fun convert_bg_to_units(value: Double, profile: OapsProfileAutoIsf): Double =
         if (profile.out_units == "mmol/L") value * Constants.MGDL_TO_MMOLL else value
 
+    /** Autosens ratio of the last calculation, or 1.0 when autosens is disabled or not available. */
+    private suspend fun lastAutosensRatio(): Double {
+        if (!constraintsChecker.isAutosensModeEnabled().value()) return 1.0
+        return iobCobCalculator.getLastAutosensDataWithWaitForCalculationFinish("OpenAPSAutoISFPlugin")?.autosensResult?.ratio ?: 1.0
+    }
+
     suspend fun activityMonitor(isTempTarget: Boolean, bg: Double, target_bg: Double, now: Int): Double {
         if (preferences.get(BooleanKey.ActivityMonitorShowStepsFromSmartphone)) {
             val nowMillis = dateUtil.now()
@@ -671,19 +684,11 @@ open class OpenAPSAutoISFPlugin(
                 }
                 sensitivityRatio = min(sensitivityRatio, resistanceMax)
                 sensitivityRatio = round(sensitivityRatio, 2)
-            } else if (stepActivityDetected) {
-                sensitivityRatio = activityRatio
-            } else if (stepInactivityDetected) {
-                sensitivityRatio = activityRatio
+            } else {
+                sensitivityRatio = activitySensitivityRatio(lastAutosensRatio(), activityRatio, stepActivityDetected)
             }
         } else {
-            var autosensResult = AutosensResult()
-            if (constraintsChecker.isAutosensModeEnabled().value()) {
-                iobCobCalculator.getLastAutosensDataWithWaitForCalculationFinish("OpenAPSAutoISFPlugin")?.also {
-                    autosensResult = it.autosensResult
-                }
-            } else autosensResult.sensResult = "autosens disabled"
-            sensitivityRatio = autosensResult.ratio
+            sensitivityRatio = lastAutosensRatio()
         }
         var skipWeights = false
         val calibrationMinutes = calibrationDuration - (dateUtil.now() - preferences.get(LongNonKey.FslCalibrationStart)) / 60000

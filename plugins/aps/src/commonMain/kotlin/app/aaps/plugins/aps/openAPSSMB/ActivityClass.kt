@@ -1,11 +1,16 @@
 package app.aaps.plugins.aps.openAPSSMB
 
+/**
+ * Result of [ActivityClassifier].
+ *
+ * The sensitivity change for AEROBIC comes from the activity monitor ratio (capped by autosens), not from this
+ * class. Here are only the optional target offset and the factor that makes SMBs smaller.
+ */
 enum class ActivityClass(
-    val isfMultiplier: Double,
     val targetBgOffsetMgdl: Double,
     val smbCapFactor: Double
 ) {
-    AEROBIC    (isfMultiplier = 1.3, targetBgOffsetMgdl = 10.0, smbCapFactor = 0.7),
-    RESISTANCE (isfMultiplier = 1.0, targetBgOffsetMgdl = 15.0, smbCapFactor = 0.8),
-    REST       (isfMultiplier = 1.0, targetBgOffsetMgdl =  0.0, smbCapFactor = 1.0)
+    AEROBIC    (targetBgOffsetMgdl = 10.0, smbCapFactor = 0.7),
+    RESISTANCE (targetBgOffsetMgdl = 15.0, smbCapFactor = 0.8),
+    REST       (targetBgOffsetMgdl =  0.0, smbCapFactor = 1.0)
 }
