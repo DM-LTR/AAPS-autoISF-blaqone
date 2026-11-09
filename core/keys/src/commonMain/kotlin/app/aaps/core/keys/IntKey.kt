@@ -400,6 +400,13 @@ enum class IntKey(
         title = KeysStrings.calibration_duration_title,
         defaultedBySM = true
     ),
+    ActivityRestingHr(
+        key = "activity_resting_hr",
+        defaultValue = 60,
+        min = 40,
+        max = 100,
+        title = KeysStrings.activity_resting_hr_title
+    ),
     ApsDynIsfAdjustmentFactor(
         key = "DynISFAdjust",
         defaultValue = 100,

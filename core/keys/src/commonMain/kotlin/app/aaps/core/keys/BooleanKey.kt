@@ -223,6 +223,24 @@ enum class BooleanKey(
         defaultedBySM = true,
         sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
     ),
+    ApsAutoIsfUseActivityClassifier(
+        "autoisf_use_activity_classifier",
+        true,
+        KeysStrings.pref_title_aps_autoisf_use_activity_classifier,
+        KeysStrings.pref_summary_aps_autoisf_use_activity_classifier,
+        defaultedBySM = true,
+        dependency = ActivityMonitorDetection,
+        sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
+    ),
+    ApsAutoIsfUseActivityTargetOffset(
+        "autoisf_use_activity_target_offset",
+        false,
+        KeysStrings.pref_title_aps_autoisf_use_activity_target_offset,
+        KeysStrings.pref_summary_aps_autoisf_use_activity_target_offset,
+        defaultedBySM = true,
+        dependency = ApsAutoIsfUseActivityClassifier,
+        sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
+    ),
 
     // FSL calibration suppresses SMB/AutoISF weights for a short window
     FslCalibrationTrigger(
