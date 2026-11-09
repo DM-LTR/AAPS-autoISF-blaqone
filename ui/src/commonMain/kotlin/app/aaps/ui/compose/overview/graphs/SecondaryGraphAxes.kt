@@ -1,5 +1,6 @@
 package app.aaps.ui.compose.overview.graphs
 
+import app.aaps.core.interfaces.overview.graph.GraphConfig
 import app.aaps.core.interfaces.overview.graph.SeriesType
 
 // The axes of a graph below BG, from a few rules that hold for every series:
