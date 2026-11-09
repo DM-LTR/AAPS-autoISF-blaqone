@@ -79,6 +79,7 @@ class PostCalculationRunnerTest : TestBaseWithProfile() {
     fun setup() {
         whenever(config.APS).thenReturn(false)
         whenever(iobCobCalculator.ads).thenReturn(ads)
+        whenever(preferences.get(IntKey.ApsLoopInterval)).thenReturn(5)
     }
 
     @Test
@@ -280,6 +281,7 @@ class PostCalculationRunnerTest : TestBaseWithProfile() {
         smbEnabled: Boolean,
         smbIntervalMin: Int,
         smbEachRun: Boolean,
+        loopIntervalMin: Int = 1,
         processingDelaySec: (Int) -> Long = { 20L }
     ): List<Int> {
         val start = T.hours(10).msecs()
@@ -293,6 +295,7 @@ class PostCalculationRunnerTest : TestBaseWithProfile() {
         whenever(dateUtil.now()).thenAnswer { wallClock }
         whenever(constraintsChecker.isSMBModeEnabled()).thenReturn(ConstraintObject(smbEnabled, aapsLogger))
         whenever(preferences.get(IntKey.ApsMaxSmbFrequency)).thenReturn(smbIntervalMin)
+        whenever(preferences.get(IntKey.ApsLoopInterval)).thenReturn(loopIntervalMin)
         val bolus = mock<BS>()
         whenever(bolus.timestamp).thenAnswer { lastBolusTime }
         whenever(persistenceLayer.getNewestBolus()).thenAnswer { if (lastBolusTime == null) null else bolus }
@@ -312,14 +315,25 @@ class PostCalculationRunnerTest : TestBaseWithProfile() {
     private fun gaps(runs: List<Int>) = runs.zipWithNext { a, b -> b - a }.toSet()
 
     @Test
-    fun `one minute source without SMB runs every 5 minutes as before`() = runTest {
-        val runs = simulate(minutes = 60, readingEveryMin = 1, smbEnabled = false, smbIntervalMin = 3, smbEachRun = false)
+    fun `default loop interval of 5 runs every 5 minutes on a one minute source`() = runTest {
+        for (smb in listOf(false, true)) {
+            val runs = simulate(minutes = 60, readingEveryMin = 1, smbEnabled = smb, smbIntervalMin = 1, smbEachRun = smb, loopIntervalMin = 5)
 
-        Assertions.assertEquals(setOf(5), gaps(runs))
+            Assertions.assertEquals(setOf(5), gaps(runs), "SMB $smb")
+        }
     }
 
     @Test
-    fun `one minute source with SMB runs at the SMB interval`() = runTest {
+    fun `without SMB the loop runs at the loop interval`() = runTest {
+        for (interval in 1..10) {
+            val runs = simulate(minutes = 120, readingEveryMin = 1, smbEnabled = false, smbIntervalMin = 3, smbEachRun = false, loopIntervalMin = interval)
+
+            Assertions.assertEquals(setOf(interval), gaps(runs), "loop interval $interval")
+        }
+    }
+
+    @Test
+    fun `with an SMB on each run the loop waits for the SMB interval`() = runTest {
         for (interval in 1..4) {
             val runs = simulate(minutes = 60, readingEveryMin = 1, smbEnabled = true, smbIntervalMin = interval, smbEachRun = true)
 
@@ -328,7 +342,7 @@ class PostCalculationRunnerTest : TestBaseWithProfile() {
     }
 
     @Test
-    fun `SMB interval of 5 or more keeps the 5 minute cadence`() = runTest {
+    fun `an SMB interval of 5 or more still gives a run every 5 minutes`() = runTest {
         for (interval in 5..10) {
             val runs = simulate(minutes = 60, readingEveryMin = 1, smbEnabled = true, smbIntervalMin = interval, smbEachRun = true)
 
@@ -337,10 +351,24 @@ class PostCalculationRunnerTest : TestBaseWithProfile() {
     }
 
     @Test
-    fun `5 minute source is not changed by the SMB interval`() = runTest {
-        val runs = simulate(minutes = 120, readingEveryMin = 5, smbEnabled = true, smbIntervalMin = 1, smbEachRun = true)
+    fun `without a recent bolus the loop interval sets the cadence`() = runTest {
+        val runs = simulate(minutes = 60, readingEveryMin = 1, smbEnabled = true, smbIntervalMin = 3, smbEachRun = false, loopIntervalMin = 2)
+
+        Assertions.assertEquals(setOf(2), gaps(runs))
+    }
+
+    @Test
+    fun `5 minute source runs every 5 minutes with a short loop interval`() = runTest {
+        val runs = simulate(minutes = 120, readingEveryMin = 5, smbEnabled = true, smbIntervalMin = 1, smbEachRun = true, loopIntervalMin = 1)
 
         Assertions.assertEquals(setOf(5), gaps(runs))
+    }
+
+    @Test
+    fun `a loop interval above 5 makes a 5 minute source run less often`() = runTest {
+        Assertions.assertEquals(setOf(10), gaps(simulate(minutes = 120, readingEveryMin = 5, smbEnabled = false, smbIntervalMin = 3, smbEachRun = false, loopIntervalMin = 10)))
+        // 7 minutes: the next reading after 7 minutes is the one after 10
+        Assertions.assertEquals(setOf(10), gaps(simulate(minutes = 120, readingEveryMin = 5, smbEnabled = false, smbIntervalMin = 3, smbEachRun = false, loopIntervalMin = 7)))
     }
 
     @Test
@@ -360,28 +388,12 @@ class PostCalculationRunnerTest : TestBaseWithProfile() {
         val runs = simulate(minutes = 60, readingEveryMin = 1, smbEnabled = true, smbIntervalMin = 3, smbEachRun = true, processingDelaySec = slowThenFast)
 
         Assertions.assertEquals(setOf(3, 4), gaps(runs))
-        // Every run that happened could deliver: none of them was inside the SMB interval.
-        Assertions.assertTrue(runs.isNotEmpty())
-    }
-
-    @Test
-    fun `without a recent bolus the SMB interval still sets the cadence`() = runTest {
-        val runs = simulate(minutes = 60, readingEveryMin = 1, smbEnabled = true, smbIntervalMin = 3, smbEachRun = false)
-
-        Assertions.assertEquals(setOf(3), gaps(runs))
     }
 
     @Test
     fun `loop runs per day for a one minute source`() = runTest {
-        val perDay = mutableMapOf<String, Int>()
-        perDay["no SMB"] = simulate(minutes = 1440, readingEveryMin = 1, smbEnabled = false, smbIntervalMin = 3, smbEachRun = false).size
-        for (interval in listOf(1, 2, 3, 4, 5)) {
-            perDay["SMB interval $interval"] = simulate(minutes = 1440, readingEveryMin = 1, smbEnabled = true, smbIntervalMin = interval, smbEachRun = true).size
-        }
-        println("Loop runs per day, 1 minute source: $perDay")
-
-        Assertions.assertEquals(288, perDay["no SMB"])
-        Assertions.assertEquals(480, perDay["SMB interval 3"])
-        Assertions.assertEquals(1440, perDay["SMB interval 1"])
+        Assertions.assertEquals(288, simulate(minutes = 1440, readingEveryMin = 1, smbEnabled = false, smbIntervalMin = 3, smbEachRun = false, loopIntervalMin = 5).size)
+        Assertions.assertEquals(1440, simulate(minutes = 1440, readingEveryMin = 1, smbEnabled = false, smbIntervalMin = 3, smbEachRun = false, loopIntervalMin = 1).size)
+        Assertions.assertEquals(480, simulate(minutes = 1440, readingEveryMin = 1, smbEnabled = true, smbIntervalMin = 3, smbEachRun = true, loopIntervalMin = 1).size)
     }
 }

@@ -130,21 +130,25 @@ class PostCalculationRunner(
     }
 
     /**
-     * One run per 5 minutes, like a 5 minute CGM gives. When SMB is enabled the loop may run again
-     * after the SMB interval instead, so a faster source can deliver SMBs as often as the user set.
+     * The loop runs at most once per loop interval ([IntKey.ApsLoopInterval], 1 to 10 minutes, 5 by
+     * default). Less than 5 minutes only makes a difference with a source that sends a value more
+     * often than every 5 minutes.
      *
-     * The second rule also asks the same question as `LoopPlugin` and `CommandSMBBolus`: is the SMB
-     * interval over since the last bolus? If not, the run could not deliver an SMB and only the next
-     * reading is worth a run.
+     * Between the 5 minute runs one more rule applies: while SMB is enabled and the SMB interval since
+     * the last bolus is not over, the run is left out. It could not deliver an SMB (`LoopPlugin` and
+     * `CommandSMBBolus` ask the same question), and running then would only push the next run, which
+     * could deliver, a whole loop interval further. A run after 5 minutes or more always happens, so
+     * the loop is never slower than with a 5 minute CGM unless the user set a loop interval above 5.
      *
      * [sinceLastRun] is measured between reading timestamps. [READING_JITTER] keeps a reading that
      * comes a few seconds early from pushing the run to the next reading.
      */
     private suspend fun isLoopRunDue(sinceLastRun: Long): Boolean {
+        val loopInterval = T.mins(preferences.get(IntKey.ApsLoopInterval).toLong()).msecs()
+        if (sinceLastRun < loopInterval - READING_JITTER) return false
         if (sinceLastRun >= T.mins(5).msecs() - READING_JITTER) return true
-        if (!constraintChecker.isSMBModeEnabled().value()) return false
+        if (!constraintChecker.isSMBModeEnabled().value()) return true
         val smbInterval = T.mins(preferences.get(IntKey.ApsMaxSmbFrequency).toLong()).msecs()
-        if (sinceLastRun < smbInterval - READING_JITTER) return false
         val lastBolusTime = persistenceLayer.getNewestBolus()?.timestamp ?: 0L
         return lastBolusTime + smbInterval <= dateUtil.now()
     }

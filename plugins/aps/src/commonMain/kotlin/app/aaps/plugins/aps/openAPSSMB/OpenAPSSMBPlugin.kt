@@ -567,6 +567,7 @@ open class OpenAPSSMBPlugin(
             BooleanKey.ApsUseSmbWithCob,
             BooleanKey.ApsUseSmbWithLowTt,
             BooleanKey.ApsUseSmbAfterCarbs,
+            IntKey.ApsLoopInterval,
             IntKey.ApsMaxSmbFrequency,
             IntKey.ApsMaxMinutesOfBasalToLimitSmb,
             IntKey.ApsUamMaxMinutesOfBasalToLimitSmb,

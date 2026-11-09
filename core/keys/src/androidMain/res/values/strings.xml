@@ -218,6 +218,8 @@
 
     <!-- IntKey: APS preferences -->
     <string name="pref_title_smb_frequency">SMB interval</string>
+    <string name="pref_title_loop_interval">Loop interval</string>
+    <string name="pref_summary_loop_interval">How often the loop may run at most. 5 min is the normal behaviour. Less than 5 min only helps with a CGM that sends a value every minute. More than 5 min makes the loop react later, also to lows.</string>
     <string name="pref_title_smb_max_minutes">Max minutes of basal to limit SMB</string>
     <string name="pref_title_uam_smb_max_minutes">UAM max minutes of basal to limit SMB</string>
     <string name="uam_smb_max_minutes">UAM SMB max minutes</string>

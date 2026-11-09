@@ -309,6 +309,16 @@ enum class IntKey(
         defaultedBySM = true,
         unitType = UnitType.PERCENT
     ),
+    ApsLoopInterval(
+        key = "loop_interval",
+        defaultValue = 5,
+        min = 1,
+        max = 10,
+        title = KeysStrings.pref_title_loop_interval,
+        summary = KeysStrings.pref_summary_loop_interval,
+        unitType = UnitType.MIN,
+        sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
+    ),
     ApsMaxSmbFrequency(
         key = "smbinterval",
         defaultValue = 3,

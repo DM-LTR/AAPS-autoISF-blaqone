@@ -1068,6 +1068,7 @@ open class OpenAPSAutoISFPlugin(
             BooleanKey.ApsUseSmbWithLowTt,
             BooleanKey.ApsUseSmbAfterCarbs,
             BooleanKey.ApsUseUam,
+            IntKey.ApsLoopInterval,
             IntKey.ApsMaxSmbFrequency,
             IntKey.ApsMaxMinutesOfBasalToLimitSmb,
             IntKey.ApsUamMaxMinutesOfBasalToLimitSmb,

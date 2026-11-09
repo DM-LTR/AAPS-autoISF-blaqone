@@ -287,6 +287,7 @@ local_profile_data|StringNonKey|true
 local_profile_last_change|LongNonKey|true
 location|StringKey|true
 log_%s|BooleanComposedKey|true
+loop_interval|IntKey|true
 loop_openmode_min_change|IntKey|true
 low_mark|UnitDoubleKey|true
 low_temptarget_lowers_sensitivity|BooleanKey|true
