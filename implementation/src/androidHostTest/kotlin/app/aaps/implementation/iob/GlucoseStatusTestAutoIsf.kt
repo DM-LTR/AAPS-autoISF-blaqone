@@ -98,6 +98,44 @@ class GlucoseStatusTestAutoIsf : TestBaseWithProfile() {
         assertThat(glucoseStatus).isNotNull()
     }
 
+    // #3688 / #5148: a fast but off-phase source leaves most 5 minute buckets interpolated, which
+    // filledGap flags - and this calculator refuses those for the fit. The grid below is entirely
+    // filledGap, so the old bucketed-only path gives zero. A trusted fast raw stream is used instead.
+    @Test fun aThreeMinuteTrustedNonLibreSourceUsesTheRawStreamNotTheStarvedGrid() {
+        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(generateFullyGapFlaggedBgData())
+        whenever(autosensDataStore.getBgReadingsDataTableCopy()).thenReturn(generateThreeMinuteRawStream())
+        val glucoseStatus = GlucoseStatusCalculatorAutoIsf(aapsLogger, iobCobCalculator, dateUtil, preferences, deltaCalculator).getGlucoseStatusData(false)!!
+        assertThat(glucoseStatus.duraISFminutes).isGreaterThan(0.0)
+        assertThat(glucoseStatus.parabolaMinutes).isGreaterThan(0.0)
+        assertThat(glucoseStatus.corrSqu).isGreaterThan(0.0)
+        assertThat(glucoseStatus.bgAcceleration).isNotEqualTo(0.0)
+    }
+
+    // Fast is not enough: an untrusted source stays on the starved grid, same as before.
+    @Test fun aThreeMinuteUntrustedSourceStaysOnTheStarvedGrid() {
+        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(generateFullyGapFlaggedBgData())
+        whenever(autosensDataStore.getBgReadingsDataTableCopy()).thenReturn(generateThreeMinuteRawStream(sourceSensor = SourceSensor.UNKNOWN))
+        val glucoseStatus = GlucoseStatusCalculatorAutoIsf(aapsLogger, iobCobCalculator, dateUtil, preferences, deltaCalculator).getGlucoseStatusData(false)!!
+        assertThat(glucoseStatus.duraISFminutes).isEqualTo(0.0)
+        assertThat(glucoseStatus.parabolaMinutes).isEqualTo(0.0)
+        assertThat(glucoseStatus.bgAcceleration).isEqualTo(0.0)
+    }
+
+    // A trusted source that has recently been slower than ~4 minutes must not switch to the raw path.
+    @Test fun aSlowTrustedSourceStaysOnTheBucketedGridEvenWithRawReadingsPresent() {
+        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(generateValidBgData())
+        whenever(autosensDataStore.getBgReadingsDataTableCopy()).thenReturn(
+            listOf(
+                GV(id = 0, timestamp = 1514766900000, raw = 0.0, value = 214.0, trendArrow = TrendArrow.FLAT, noise = 0.0, sourceSensor = SourceSensor.DEXCOM_G6),
+                GV(id = 0, timestamp = 1514766900000 - T.mins(6).msecs(), raw = 0.0, value = 226.0, trendArrow = TrendArrow.FLAT, noise = 0.0, sourceSensor = SourceSensor.DEXCOM_G6),
+                GV(id = 0, timestamp = 1514766900000 - T.mins(12).msecs(), raw = 0.0, value = 228.0, trendArrow = TrendArrow.FLAT, noise = 0.0, sourceSensor = SourceSensor.DEXCOM_G6),
+            )
+        )
+        val glucoseStatus = GlucoseStatusCalculatorAutoIsf(aapsLogger, iobCobCalculator, dateUtil, preferences, deltaCalculator).getGlucoseStatusData(false)!!
+        assertThat(glucoseStatus.bgAcceleration).isWithin(0.01).of(-0.21)
+        assertThat(glucoseStatus.duraISFminutes).isEqualTo(35.0)
+    }
+
     @Test fun averageShouldNotFailOnEmptyArray() {
         assertThat(DeltaCalculator.average(ArrayList())).isWithin(0.001).of(0.0)
     }
@@ -136,5 +174,29 @@ class GlucoseStatusTestAutoIsf : TestBaseWithProfile() {
         val origData: MutableList<GV> = ArrayList()
         origData.add(GV(timestamp = 1514766900000, value = 214.0, raw = 0.0, noise = 0.0, trendArrow = TrendArrow.FLAT, sourceSensor = SourceSensor.UNKNOWN))
         return origData
+    }
+
+    private fun generateFullyGapFlaggedBgData(): MutableList<InMemoryGlucoseValue> {
+        val list: MutableList<InMemoryGlucoseValue> = ArrayList()
+        for (i in 0 until 8) {
+            list.add(
+                InMemoryGlucoseValue(
+                    value = 214.0 + i * 2, timestamp = 1514766900000 - T.mins((i * 5).toLong()).msecs(),
+                    trendArrow = TrendArrow.FLAT, sourceSensor = SourceSensor.UNKNOWN, filledGap = true
+                )
+            )
+        }
+        return list
+    }
+
+    /** 20 readings 3 minutes apart, not Libre, curving so the fit has real acceleration to find. */
+    private fun generateThreeMinuteRawStream(sourceSensor: SourceSensor = SourceSensor.DEXCOM_G6): List<GV> {
+        val newest = 1514766900000L
+        return (0 until 20).map { k ->
+            GV(
+                id = 0, timestamp = newest - T.mins((k * 3).toLong()).msecs(),
+                raw = 0.0, value = 200.0 + 0.4 * k * k, trendArrow = TrendArrow.FLAT, noise = 0.0, sourceSensor = sourceSensor
+            )
+        }
     }
 }

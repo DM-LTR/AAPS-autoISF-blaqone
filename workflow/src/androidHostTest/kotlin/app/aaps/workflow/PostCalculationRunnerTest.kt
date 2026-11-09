@@ -1,6 +1,8 @@
 package app.aaps.workflow
 
 import app.aaps.core.data.iob.InMemoryGlucoseValue
+import app.aaps.core.data.model.BS
+import app.aaps.core.data.time.T
 import app.aaps.core.interfaces.aps.AutosensDataStore
 import app.aaps.core.interfaces.aps.Loop
 import app.aaps.core.interfaces.db.PersistenceLayer
@@ -10,6 +12,8 @@ import app.aaps.core.interfaces.overview.graph.OverviewDataCache
 import app.aaps.core.interfaces.scenes.SceneExpiryCheck
 import app.aaps.core.interfaces.widget.WidgetUpdater
 import app.aaps.core.interfaces.workflow.CalculationSignalsEmitter
+import app.aaps.core.keys.IntKey
+import app.aaps.core.objects.constraints.ConstraintObject
 import app.aaps.core.objects.workflow.WorkOutcome
 import app.aaps.shared.tests.TestBaseWithProfile
 import com.google.common.truth.Truth.assertThat
@@ -21,6 +25,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mock
 import org.mockito.kotlin.any
+import org.mockito.kotlin.anyOrNull
+import org.mockito.kotlin.doAnswer
 import org.mockito.kotlin.doSuspendableAnswer
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.never
@@ -37,6 +43,7 @@ class PostCalculationRunnerTest : TestBaseWithProfile() {
     @Mock lateinit var widgetUpdater: WidgetUpdater
     @Mock lateinit var processedDeviceStatusData: ProcessedDeviceStatusData
     @Mock lateinit var persistenceLayer: PersistenceLayer
+    @Mock lateinit var ads: AutosensDataStore
     @Mock lateinit var sceneExpiryCheck: SceneExpiryCheck
 
     private fun runner() =
@@ -60,9 +67,18 @@ class PostCalculationRunnerTest : TestBaseWithProfile() {
         )
     }
 
+    // Built before the stubbing call: dataWith() stubs its own mocks, which must not happen inside another stubbing.
+    private fun stubFullPhase() {
+        val data = dataWith(runLoopAndWidgetPhase = true)
+        whenever(workflowChainData.postFor(anyOrNull(), any())).thenReturn(data)
+    }
+
+    private fun bgAt(timestamp: Long): InMemoryGlucoseValue = InMemoryGlucoseValue(timestamp, 120.0)
+
     @BeforeEach
     fun setup() {
         whenever(config.APS).thenReturn(false)
+        whenever(iobCobCalculator.ads).thenReturn(ads)
     }
 
     @Test
@@ -86,14 +102,10 @@ class PostCalculationRunnerTest : TestBaseWithProfile() {
 
     @Test
     fun `full phase invokes loop on new bg and updates widget`() = runTest {
-        val ads = mock<AutosensDataStore>()
-        val bg = mock<InMemoryGlucoseValue>()
-        whenever(bg.timestamp).thenReturn(5000L)
-        whenever(iobCobCalculator.ads).thenReturn(ads)
-        whenever(ads.actualBg()).thenReturn(bg)
+        // lastBgTriggeredRun is 0 after app start, so any real reading is far more than 5 minutes newer.
+        whenever(ads.actualStatusBg()).thenReturn(bgAt(T.hours(10).msecs()))
         whenever(loop.lastBgTriggeredRun).thenReturn(0L)
-        val data = dataWith(runLoopAndWidgetPhase = true)
-        whenever(workflowChainData.postFor(any(), any())).thenReturn(data)
+        stubFullPhase()
 
         val result = run()
 
@@ -107,15 +119,11 @@ class PostCalculationRunnerTest : TestBaseWithProfile() {
     // gate left is lastBgTriggeredRun, so the two cases below are what keeps the loop from running twice.
     @Test
     fun `full phase invokes loop even when the chain was not started by a new bg`() = runTest {
-        val ads = mock<AutosensDataStore>()
-        val bg = mock<InMemoryGlucoseValue>()
-        whenever(bg.timestamp).thenReturn(5000L)
-        whenever(iobCobCalculator.ads).thenReturn(ads)
-        whenever(ads.actualBg()).thenReturn(bg)
+        val newest = T.mins(60).msecs()
+        whenever(ads.actualStatusBg()).thenReturn(bgAt(newest))
         // A loop run happened for an older BG, the newest one was never used
-        whenever(loop.lastBgTriggeredRun).thenReturn(4000L)
-        val data = dataWith(runLoopAndWidgetPhase = true)
-        whenever(workflowChainData.postFor(any(), any())).thenReturn(data)
+        whenever(loop.lastBgTriggeredRun).thenReturn(newest - T.mins(5).msecs())
+        stubFullPhase()
 
         val result = run()
 
@@ -125,14 +133,9 @@ class PostCalculationRunnerTest : TestBaseWithProfile() {
 
     @Test
     fun `full phase skips loop when newest bg was already used`() = runTest {
-        val ads = mock<AutosensDataStore>()
-        val bg = mock<InMemoryGlucoseValue>()
-        whenever(bg.timestamp).thenReturn(5000L)
-        whenever(iobCobCalculator.ads).thenReturn(ads)
-        whenever(ads.actualBg()).thenReturn(bg)
+        whenever(ads.actualStatusBg()).thenReturn(bgAt(5000L))
         whenever(loop.lastBgTriggeredRun).thenReturn(5000L)
-        val data = dataWith(runLoopAndWidgetPhase = true)
-        whenever(workflowChainData.postFor(any(), any())).thenReturn(data)
+        stubFullPhase()
 
         val result = run()
 
@@ -150,9 +153,9 @@ class PostCalculationRunnerTest : TestBaseWithProfile() {
     fun `a loop run cancelled before its decision gives the bg back`() = runTest {
         val ads = mock<AutosensDataStore>()
         val bg = mock<InMemoryGlucoseValue>()
-        whenever(bg.timestamp).thenReturn(5000L)
+        whenever(bg.timestamp).thenReturn(T.hours(10).msecs())
         whenever(iobCobCalculator.ads).thenReturn(ads)
-        whenever(ads.actualBg()).thenReturn(bg)
+        whenever(ads.actualStatusBg()).thenReturn(bg)
         whenever(loop.lastBgTriggeredRun).thenReturn(4000L)
         whenever(loop.lastRun).thenReturn(Loop.LastRun().apply { lastAPSRun = 1000L })
         whenever(loop.invoke(any(), any(), any())).doSuspendableAnswer { throw CancellationException("replaced") }
@@ -161,7 +164,7 @@ class PostCalculationRunnerTest : TestBaseWithProfile() {
 
         assertFailsWith<CancellationException> { run() }
 
-        verify(loop).lastBgTriggeredRun = 5000L
+        verify(loop).lastBgTriggeredRun = T.hours(10).msecs()
         verify(loop).lastBgTriggeredRun = 4000L
     }
 
@@ -173,9 +176,9 @@ class PostCalculationRunnerTest : TestBaseWithProfile() {
     fun `a loop run cancelled after its decision keeps the bg used`() = runTest {
         val ads = mock<AutosensDataStore>()
         val bg = mock<InMemoryGlucoseValue>()
-        whenever(bg.timestamp).thenReturn(5000L)
+        whenever(bg.timestamp).thenReturn(T.hours(10).msecs())
         whenever(iobCobCalculator.ads).thenReturn(ads)
-        whenever(ads.actualBg()).thenReturn(bg)
+        whenever(ads.actualStatusBg()).thenReturn(bg)
         whenever(loop.lastBgTriggeredRun).thenReturn(4000L)
         val lastRun = Loop.LastRun().apply { lastAPSRun = 1000L }
         whenever(loop.lastRun).thenReturn(lastRun)
@@ -188,7 +191,7 @@ class PostCalculationRunnerTest : TestBaseWithProfile() {
 
         assertFailsWith<CancellationException> { run() }
 
-        verify(loop).lastBgTriggeredRun = 5000L
+        verify(loop).lastBgTriggeredRun = T.hours(10).msecs()
         verify(loop, never()).lastBgTriggeredRun = 4000L
     }
 
@@ -201,9 +204,9 @@ class PostCalculationRunnerTest : TestBaseWithProfile() {
         whenever(config.APS).thenReturn(true)
         val ads = mock<AutosensDataStore>()
         val bg = mock<InMemoryGlucoseValue>()
-        whenever(bg.timestamp).thenReturn(5000L)
+        whenever(bg.timestamp).thenReturn(T.hours(10).msecs())
         whenever(iobCobCalculator.ads).thenReturn(ads)
-        whenever(ads.actualBg()).thenReturn(bg)
+        whenever(ads.actualStatusBg()).thenReturn(bg)
         whenever(loop.lastBgTriggeredRun).thenReturn(0L)
         val calls = mutableListOf<String>()
         whenever(sceneExpiryCheck.endIfOverdue()).doSuspendableAnswer { calls += "scene" }
@@ -221,7 +224,7 @@ class PostCalculationRunnerTest : TestBaseWithProfile() {
     fun `a client does not end scenes`() = runTest {
         val ads = mock<AutosensDataStore>()
         whenever(iobCobCalculator.ads).thenReturn(ads)
-        whenever(ads.actualBg()).thenReturn(null)
+        whenever(ads.actualStatusBg()).thenReturn(null)
         val data = dataWith(runLoopAndWidgetPhase = true)
         whenever(workflowChainData.postFor(any(), any())).thenReturn(data)
 
@@ -237,9 +240,9 @@ class PostCalculationRunnerTest : TestBaseWithProfile() {
         whenever(sceneExpiryCheck.endIfOverdue()).doSuspendableAnswer { throw IllegalStateException("broken scene") }
         val ads = mock<AutosensDataStore>()
         val bg = mock<InMemoryGlucoseValue>()
-        whenever(bg.timestamp).thenReturn(5000L)
+        whenever(bg.timestamp).thenReturn(T.hours(10).msecs())
         whenever(iobCobCalculator.ads).thenReturn(ads)
-        whenever(ads.actualBg()).thenReturn(bg)
+        whenever(ads.actualStatusBg()).thenReturn(bg)
         whenever(loop.lastBgTriggeredRun).thenReturn(0L)
         val data = dataWith(runLoopAndWidgetPhase = true)
         whenever(workflowChainData.postFor(any(), any())).thenReturn(data)
@@ -252,16 +255,133 @@ class PostCalculationRunnerTest : TestBaseWithProfile() {
 
     @Test
     fun `full phase skips loop when no actual bg is available`() = runTest {
-        val ads = mock<AutosensDataStore>()
-        whenever(iobCobCalculator.ads).thenReturn(ads)
-        whenever(ads.actualBg()).thenReturn(null)
-        val data = dataWith(runLoopAndWidgetPhase = true)
-        whenever(workflowChainData.postFor(any(), any())).thenReturn(data)
+        whenever(ads.actualStatusBg()).thenReturn(null)
+        stubFullPhase()
 
         val result = run()
 
         Assertions.assertEquals(WorkOutcome.Success, result)
         verify(loop, never()).invoke(any(), any(), any())
         verify(widgetUpdater).update("WorkFlow")
+    }
+
+    // ---------- Loop cadence on synthetic BG streams ----------
+
+    /**
+     * Feeds [minutes] of readings, one every [readingEveryMin] minutes, through the runner the way the
+     * calculation does: one run per reading, [processingDelaySec] after the reading. When [smbEachRun]
+     * is set, every loop run records a bolus at the moment it runs, like an SMB would.
+     *
+     * Returns the minutes (from the start) of the readings that started a loop run.
+     */
+    private suspend fun simulate(
+        minutes: Int,
+        readingEveryMin: Int,
+        smbEnabled: Boolean,
+        smbIntervalMin: Int,
+        smbEachRun: Boolean,
+        processingDelaySec: (Int) -> Long = { 20L }
+    ): List<Int> {
+        val start = T.hours(10).msecs()
+        var lastRun = 0L
+        var lastBolusTime: Long? = null
+        var wallClock = start
+        val runs = mutableListOf<Int>()
+        whenever(loop.lastBgTriggeredRun).thenAnswer { lastRun }
+        doAnswer { lastRun = it.getArgument(0); null }.whenever(loop).lastBgTriggeredRun = any()
+        doAnswer { if (smbEachRun) lastBolusTime = wallClock; null }.whenever(loop).invoke(any(), any(), any())
+        whenever(dateUtil.now()).thenAnswer { wallClock }
+        whenever(constraintsChecker.isSMBModeEnabled()).thenReturn(ConstraintObject(smbEnabled, aapsLogger))
+        whenever(preferences.get(IntKey.ApsMaxSmbFrequency)).thenReturn(smbIntervalMin)
+        val bolus = mock<BS>()
+        whenever(bolus.timestamp).thenAnswer { lastBolusTime }
+        whenever(persistenceLayer.getNewestBolus()).thenAnswer { if (lastBolusTime == null) null else bolus }
+        stubFullPhase()
+
+        for (minute in 0 until minutes step readingEveryMin) {
+            val readingTime = start + T.mins(minute.toLong()).msecs()
+            wallClock = readingTime + T.secs(processingDelaySec(minute)).msecs()
+            whenever(ads.actualStatusBg()).thenReturn(bgAt(readingTime))
+            val before = lastRun
+            run()
+            if (lastRun != before) runs.add(minute)
+        }
+        return runs
+    }
+
+    private fun gaps(runs: List<Int>) = runs.zipWithNext { a, b -> b - a }.toSet()
+
+    @Test
+    fun `one minute source without SMB runs every 5 minutes as before`() = runTest {
+        val runs = simulate(minutes = 60, readingEveryMin = 1, smbEnabled = false, smbIntervalMin = 3, smbEachRun = false)
+
+        Assertions.assertEquals(setOf(5), gaps(runs))
+    }
+
+    @Test
+    fun `one minute source with SMB runs at the SMB interval`() = runTest {
+        for (interval in 1..4) {
+            val runs = simulate(minutes = 60, readingEveryMin = 1, smbEnabled = true, smbIntervalMin = interval, smbEachRun = true)
+
+            Assertions.assertEquals(setOf(interval), gaps(runs), "SMB interval $interval")
+        }
+    }
+
+    @Test
+    fun `SMB interval of 5 or more keeps the 5 minute cadence`() = runTest {
+        for (interval in 5..10) {
+            val runs = simulate(minutes = 60, readingEveryMin = 1, smbEnabled = true, smbIntervalMin = interval, smbEachRun = true)
+
+            Assertions.assertEquals(setOf(5), gaps(runs), "SMB interval $interval")
+        }
+    }
+
+    @Test
+    fun `5 minute source is not changed by the SMB interval`() = runTest {
+        val runs = simulate(minutes = 120, readingEveryMin = 5, smbEnabled = true, smbIntervalMin = 1, smbEachRun = true)
+
+        Assertions.assertEquals(setOf(5), gaps(runs))
+    }
+
+    @Test
+    fun `2 minute source with SMB interval 3 runs every 4 minutes`() = runTest {
+        val runs = simulate(minutes = 60, readingEveryMin = 2, smbEnabled = true, smbIntervalMin = 3, smbEachRun = true)
+
+        Assertions.assertEquals(setOf(4), gaps(runs))
+    }
+
+    // The bolus of run N is recorded at wall clock time. When run N+1 is processed faster than run N,
+    // the SMB interval is not over yet at N+1. Running then would block the SMB for a whole interval,
+    // so the runner waits for the next reading instead.
+    @Test
+    fun `run that the SMB interval would still block waits one reading`() = runTest {
+        val slowThenFast: (Int) -> Long = { minute -> if ((minute / 3) % 2 == 0) 40L else 10L }
+
+        val runs = simulate(minutes = 60, readingEveryMin = 1, smbEnabled = true, smbIntervalMin = 3, smbEachRun = true, processingDelaySec = slowThenFast)
+
+        Assertions.assertEquals(setOf(3, 4), gaps(runs))
+        // Every run that happened could deliver: none of them was inside the SMB interval.
+        Assertions.assertTrue(runs.isNotEmpty())
+    }
+
+    @Test
+    fun `without a recent bolus the SMB interval still sets the cadence`() = runTest {
+        val runs = simulate(minutes = 60, readingEveryMin = 1, smbEnabled = true, smbIntervalMin = 3, smbEachRun = false)
+
+        Assertions.assertEquals(setOf(3), gaps(runs))
+    }
+
+    @Test
+    fun `loop runs per day for a one minute source`() = runTest {
+        val perDay = mutableMapOf<String, Int>()
+        perDay["no SMB"] = simulate(minutes = 1440, readingEveryMin = 1, smbEnabled = false, smbIntervalMin = 3, smbEachRun = false).size
+        for (interval in listOf(1, 2, 3, 4, 5)) {
+            perDay["SMB interval $interval"] = simulate(minutes = 1440, readingEveryMin = 1, smbEnabled = true, smbIntervalMin = interval, smbEachRun = true).size
+        }
+        println("Loop runs per day, 1 minute source: $perDay")
+
+        Assertions.assertEquals(288, perDay["no SMB"])
+        Assertions.assertEquals(480, perDay["SMB interval 3"])
+        Assertions.assertEquals(1440, perDay["SMB interval 1"])
     }
 }
