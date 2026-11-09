@@ -1,5 +1,7 @@
 package app.aaps.plugins.aps.openAPSAutoISF
 
+import app.aaps.core.data.model.advancedFilteringSupported
+import app.aaps.core.data.model.rawObservationEstimatorSupported
 import app.aaps.core.interfaces.aps.GlucoseStatusAutoIsf
 import app.aaps.core.interfaces.iob.IobCobCalculator
 import app.aaps.core.interfaces.logging.AAPSLogger
@@ -24,7 +26,7 @@ class GlucoseStatusCalculatorAutoIsf(
 ) {
 
     fun getGlucoseStatusData(allowOldData: Boolean): GlucoseStatusAutoIsf? {
-        val data = iobCobCalculator.ads.getBucketedDataTableCopy() ?: return null
+        val data = iobCobCalculator.ads.getStatusDataCopy() ?: return null
         val orig = iobCobCalculator.ads.getBgReadingsDataTableCopy()
 
         var sizeRecords = data.size
@@ -43,14 +45,32 @@ class GlucoseStatusCalculatorAutoIsf(
         val smooth = now.smoothed
         val filled = now.filledGap
         val cgm = now.sourceSensor
-        val fsl = orig[0]
-        val fslDate = fsl.timestamp
-        val fslValue = fsl.raw
-        val fslRaw = fsl.noise
-        val fslSmooth = fsl.value
-        val fslReally = cgm.text=="Libre2" || cgm.text=="Libre2 Native" || cgm.text=="Libre3"   // || cgm.text=="G7"
+        val fsl = orig.firstOrNull()
+        val fslDate = fsl?.timestamp
+        val fslValue = fsl?.raw
+        val fslRaw = fsl?.noise
+        val fslSmooth = fsl?.value
+
+        // Fit directly on the raw stream instead of the bucketed grid whenever the source has recently
+        // been running faster than the grid's own 5 minute spacing. A fast or phase-shifted source
+        // leaves most 5 minute buckets interpolated (filledGap=true), and this calculator refuses those
+        // for the fit; on the grid that means bgAcceleration and duraISFminutes sit at zero for as long
+        // as the source stays off-phase (issues #3688, #5148). The raw stream has no such gap - every
+        // point in it is a real measurement - so there is nothing to refuse, but only a source this app
+        // already trusts is used: the advanced-filtering list or the raw-observation list.
+        var useRawFit = false
         var fslMinDur = 15
-        if (sizeRecords == 1) {
+        if (orig.size > 2) {
+            val sourceTrusted = orig[0].sourceSensor.advancedFilteringSupported() || orig[0].sourceSensor.rawObservationEstimatorSupported()
+            val recentSpacingMs = (orig[0].timestamp - orig[2].timestamp) / 2.0
+            if (sourceTrusted && recentSpacingMs < 4 * 60_000) {
+                useRawFit = true
+                sizeRecords = orig.size
+                fslMinDur = if (recentSpacingMs < 90_000) 10 else 15
+            }
+        }
+
+        if (data.size == 1) {
             aapsLogger.debug(LTag.GLUCOSE, "sizeRecords==1")
             return GlucoseStatusAutoIsf(
                 glucose = now.recalculated,
@@ -74,26 +94,33 @@ class GlucoseStatusCalculatorAutoIsf(
 
         val deltaResult = deltaCalculator.calculateDeltas(data)
 
-        // calculate 2 variables for 5% range; still using 5 minute data
+        // calculate 2 variables for 5% range
+        //
+        // Raw readings are never filledGap (they are real measurements by definition), and the
+        // reference point is the raw newest reading rather than the bucketed one: on a fast source the
+        // bucketed nowDate can be stale by close to a bucket width.
+        val nowDateForSteadyState = if (useRawFit) orig[0].timestamp else nowDate
         val bw = 0.05
-        var sumBG: Double = now.recalculated
+        var sumBG: Double = if (useRawFit) orig[0].value else now.recalculated
         var oldAvg: Double = sumBG
         var minutesDur = 0L
         var n = 1
         for (i in 1 until sizeRecords) {
-            if (data[i].value > 39 && !data[i].filledGap) {
+            val thenValue = if (useRawFit) orig[i].value else data[i].value
+            val thenIsGap = !useRawFit && data[i].filledGap
+            if (thenValue > 39 && !thenIsGap) {
                 n += 1
-                val then = data[i]
-                val thenDate: Long = then.timestamp
+                val thenDate: Long = if (useRawFit) orig[i].timestamp else data[i].timestamp
+                val thenRecalculated = if (useRawFit) orig[i].value else data[i].recalculated
                 //  stop the series if there was a CGM gap greater than 13 minutes, i.e. 2 regular readings
                 //  needs shorter gap for Libre?
-                if (((nowDate - thenDate) / (1000.0 * 60)).roundToInt() - minutesDur > 13) {
+                if (((nowDateForSteadyState - thenDate) / (1000.0 * 60)).roundToInt() - minutesDur > 13) {
                     break
                 }
-                if (then.recalculated > oldAvg * (1 - bw) && then.recalculated < oldAvg * (1 + bw)) {
-                    sumBG += then.recalculated
+                if (thenRecalculated > oldAvg * (1 - bw) && thenRecalculated < oldAvg * (1 + bw)) {
+                    sumBG += thenRecalculated
                     oldAvg = sumBG / n  // was: (i + 1)
-                    minutesDur = ((nowDate - thenDate) / (1000.0 * 60)).roundToLong()
+                    minutesDur = ((nowDateForSteadyState - thenDate) / (1000.0 * 60)).roundToLong()
                 } else {
                     break
                 }
@@ -114,17 +141,7 @@ class GlucoseStatusCalculatorAutoIsf(
         var a1 = 0.0
         var a2 = 0.0
         //var b = 0.0
-        var use1MinuteRaw = false
-        if ( fslReally ) {
-            if (orig.size>2) {
-                if ( orig[0].timestamp - orig[2].timestamp < 3 * 60000 ) {
-                    use1MinuteRaw = true
-                    sizeRecords = orig.size
-                    fslMinDur = 10
-                }
-            }
-        }
-        aapsLogger.debug(LTag.GLUCOSE, "BgReadings stamp=$fslDate; raw=$fslRaw; value=$fslValue; Libre=$fslReally; fitMinutes=$fslMinDur; fslSmooth=$fslSmooth; " +
+        aapsLogger.debug(LTag.GLUCOSE, "BgReadings stamp=$fslDate; raw=$fslRaw; value=$fslValue; rawFit=$useRawFit; fitMinutes=$fslMinDur; fslSmooth=$fslSmooth; " +
             "BgBucketed value=$nowValue; recalc=$recalc; smooth=$smooth; filled=$filled; CGM=$cgm")
 
         if (sizeRecords > 3) {
@@ -135,7 +152,7 @@ class GlucoseStatusCalculatorAutoIsf(
             var sx4 = 0.0 // x^4
             var sxy = 0.0 // x*y
             var sx2y = 0.0 // x^2*y
-            val time0 = if (use1MinuteRaw) orig[0].timestamp else data[0].timestamp
+            val time0 = if (useRawFit) orig[0].timestamp else data[0].timestamp
             var tiLast = 0.0
             //# for best numerical accuracy time and bg must be of same order of magnitude
             val scaleTime = 1.0 // was 00.0 // in 5m; values are  0, -1, -2, -3, -4, ...
@@ -144,13 +161,13 @@ class GlucoseStatusCalculatorAutoIsf(
             // if (data[i].recalculated > 38) {  } // not checked in past 1.5 years
             var n = 0
             for (i in 0 until sizeRecords) {
-                val noGap = if (use1MinuteRaw) true else !data[i].filledGap
-                val usableValue = if (use1MinuteRaw) orig[i].value else data[i].value
+                val noGap = if (useRawFit) true else !data[i].filledGap
+                val usableValue = if (useRawFit) orig[i].value else data[i].value
                 if (usableValue > 39 && noGap) {
                     n += 1
                     val thenDate: Long
                     var bg: Double
-                    if (use1MinuteRaw) {
+                    if (useRawFit) {
                         val then = orig[i]
                         thenDate = then.timestamp
                         bg = then.value / scaleBg
@@ -203,7 +220,7 @@ class GlucoseStatusCalculatorAutoIsf(
                         var sResidualSquares = 0.0
                         //var rawBg: Double
                         for (j in 0..i) {
-                            if (use1MinuteRaw) {
+                            if (useRawFit) {
                                 val before = orig[j]
                                 val scaledBg = before.value / scaleBg
                                 sSquares += (scaledBg - yMean).pow(2.0)

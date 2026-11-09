@@ -2,8 +2,10 @@ package app.aaps.workflow
 
 import app.aaps.core.data.aps.SMBDefaults
 import app.aaps.core.data.configuration.Constants
+import app.aaps.core.data.iob.InMemoryGlucoseValue
 import app.aaps.core.data.model.CA
 import app.aaps.core.data.model.TE
+import app.aaps.core.data.model.rawObservationEstimatorSupported
 import app.aaps.core.data.time.T
 import app.aaps.core.interfaces.aps.AutosensData
 import app.aaps.core.interfaces.aps.AutosensDataStore
@@ -37,6 +39,7 @@ import app.aaps.core.interfaces.overview.graph.PpIsfGraphData
 import app.aaps.core.interfaces.overview.graph.RatioGraphData
 import app.aaps.core.interfaces.overview.graph.TimeRange
 import app.aaps.core.interfaces.overview.graph.VarSensGraphData
+import app.aaps.core.objects.extensions.fromGv
 import app.aaps.core.interfaces.plugin.ActivePlugin
 import app.aaps.core.interfaces.profile.EffectiveProfile
 import app.aaps.core.interfaces.profile.ProfileFunction
@@ -187,13 +190,68 @@ class PrepareGraphDataRunner(
     }
 
     private suspend fun AutosensDataStore.smoothData() {
-        val workingCopy = dataLock.withLock {
-            bucketedData?.map { it.copy(smoothed = null, calibrated = null) }?.toMutableList()
-        } ?: return
-        val calibrated = activePlugin.activeCalibration.calibrate(workingCopy, CalibrationContext.NONE)
-        val smoothed = activePlugin.activeSmoothing.smooth(calibrated)
+        val (workingCopy, statusCopy, readings) = dataLock.withLock {
+            Triple(
+                bucketedData?.map { it.copy(smoothed = null, calibrated = null) }?.toMutableList(),
+                statusData?.map { it.copy(smoothed = null, calibrated = null) }?.toMutableList(),
+                bgReadings
+            )
+        }
+        if (workingCopy == null) return
+        val smoothing = activePlugin.activeSmoothing
+
+        // Calibration on the grid keeps its historical call and its side effects (e.g. a gap detection
+        // notification), whether or not the estimator ends up using the grid.
+        val calibratedGrid = activePlugin.activeCalibration.calibrate(workingCopy, CalibrationContext.NONE)
+        // QUIET: this is the same underlying readings as workingCopy on a shifted grid, so a gap
+        // detection side effect (e.g. LinearCalibrationPlugin's sensor-change notification) has
+        // already had its one chance to fire above; running it again here would just repeat it.
+        val calibratedStatus = statusCopy?.let { activePlugin.activeCalibration.calibrate(it, CalibrationContext.QUIET) }
+
+        // A source whose observation arrives at its own cadence faster than the 5-minute grid is fed to
+        // the estimator as-is, and the grid then only samples the result. For every other source the
+        // grid itself is smoothed, exactly as before.
+        if (calibratedGrid.firstOrNull()?.sourceSensor?.rawObservationEstimatorSupported() == true && readings.isNotEmpty()) {
+            val observations = readings.map { InMemoryGlucoseValue.fromGv(it) }.toMutableList()
+            val calibratedObservations = activePlugin.activeCalibration.calibrate(observations, CalibrationContext.QUIET)
+            smoothing.smooth(calibratedObservations)
+            projectSmoothedOntoGrid(calibratedGrid, calibratedObservations)
+            calibratedStatus?.let { projectSmoothedOntoGrid(it, calibratedObservations) }
+            dataLock.withLock {
+                bucketedData = calibratedGrid
+                statusData = calibratedStatus
+            }
+            return
+        }
+
+        val smoothed = smoothing.smooth(calibratedGrid)
+        val smoothedStatus = calibratedStatus?.let { smoothing.smoothWithoutLearning(it) }
         dataLock.withLock {
             bucketedData = smoothed
+            statusData = smoothedStatus
+        }
+    }
+
+    /**
+     * Copies each grid point's `smoothed` from the observation nearest to its timestamp, so a result
+     * computed on the observation stream is consumable by everything that reads the 5-minute grid.
+     * Both lists are newest-first. A grid point with no observation within [toleranceMs] keeps its
+     * fallback (unset `smoothed`). Internal so it can be unit-tested without the phase machinery.
+     */
+    internal fun projectSmoothedOntoGrid(
+        grid: List<InMemoryGlucoseValue>,
+        observations: List<InMemoryGlucoseValue>,
+        toleranceMs: Long = T.mins(5).msecs()
+    ) {
+        if (observations.isEmpty()) return
+        var j = 0
+        for (g in grid) {
+            while (j + 1 < observations.size && observations[j + 1].timestamp > g.timestamp) j++
+            val nearest = listOfNotNull(observations.getOrNull(j), observations.getOrNull(j + 1))
+                .minByOrNull { abs(it.timestamp - g.timestamp) } ?: continue
+            if (abs(nearest.timestamp - g.timestamp) <= toleranceMs) {
+                nearest.smoothed?.let { g.smoothed = it }
+            }
         }
     }
 

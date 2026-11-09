@@ -525,11 +525,44 @@ class UnscentedKalmanFilterPlugin(
     // MAIN FILTERING API
     // ============================================================
 
-    override fun smooth(data: MutableList<InMemoryGlucoseValue>): MutableList<InMemoryGlucoseValue> {
+    override fun smooth(data: MutableList<InMemoryGlucoseValue>): MutableList<InMemoryGlucoseValue> =
+        smoothOrRaw(data, learn = true)
+
+    /**
+     * The filter adapts R and fills its innovation windows on every pass, not only for new readings.
+     * A second pass over the same readings on a shifted grid would count them twice, and its newer
+     * first timestamp would make the next normal pass look like time went backwards, which resets the
+     * learning. So remember the learned state and put it back afterwards.
+     */
+    override fun smoothWithoutLearning(data: MutableList<InMemoryGlucoseValue>): MutableList<InMemoryGlucoseValue> {
+        val savedR = learnedR
+        val savedInnovations = innovations.toList()
+        val savedRawInnovationVariance = rawInnovationVariance.toList()
+        val savedPredVarHistory = predVarHistory.toList()
+        val savedMeasurementCount = sessionMeasurementCount
+        val savedOutlierCount = sessionOutlierCount
+        val savedConsecutiveOutliers = consecutiveOutliers
+        try {
+            return smoothOrRaw(data, learn = false)
+        } finally {
+            learnedR = savedR
+            innovations.clear()
+            innovations.addAll(savedInnovations)
+            rawInnovationVariance.clear()
+            rawInnovationVariance.addAll(savedRawInnovationVariance)
+            predVarHistory.clear()
+            predVarHistory.addAll(savedPredVarHistory)
+            sessionMeasurementCount = savedMeasurementCount
+            sessionOutlierCount = savedOutlierCount
+            consecutiveOutliers = savedConsecutiveOutliers
+        }
+    }
+
+    private fun smoothOrRaw(data: MutableList<InMemoryGlucoseValue>, learn: Boolean): MutableList<InMemoryGlucoseValue> {
         if (data.isEmpty()) return data
 
         try {
-            return smoothInternal(data)
+            return smoothInternal(data, learn)
         } catch (e: Exception) {
             aapsLogger.error(
                 LTag.GLUCOSE,
@@ -576,8 +609,8 @@ class UnscentedKalmanFilterPlugin(
         return segments
     }
 
-    private fun smoothInternal(data: MutableList<InMemoryGlucoseValue>): MutableList<InMemoryGlucoseValue> {
-        if (shouldResetLearning(data[0].timestamp)) {
+    private fun smoothInternal(data: MutableList<InMemoryGlucoseValue>, learn: Boolean): MutableList<InMemoryGlucoseValue> {
+        if (learn && shouldResetLearning(data[0].timestamp)) {
             resetLearning()
         }
 
@@ -590,9 +623,9 @@ class UnscentedKalmanFilterPlugin(
 
         aapsLogger.debug(LTag.GLUCOSE, "UKF: Processing ${segments.size} data segments")
 
-        // Track new measurements across all segments.
-        val previousTimestamp = lastProcessedTimestamp
-        lastProcessedTimestamp = data[0].timestamp
+        // Track new measurements across all segments. Without learning no reading counts as new.
+        val previousTimestamp = if (learn) lastProcessedTimestamp else Long.MAX_VALUE
+        if (learn) lastProcessedTimestamp = data[0].timestamp
 
         // Process each segment independently.
         for ((idx, segment) in segments.withIndex()) {
