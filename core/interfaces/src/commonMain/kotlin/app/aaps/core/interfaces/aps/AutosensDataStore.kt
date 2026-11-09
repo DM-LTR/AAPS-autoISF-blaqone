@@ -9,12 +9,22 @@ import app.aaps.core.interfaces.utils.DateUtil
 
 interface AutosensDataStore {
 
-    /** Guards [bgReadings], [autosensDataTable] and [bucketedData]. Hold it across compound work. */
+    /** Guards [bgReadings], [autosensDataTable], [bucketedData] and [statusData]. Hold it across compound work. */
     val dataLock: AapsLock
 
     var bgReadings: List<GV>
     var autosensDataTable: LongSparseArray<AutosensData>
     var bucketedData: MutableList<InMemoryGlucoseValue>?
+
+    /**
+     * 5 minute buckets that start at the newest reading, or null when that is the same as [bucketedData].
+     *
+     * [bucketedData] stays on one fixed 5 minute grid for the life of the process, so the cached
+     * autosens results keep their keys (issue #5066). With a source faster than 5 minutes the newest
+     * reading is then up to 4 minutes newer than `bucketedData[0]`. The glucose status and the loop
+     * trigger need that newest reading, so they read this list instead. Autosens and the graph do not.
+     */
+    var statusData: MutableList<InMemoryGlucoseValue>?
     var lastUsed5minCalculation: Boolean?
 
     /**
@@ -30,12 +40,18 @@ interface AutosensDataStore {
      * @return InMemoryGlucoseValue or null
      */
     fun actualBg(): InMemoryGlucoseValue?
+
+    /** Like [actualBg], but the newest value of [getStatusDataCopy]. */
+    fun actualStatusBg(): InMemoryGlucoseValue?
     fun lastDataTime(dateUtil: DateUtil): String
     fun clone(): AutosensDataStore
     fun getBgReadingsDataTableCopy(): List<GV>
     fun getLastAutosensData(reason: String, aapsLogger: AAPSLogger, dateUtil: DateUtil): AutosensData?
     fun getAutosensDataAtTime(fromTime: Long): AutosensData?
     fun getBucketedDataTableCopy(): MutableList<InMemoryGlucoseValue>?
+
+    /** Copy of [statusData], or of [bucketedData] when there is no separate status data. */
+    fun getStatusDataCopy(): MutableList<InMemoryGlucoseValue>?
     fun createBucketedData(aapsLogger: AAPSLogger, dateUtil: DateUtil)
     fun slowAbsorptionPercentage(timeInMinutes: Int): Double
     /**

@@ -3,8 +3,11 @@ package app.aaps.workflow
 import app.aaps.core.data.configuration.Constants
 import app.aaps.core.data.model.SourceSensor
 import app.aaps.core.data.time.T
+import app.aaps.core.interfaces.aps.AutosensDataStore
 import app.aaps.core.interfaces.aps.Loop
 import app.aaps.core.interfaces.configuration.Config
+import app.aaps.core.interfaces.constraints.ConstraintsChecker
+import app.aaps.core.interfaces.db.PersistenceLayer
 import app.aaps.core.interfaces.iob.IobCobCalculator
 import app.aaps.core.interfaces.logging.AAPSLogger
 import app.aaps.core.interfaces.logging.LTag
@@ -14,8 +17,10 @@ import app.aaps.core.interfaces.overview.graph.BgRange
 import app.aaps.core.interfaces.overview.graph.BgType
 import app.aaps.core.interfaces.profile.ProfileUtil
 import app.aaps.core.interfaces.scenes.SceneExpiryCheck
+import app.aaps.core.interfaces.utils.DateUtil
 import app.aaps.core.interfaces.widget.WidgetUpdater
 import app.aaps.core.interfaces.workflow.CalculationWorkflow
+import app.aaps.core.keys.IntKey
 import app.aaps.core.keys.UnitDoubleKey
 import app.aaps.core.keys.interfaces.Preferences
 import app.aaps.core.objects.workflow.WorkOutcome
@@ -49,6 +54,9 @@ class PostCalculationRunner(
     private val processedDeviceStatusData: ProcessedDeviceStatusData,
     private val profileUtil: ProfileUtil,
     private val preferences: Preferences,
+    private val persistenceLayer: PersistenceLayer,
+    private val constraintChecker: ConstraintsChecker,
+    private val dateUtil: DateUtil,
     private val sceneExpiryCheck: SceneExpiryCheck
 ) : CalculationPhase {
 
@@ -107,8 +115,9 @@ class PostCalculationRunner(
      * for the same BG must not follow.
      */
     private suspend fun invokeLoop() {
-        val glucoseValue = iobCobCalculator.ads.actualBg() ?: return
-        if (glucoseValue.timestamp <= loop.lastBgTriggeredRun) return
+        val glucoseValue = iobCobCalculator.ads.actualStatusBg() ?: return
+        val sinceLastRun = glucoseValue.timestamp - loop.lastBgTriggeredRun
+        if (sinceLastRun <= 0 || !isLoopRunDue(sinceLastRun)) return
         val previousTrigger = loop.lastBgTriggeredRun
         val decisionBefore = loop.lastRun?.lastAPSRun
         loop.lastBgTriggeredRun = glucoseValue.timestamp
@@ -118,6 +127,26 @@ class PostCalculationRunner(
             if (loop.lastRun?.lastAPSRun == decisionBefore) loop.lastBgTriggeredRun = previousTrigger
             throw e
         }
+    }
+
+    /**
+     * One run per 5 minutes, like a 5 minute CGM gives. When SMB is enabled the loop may run again
+     * after the SMB interval instead, so a faster source can deliver SMBs as often as the user set.
+     *
+     * The second rule also asks the same question as `LoopPlugin` and `CommandSMBBolus`: is the SMB
+     * interval over since the last bolus? If not, the run could not deliver an SMB and only the next
+     * reading is worth a run.
+     *
+     * [sinceLastRun] is measured between reading timestamps. [READING_JITTER] keeps a reading that
+     * comes a few seconds early from pushing the run to the next reading.
+     */
+    private suspend fun isLoopRunDue(sinceLastRun: Long): Boolean {
+        if (sinceLastRun >= T.mins(5).msecs() - READING_JITTER) return true
+        if (!constraintChecker.isSMBModeEnabled().value()) return false
+        val smbInterval = T.mins(preferences.get(IntKey.ApsMaxSmbFrequency).toLong()).msecs()
+        if (sinceLastRun < smbInterval - READING_JITTER) return false
+        val lastBolusTime = persistenceLayer.getNewestBolus()?.timestamp ?: 0L
+        return lastBolusTime + smbInterval <= dateUtil.now()
     }
 
     private fun preparePredictions(data: PostCalculationData) {
@@ -183,4 +212,9 @@ class PostCalculationRunner(
         }
     }
 
+    companion object {
+
+        /** Same "still the same slot" limit as `AutosensDataStoreObject.IRREGULAR_DATA_SEC`. */
+        private val READING_JITTER = T.secs(30).msecs()
+    }
 }

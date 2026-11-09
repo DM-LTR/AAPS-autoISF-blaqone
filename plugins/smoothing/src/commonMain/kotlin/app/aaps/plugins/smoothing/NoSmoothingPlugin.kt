@@ -38,4 +38,6 @@ class NoSmoothingPlugin(
 ), Smoothing {
 
     override fun smooth(data: MutableList<InMemoryGlucoseValue>): MutableList<InMemoryGlucoseValue> = data
+
+    override fun smoothWithoutLearning(data: MutableList<InMemoryGlucoseValue>): MutableList<InMemoryGlucoseValue> = data
 }

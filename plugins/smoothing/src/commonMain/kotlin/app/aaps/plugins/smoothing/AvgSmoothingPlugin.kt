@@ -72,4 +72,7 @@ class AvgSmoothingPlugin(
         // For Dexcom: Below 39 is LOW, above 401 Dexcom just says HI
         return n > 39 && n < 401
     }
+
+    // Stateless between calls: a second pass on a shifted grid cannot disturb anything learned.
+    override fun smoothWithoutLearning(data: MutableList<InMemoryGlucoseValue>): MutableList<InMemoryGlucoseValue> = smooth(data)
 }

@@ -145,4 +145,7 @@ class ExponentialSmoothingPlugin(
 
         return data
     }
+
+    // Stateless between calls: a second pass on a shifted grid cannot disturb anything learned.
+    override fun smoothWithoutLearning(data: MutableList<InMemoryGlucoseValue>): MutableList<InMemoryGlucoseValue> = smooth(data)
 }
