@@ -5,6 +5,16 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-10 (8) – Parabel-Vergleich als Diagramm
+
+- **Neues Diagramm „Parabola acceleration“:** zwei Linien über die Zeit, die Beschleunigung, die
+  AutoISF benutzt hat (**acc raw**, grün), und dieselbe Parabel auf den UKF-geglätteten Werten
+  (**acc smooth**, pink, dicker). Gleiche Achse, 0 in der Mitte (0 = BZ wird weder schneller noch
+  langsamer).
+  - Einschalten: „+ Diagramm hinzufügen“ → **acc raw** und **acc smooth** wählen.
+  - Die Werte werden ab dieser Version bei jedem Loop-Lauf gespeichert; ältere Läufe haben keine.
+  - Nur Anzeige, AutoISF rechnet unverändert mit den Rohwerten.
+
 ## 2026-11-09 (7) – Parabel-Vergleich roh / geglättet (nur Anzeige)
 
 - **Vergleich des Parabel-Fits:** Bei 1-Minuten-Sensoren wird die AutoISF-Parabel zusätzlich mit den

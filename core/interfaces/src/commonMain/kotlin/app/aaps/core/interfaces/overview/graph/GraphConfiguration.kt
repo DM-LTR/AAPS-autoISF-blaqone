@@ -31,7 +31,9 @@ enum class SeriesType {
     PP_ISF,
     DURA_ISF,
     FINAL_ISF,
-    IOB_TH_EFFECTIVE
+    IOB_TH_EFFECTIVE,
+    PARABOLA_RAW,
+    PARABOLA_SMOOTHED
 }
 
 /**

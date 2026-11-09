@@ -169,6 +169,7 @@ fun SecondaryGraphCompose(
     val duraIsfData = if (SeriesType.DURA_ISF in seriesTypes) viewModel.duraIsfGraphFlow.collectAsStateWithLifecycle().value else null
     val finalIsfData = if (SeriesType.FINAL_ISF in seriesTypes) viewModel.finalIsfGraphFlow.collectAsStateWithLifecycle().value else null
     val iobThEffectiveData = if (SeriesType.IOB_TH_EFFECTIVE in seriesTypes) viewModel.iobThEffectiveGraphFlow.collectAsStateWithLifecycle().value else null
+    val parabolaData = if (SeriesType.PARABOLA_RAW in seriesTypes || SeriesType.PARABOLA_SMOOTHED in seriesTypes) viewModel.parabolaGraphFlow.collectAsStateWithLifecycle().value else null
     // Activity data: either as a series OR as the overlay on the IOB graph
     val needsActivity = SeriesType.ACTIVITY in seriesTypes || (activityOverlay && hasIob)
     val activityData = if (needsActivity) viewModel.activityGraphFlow.collectAsStateWithLifecycle().value else null
@@ -187,7 +188,7 @@ fun SecondaryGraphCompose(
     // Simple line series processing (excludes BASAL — it's a fixed flipped overlay on IOB)
     val processedSimpleSeries = remember(
         seriesTypes, stableTimeRange, absIobData, bgiData, ratioData, varSensData, devSlopeData, hrData, stepsData, activityData,
-        acceIsfData, bgIsfData, ppIsfData, duraIsfData, finalIsfData, iobThEffectiveData
+        acceIsfData, bgIsfData, ppIsfData, duraIsfData, finalIsfData, iobThEffectiveData, parabolaData
     ) {
         if (!hasRealTimeRange) return@remember emptyList()
         buildList {
@@ -233,6 +234,12 @@ fun SecondaryGraphCompose(
             }
             iobThEffectiveData?.iobThEffective?.takeIf { it.isNotEmpty() }?.let {
                 add(SeriesType.IOB_TH_EFFECTIVE to processPoints(it, minTimestamp, minX, maxX))
+            }
+            if (SeriesType.PARABOLA_RAW in seriesTypes) parabolaData?.raw?.takeIf { it.isNotEmpty() }?.let {
+                add(SeriesType.PARABOLA_RAW to processPoints(it, minTimestamp, minX, maxX))
+            }
+            if (SeriesType.PARABOLA_SMOOTHED in seriesTypes) parabolaData?.smoothed?.takeIf { it.isNotEmpty() }?.let {
+                add(SeriesType.PARABOLA_SMOOTHED to processPoints(it, minTimestamp, minX, maxX))
             }
             // Not when activity is only the overlay of the IOB graph: that one is scaled into IOB units below
             if (SeriesType.ACTIVITY in seriesTypes) {
@@ -911,7 +918,9 @@ data class SeriesColors(
     val ppIsf: Color,
     val duraIsf: Color,
     val finalIsf: Color,
-    val iobThEffective: Color
+    val iobThEffective: Color,
+    val parabolaRaw: Color,
+    val parabolaSmoothed: Color
 ) {
 
     fun colorFor(type: SeriesType): Color = when (type) {
@@ -933,6 +942,8 @@ data class SeriesColors(
         SeriesType.DURA_ISF -> duraIsf
         SeriesType.FINAL_ISF -> finalIsf
         SeriesType.IOB_TH_EFFECTIVE -> iobThEffective
+        SeriesType.PARABOLA_RAW -> parabolaRaw
+        SeriesType.PARABOLA_SMOOTHED -> parabolaSmoothed
     }
 }
 
@@ -959,7 +970,9 @@ fun rememberSeriesColors(): SeriesColors {
             ppIsf = Color(0xFFFF69B4),
             duraIsf = Color(0xFF00FA9A),
             finalIsf = onSurface,                   // white in dark, black in light: gold was too close to bgISF orange
-            iobThEffective = Color(0xFF00BFFF)
+            iobThEffective = Color(0xFF00BFFF),
+            parabolaRaw = Color(0xFF7FFF00),        // same green as acISF: it is the acceleration acISF comes from
+            parabolaSmoothed = Color(0xFFFF69B4)    // pink, clearly different from the raw line
         )
     }
 }
@@ -993,6 +1006,16 @@ fun createSeriesLine(type: SeriesType, colors: SeriesColors): LineCartesianLayer
         )
         // Final combined ISF result — bolder line to stand out among the companion series
         SeriesType.FINAL_ISF                                                     -> LineCartesianLayer.Line(
+            fill = LineCartesianLayer.LineFill.single(Fill(color)),
+            stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 2.dp),
+            areaFill = null
+        )
+        // Parabola acceleration: raw as a plain line, smoothed thicker, so both stay readable on top of each other
+        SeriesType.PARABOLA_RAW                                                  -> LineCartesianLayer.Line(
+            fill = LineCartesianLayer.LineFill.single(Fill(color)),
+            areaFill = null
+        )
+        SeriesType.PARABOLA_SMOOTHED                                             -> LineCartesianLayer.Line(
             fill = LineCartesianLayer.LineFill.single(Fill(color)),
             stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 2.dp),
             areaFill = null
