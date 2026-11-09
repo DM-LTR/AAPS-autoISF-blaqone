@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Automation States Plugin -->
+    <string name="automation_states">Automatisierungszustände</string>
+    <string name="automation_states_short">Zustände</string>
+    <string name="description_automation_states">Automatisierungs-Zustandsvariablen anzeigen und überwachen</string>
+    <string name="automation_state_values">Werte der Automatisierungszustände</string>
+    <string name="enter_state_value">Zustandswert eingeben</string>
+    <string name="automation_state_missing_name_value">Bitte einen Zustandsnamen eingeben</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Abbrechen</string>
+    <string name="add_automation_state">Automatisierungszustand hinzufügen</string>
+    <string name="select_state_name">Zustandsnamen auswählen</string>
+    <string name="select_state_value">Zustandswert auswählen</string>
+    <string name="state_name_label">Zustandsname</string>
+    <string name="state_value_label">Zustandswert</string>
+    <string name="automation_state_last_value_cannot_be_deleted">Der letzte Zustandswert kann nicht gelöscht werden</string>
+    <string name="delete_state">Zustand löschen</string>
+    <string name="delete_state_confirmation">Möchten Sie diesen Zustand wirklich löschen?</string>
+    <string name="automation_state_name">Zustandsname</string>
+    <string name="no_automation_states">Keine Zustände definiert. Tippen Sie auf +, um einen hinzuzufügen.</string>
+    <string name="add_state_value">Neuer Wert</string>
+</resources>

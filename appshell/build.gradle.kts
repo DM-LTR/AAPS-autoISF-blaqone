@@ -28,6 +28,11 @@ plugins {
  * The navigation dependency is already the JetBrains republish, so nothing is waiting on that.
  * `:plugins:sync` is multiplatform now too - an older note here said otherwise.
  */
+
+// Plugin modules that are plain Android libraries (no iOS/desktop variant). Skipped in commonMain;
+// pulled into androidMain below.
+val androidOnlyPlugins = setOf(":plugins:automation-state")
+
 kotlin {
     android {
         namespace = "app.aaps.appshell"
@@ -52,7 +57,7 @@ kotlin {
                 // with the navigation graph that routes to them; `api` so `:app` still builds its
                 // graph against them. Adding or removing a plugin stays an edit in settings.gradle.
                 rootProject.subprojects
-                    .filter { it.path.startsWith(":plugins:") && it.buildFile.exists() }
+                    .filter { it.path.startsWith(":plugins:") && it.buildFile.exists() && it.path !in androidOnlyPlugins }
                     .forEach { api(project(it.path)) }
 
                 api(libs.jetbrains.compose.runtime)
@@ -71,6 +76,7 @@ kotlin {
             dependencies {
                 api(project.dependencies.platform(libs.androidx.compose.bom))
                 implementation(libs.androidx.activity.compose)
+                androidOnlyPlugins.forEach { api(project(it)) }
             }
         }
         getByName("androidHostTest") {

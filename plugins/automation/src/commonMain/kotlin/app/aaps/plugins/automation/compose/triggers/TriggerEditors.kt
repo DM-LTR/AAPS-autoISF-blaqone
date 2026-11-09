@@ -32,6 +32,7 @@ import app.aaps.plugins.automation.elements.InputDelta.DeltaType
 import app.aaps.plugins.automation.elements.InputPercent
 import app.aaps.plugins.automation.triggers.Trigger
 import app.aaps.plugins.automation.triggers.TriggerAutosensValue
+import app.aaps.plugins.automation.triggers.TriggerAutomationState
 import app.aaps.plugins.automation.triggers.TriggerBTDevice
 import app.aaps.plugins.automation.triggers.TriggerBg
 import app.aaps.plugins.automation.triggers.TriggerBolusAgo
@@ -95,6 +96,7 @@ fun TriggerEditor(
             is TriggerTempTarget         -> TriggerTempTargetEditor(trigger, onChange)
             is TriggerTempTargetValue    -> TriggerTempTargetValueEditor(trigger, onChange, tick)
             is TriggerStepsCount         -> TriggerStepsCountEditor(trigger, onChange, tick)
+            is TriggerAutomationState    -> TriggerAutomationStateEditor(trigger, onChange)
             is TriggerTime               -> TriggerTimeEditor(trigger, onChange)
             is TriggerRecurringTime      -> TriggerRecurringTimeEditor(trigger, onChange)
             is TriggerTimeRange          -> TriggerTimeRangeEditor(trigger, onChange)
@@ -579,4 +581,25 @@ fun TriggerLocationEditor(
         value = t.modeSelected.value,
         onValueChange = { t.modeSelected.value = it; onChange() }
     )
+}
+
+@Composable
+fun TriggerAutomationStateEditor(t: TriggerAutomationState, onChange: () -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+        AutomationDropdown(
+            value = t.inputStateName.value,
+            options = t.stateNames,
+            onValueChange = { name -> t.inputStateName.value = name; t.inputStateValue.value = ""; onChange() },
+            label = stringResource(AutomationStrings.state_name_label),
+            modifier = Modifier.fillMaxWidth()
+        )
+        AutomationDropdown(
+            value = t.inputStateValue.value,
+            options = t.getStateValues(t.inputStateName.value),
+            onValueChange = { t.inputStateValue.value = it; onChange() },
+            label = stringResource(AutomationStrings.state_value_label),
+            enabled = t.inputStateName.value.isNotEmpty(),
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
 }

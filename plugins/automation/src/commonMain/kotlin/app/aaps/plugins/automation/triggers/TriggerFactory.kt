@@ -1,6 +1,7 @@
 package app.aaps.plugins.automation.triggers
 
 import app.aaps.core.interfaces.logging.LTag
+import app.aaps.core.interfaces.automation.AutomationStateInterface
 import app.aaps.core.interfaces.receivers.ReceiverStatusStore
 import app.aaps.core.interfaces.scenes.SceneAutomationApi
 import app.aaps.core.utils.lenientString
@@ -21,7 +22,8 @@ class TriggerFactory(
     // Provider breaks a cycle: BtConnectionSource is AutomationRuntime, which reaches this factory.
     private val btConnectionSource: () -> BtConnectionSource,
     private val sceneApi: SceneAutomationApi,
-    private val receiverStatusStore: ReceiverStatusStore
+    private val receiverStatusStore: ReceiverStatusStore,
+    private val automationState: AutomationStateInterface
 ) {
 
     private val aapsLogger get() = deps.aapsLogger
@@ -30,6 +32,7 @@ class TriggerFactory(
     fun triggerBTDevice() = TriggerBTDevice(deps, btConnectionSource())
     fun triggerWifiSsid() = TriggerWifiSsid(deps, receiverStatusStore)
     fun triggerSceneActive() = TriggerSceneActive(deps, sceneApi)
+    fun triggerAutomationState() = TriggerAutomationState(deps, automationState)
 
     /**
      * A new, empty trigger of the named type, or null when the name is not one of ours.
@@ -71,6 +74,7 @@ class TriggerFactory(
         TriggerTimeRange::class.simpleName          -> TriggerTimeRange(deps)
         TriggerWifiSsid::class.simpleName           -> triggerWifiSsid()
         TriggerStepsCount::class.simpleName         -> TriggerStepsCount(deps)
+        TriggerAutomationState::class.simpleName    -> TriggerAutomationState(deps, automationState)
 
         else                                        -> null
     }

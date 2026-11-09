@@ -732,7 +732,8 @@ class AutomationRuntime(
             actionFactory.actionSmoothingChange(),
             actionFactory.actionRunScene(),
             actionFactory.actionEnableScene(),
-            actionFactory.actionDisableScene()
+            actionFactory.actionDisableScene(),
+            actionFactory.actionSetAutomationState()
         )
         // Autotune is only offered in engineering builds, as before.
         if (config.isEngineeringMode() && config.isDev())
@@ -764,7 +765,8 @@ class AutomationRuntime(
             TriggerSensorAge(triggerDeps),
             TriggerCannulaAge(triggerDeps),
             TriggerReservoirLevel(triggerDeps),
-            TriggerStepsCount(triggerDeps)
+            TriggerStepsCount(triggerDeps),
+            triggerFactory.triggerAutomationState()
         )
 
         val pump = activePlugin.activePump

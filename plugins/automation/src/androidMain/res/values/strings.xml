@@ -173,4 +173,12 @@
     <string name="permission_location_description">Needed for location-based automation triggers and WiFi network identification</string>
     <string name="permission_background_location_description">Needed for automation triggers to work when the app is in the background</string>
 
+    <!--    Automation state-->
+    <string name="set_state">Set automation state</string>
+    <string name="set_state_description">Set automation state %1$s=%2$s</string>
+    <string name="check_state_name">Check automation state</string>
+    <string name="check_state_description">Check automation state %1$s=%2$s</string>
+    <string name="state_name_label">State name</string>
+    <string name="state_value_label">State value</string>
+
 </resources>

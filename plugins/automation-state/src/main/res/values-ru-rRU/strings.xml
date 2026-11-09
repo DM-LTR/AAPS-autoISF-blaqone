@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Automation States Plugin -->
+    <string name="automation_states">Состояния автоматизации</string>
+    <string name="automation_states_short">Состояния</string>
+    <string name="description_automation_states">Просмотр и мониторинг переменных состояния автоматизации</string>
+    <string name="automation_state_values">Значения состояния автоматизации</string>
+    <string name="enter_state_value">Введите значение состояния</string>
+    <string name="automation_state_missing_name_value">Пожалуйста, введите имя состояния</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Отмена</string>
+    <string name="add_automation_state">Добавить состояние автоматизации</string>
+    <string name="select_state_name">Выберите имя состояния</string>
+    <string name="select_state_value">Выберите значение состояния</string>
+    <string name="state_name_label">Имя состояния</string>
+    <string name="state_value_label">Значение состояния</string>
+    <string name="automation_state_last_value_cannot_be_deleted">Невозможно удалить последнее значение состояния</string>
+    <string name="delete_state">Удалить состояние</string>
+    <string name="delete_state_confirmation">Вы уверены, что хотите удалить это состояние?</string>
+    <string name="automation_state_name">Имя состояния</string>
+    <string name="no_automation_states">Состояния не определены. Нажмите + чтобы добавить.</string>
+    <string name="add_state_value">Новое значение</string>
+</resources>

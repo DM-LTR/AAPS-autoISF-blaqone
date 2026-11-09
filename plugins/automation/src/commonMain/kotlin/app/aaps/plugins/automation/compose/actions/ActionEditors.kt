@@ -28,6 +28,7 @@ import app.aaps.plugins.automation.actions.ActionRunScene
 import app.aaps.plugins.automation.actions.ActionSMBChange
 import app.aaps.plugins.automation.actions.ActionSendSMS
 import app.aaps.plugins.automation.actions.ActionSettingsExport
+import app.aaps.plugins.automation.actions.ActionSetAutomationState
 import app.aaps.plugins.automation.actions.ActionSmoothingChange
 import app.aaps.plugins.automation.actions.ActionStartTempTarget
 import app.aaps.plugins.automation.compose.elements.AutomationDropdown
@@ -69,6 +70,7 @@ fun ActionEditor(
             is ActionCarePortalEvent      -> ActionCarePortalEventEditor(action, tick, onChange)
             is ActionSMBChange            -> ActionSMBChangeEditor(action, tick, onChange)
             is ActionSmoothingChange      -> ActionSmoothingChangeEditor(action, tick, onChange)
+            is ActionSetAutomationState   -> ActionSetAutomationStateEditor(action, onChange)
             is ActionProfileSwitch        -> ActionProfileSwitchEditor(action, profileNames, tick, onChange)
             is ActionProfileSwitchPercent -> ActionProfileSwitchPercentEditor(action, tick, onChange)
             is ActionRunAutotune          -> ActionRunAutotuneEditor(action, profileNames, tick, onChange)
@@ -325,4 +327,25 @@ fun ActionDisableSceneEditor(a: ActionDisableScene, sceneOptions: List<Scene>, t
         sceneOptions = sceneOptions,
         onPicked = { a.scene.value = it; onChange() }
     )
+}
+
+@Composable
+fun ActionSetAutomationStateEditor(a: ActionSetAutomationState, onChange: () -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+        AutomationDropdown(
+            value = a.inputStateName.value,
+            options = a.stateNames,
+            onValueChange = { name -> a.inputStateName.value = name; a.inputStateValue.value = ""; onChange() },
+            label = stringResource(AutomationStrings.state_name_label),
+            modifier = Modifier.fillMaxWidth()
+        )
+        AutomationDropdown(
+            value = a.inputStateValue.value,
+            options = a.getStateValues(a.inputStateName.value),
+            onValueChange = { a.inputStateValue.value = it; onChange() },
+            label = stringResource(AutomationStrings.state_value_label),
+            enabled = a.inputStateName.value.isNotEmpty(),
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
 }

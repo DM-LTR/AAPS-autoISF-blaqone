@@ -233,6 +233,7 @@ dependencies {
     // graph built here still sees every plugin that self-registers into the plugin map.
     implementation(project(":appshell"))
     implementation(project(":implementation"))
+    implementation(project(":plugins:automation-state"))
     implementation(project(":database:impl"))
     implementation(project(":database:persistence"))
     implementation(project(":pump:virtual"))
