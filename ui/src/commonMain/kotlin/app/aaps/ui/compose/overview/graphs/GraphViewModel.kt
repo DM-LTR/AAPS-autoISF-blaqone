@@ -114,6 +114,13 @@ class GraphViewModel(
     val varSensGraphFlow = cache.varSensGraphFlow
     val heartRateGraphFlow = cache.heartRateGraphFlow
     val stepsGraphFlow = cache.stepsGraphFlow
+    val acceIsfGraphFlow = cache.acceIsfGraphFlow
+    val bgIsfGraphFlow = cache.bgIsfGraphFlow
+    val ppIsfGraphFlow = cache.ppIsfGraphFlow
+    val driftIsfGraphFlow = cache.driftIsfGraphFlow
+    val duraIsfGraphFlow = cache.duraIsfGraphFlow
+    val finalIsfGraphFlow = cache.finalIsfGraphFlow
+    val iobThEffectiveGraphFlow = cache.iobThEffectiveGraphFlow
     val treatmentGraphFlow = cache.treatmentGraphFlow
     val epsGraphFlow = cache.epsGraphFlow
     val basalGraphFlow = cache.basalGraphFlow

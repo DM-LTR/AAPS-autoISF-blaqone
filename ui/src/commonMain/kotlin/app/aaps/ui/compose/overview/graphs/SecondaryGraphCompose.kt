@@ -163,6 +163,13 @@ fun SecondaryGraphCompose(
     val devSlopeData = if (SeriesType.DEV_SLOPE in seriesTypes) viewModel.devSlopeGraphFlow.collectAsStateWithLifecycle().value else null
     val hrData = if (SeriesType.HEART_RATE in seriesTypes) viewModel.heartRateGraphFlow.collectAsStateWithLifecycle().value else null
     val stepsData = if (SeriesType.STEPS in seriesTypes) viewModel.stepsGraphFlow.collectAsStateWithLifecycle().value else null
+    val acceIsfData = if (SeriesType.ACCE_ISF in seriesTypes) viewModel.acceIsfGraphFlow.collectAsStateWithLifecycle().value else null
+    val bgIsfData = if (SeriesType.BG_ISF in seriesTypes) viewModel.bgIsfGraphFlow.collectAsStateWithLifecycle().value else null
+    val ppIsfData = if (SeriesType.PP_ISF in seriesTypes) viewModel.ppIsfGraphFlow.collectAsStateWithLifecycle().value else null
+    val driftIsfData = if (SeriesType.DRIFT_ISF in seriesTypes) viewModel.driftIsfGraphFlow.collectAsStateWithLifecycle().value else null
+    val duraIsfData = if (SeriesType.DURA_ISF in seriesTypes) viewModel.duraIsfGraphFlow.collectAsStateWithLifecycle().value else null
+    val finalIsfData = if (SeriesType.FINAL_ISF in seriesTypes) viewModel.finalIsfGraphFlow.collectAsStateWithLifecycle().value else null
+    val iobThEffectiveData = if (SeriesType.IOB_TH_EFFECTIVE in seriesTypes) viewModel.iobThEffectiveGraphFlow.collectAsStateWithLifecycle().value else null
     // Activity data: either as a series OR as the overlay on the IOB graph
     val needsActivity = SeriesType.ACTIVITY in seriesTypes || (activityOverlay && hasIob)
     val activityData = if (needsActivity) viewModel.activityGraphFlow.collectAsStateWithLifecycle().value else null
@@ -180,7 +187,8 @@ fun SecondaryGraphCompose(
 
     // Simple line series processing (excludes BASAL — it's a fixed flipped overlay on IOB)
     val processedSimpleSeries = remember(
-        seriesTypes, stableTimeRange, absIobData, bgiData, ratioData, varSensData, devSlopeData, hrData, activityData
+        seriesTypes, stableTimeRange, absIobData, bgiData, ratioData, varSensData, devSlopeData, hrData, stepsData, activityData,
+        acceIsfData, bgIsfData, ppIsfData, driftIsfData, duraIsfData, finalIsfData, iobThEffectiveData
     ) {
         if (!hasRealTimeRange) return@remember emptyList()
         buildList {
@@ -208,6 +216,27 @@ fun SecondaryGraphCompose(
             // two readings in the same minute would draw a vertical stroke.
             hrData?.segments?.forEach { segment ->
                 add(SeriesType.HEART_RATE to processPoints(segment, minTimestamp, minX, maxX).distinctBy { it.first })
+            }
+            acceIsfData?.acceIsf?.takeIf { it.isNotEmpty() }?.let {
+                add(SeriesType.ACCE_ISF to processPoints(it, minTimestamp, minX, maxX))
+            }
+            bgIsfData?.bgIsf?.takeIf { it.isNotEmpty() }?.let {
+                add(SeriesType.BG_ISF to processPoints(it, minTimestamp, minX, maxX))
+            }
+            ppIsfData?.ppIsf?.takeIf { it.isNotEmpty() }?.let {
+                add(SeriesType.PP_ISF to processPoints(it, minTimestamp, minX, maxX))
+            }
+            driftIsfData?.driftIsf?.takeIf { it.isNotEmpty() }?.let {
+                add(SeriesType.DRIFT_ISF to processPoints(it, minTimestamp, minX, maxX))
+            }
+            duraIsfData?.duraIsf?.takeIf { it.isNotEmpty() }?.let {
+                add(SeriesType.DURA_ISF to processPoints(it, minTimestamp, minX, maxX))
+            }
+            finalIsfData?.finalIsf?.takeIf { it.isNotEmpty() }?.let {
+                add(SeriesType.FINAL_ISF to processPoints(it, minTimestamp, minX, maxX))
+            }
+            iobThEffectiveData?.iobThEffective?.takeIf { it.isNotEmpty() }?.let {
+                add(SeriesType.IOB_TH_EFFECTIVE to processPoints(it, minTimestamp, minX, maxX))
             }
             // Not when activity is only the overlay of the IOB graph: that one is scaled into IOB units below
             if (SeriesType.ACTIVITY in seriesTypes) {
@@ -880,7 +909,14 @@ data class SeriesColors(
     val devSlope: Color,
     val heartRate: Color,
     val steps: Color,
-    val activity: Color
+    val activity: Color,
+    val acceIsf: Color,
+    val bgIsf: Color,
+    val ppIsf: Color,
+    val driftIsf: Color,
+    val duraIsf: Color,
+    val finalIsf: Color,
+    val iobThEffective: Color
 ) {
 
     fun colorFor(type: SeriesType): Color = when (type) {
@@ -896,6 +932,13 @@ data class SeriesColors(
         SeriesType.STEPS           -> steps
         SeriesType.ACTIVITY        -> activity
         SeriesType.PREDICTIONS     -> activity // unused — PREDICTIONS is a BG overlay flag, not a secondary series
+        SeriesType.ACCE_ISF -> acceIsf
+        SeriesType.BG_ISF -> bgIsf
+        SeriesType.PP_ISF -> ppIsf
+        SeriesType.DRIFT_ISF -> driftIsf
+        SeriesType.DURA_ISF -> duraIsf
+        SeriesType.FINAL_ISF -> finalIsf
+        SeriesType.IOB_TH_EFFECTIVE -> iobThEffective
     }
 }
 
@@ -916,7 +959,14 @@ fun rememberSeriesColors(): SeriesColors {
             devSlope = Color(0xFFFFFF00),            // yellow (matches @color/devSlopePos)
             heartRate = Color(0xFFFFFF66),           // pale yellow (matches @color/heartRate #FFFFFF66)
             steps = Color(0xFF66FFB8),              // mint green (matches @color/steps)
-            activity = Color(0xFFD3F166)            // lime green (matches @color/activity)
+            activity = Color(0xFFD3F166),            // lime green (matches @color/activity)
+            acceIsf = Color(0xFF7FFF00),
+            bgIsf = Color(0xFFFFA500),
+            ppIsf = Color(0xFFFF69B4),
+            driftIsf = Color(0xFFBB86FC),
+            duraIsf = Color(0xFF00FA9A),
+            finalIsf = Color(0xFFFFD700),
+            iobThEffective = Color(0xFF00BFFF)
         )
     }
 }
@@ -942,8 +992,22 @@ fun createSeriesLine(type: SeriesType, colors: SeriesColors): LineCartesianLayer
             interpolator = Square
         )
         // Line only, no fill
-        SeriesType.DEV_SLOPE, SeriesType.SENSITIVITY, SeriesType.VAR_SENSITIVITY -> LineCartesianLayer.Line(
+        SeriesType.DEV_SLOPE, SeriesType.SENSITIVITY, SeriesType.VAR_SENSITIVITY,
+        SeriesType.ACCE_ISF, SeriesType.BG_ISF, SeriesType.PP_ISF, SeriesType.DRIFT_ISF,
+        SeriesType.DURA_ISF                                                      -> LineCartesianLayer.Line(
             fill = LineCartesianLayer.LineFill.single(Fill(color)),
+            areaFill = null
+        )
+        // Final combined ISF result — bolder line to stand out among the companion series
+        SeriesType.FINAL_ISF                                                     -> LineCartesianLayer.Line(
+            fill = LineCartesianLayer.LineFill.single(Fill(color)),
+            stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 2.dp),
+            areaFill = null
+        )
+        // Effective IOB threshold — dashed line, no fill
+        SeriesType.IOB_TH_EFFECTIVE                                              -> LineCartesianLayer.Line(
+            fill = LineCartesianLayer.LineFill.single(Fill(color)),
+            stroke = LineCartesianLayer.LineStroke.Dashed(thickness = 1.dp, cap = StrokeCap.Round, dashLength = 2.dp, gapLength = 2.dp),
             areaFill = null
         )
         // Thin curved line, no fill, so it reads well over the steps columns

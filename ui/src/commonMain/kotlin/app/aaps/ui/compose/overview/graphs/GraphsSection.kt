@@ -1,5 +1,6 @@
 package app.aaps.ui.compose.overview.graphs
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
@@ -711,14 +713,25 @@ fun GraphsSection(
                         .fillMaxWidth()
                         .height(secondary.height.dp - REMOVED_TIME_LABELS_HEIGHT)
                 )
-                GraphNameRow(
-                    name = seriesListLabel(secondary.series),
-                    editName = seriesListLabel(secondary.series),
-                    onEdit = if (isSimpleMode) null else ({ editingGraphIndex = i }),
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(end = 4.dp, bottom = GRAPH_NAME_BOTTOM_PADDING)
-                )
+                Column(
+                    horizontalAlignment = Alignment.End,
+                    modifier = Modifier.align(Alignment.BottomEnd)
+                ) {
+                    GraphNameRow(
+                        name = seriesListLabel(secondary.series),
+                        editName = seriesListLabel(secondary.series),
+                        onEdit = if (isSimpleMode) null else ({ editingGraphIndex = i }),
+                        modifier = Modifier.padding(end = 4.dp, bottom = GRAPH_NAME_BOTTOM_PADDING)
+                    )
+                    // AutoISF companion series share one axis and are only distinguishable by color —
+                    // show a color-coded legend below the graph.
+                    if (secondary.series.size > 1 && secondary.series.all { it in GraphConfig.ISF_COMPANION_TYPES }) {
+                        SeriesLegend(
+                            seriesTypes = secondary.series,
+                            modifier = Modifier.padding(start = 40.dp, top = 2.dp, bottom = 6.dp)
+                        )
+                    }
+                }
             }
         }
         if (editingGraphIndex >= 0 && editingGraphIndex < activeCount) {
@@ -744,7 +757,9 @@ fun GraphsSection(
                         current.remove(type)
                     } else {
                         current.add(type)
-                        if (current.size > 2) current.removeAt(0) // FIFO: drop oldest
+                        // ISF companion series (AutoISF factor breakdown) share one axis and may exceed 2
+                        val allCompanions = current.all { it in GraphConfig.ISF_COMPANION_TYPES }
+                        if (!allCompanions && current.size > 2) current.removeAt(0) // FIFO: drop oldest
                     }
                     if (current.isEmpty()) {
                         // Auto-remove graph when all series deselected
@@ -794,7 +809,9 @@ fun GraphsSection(
                         current.remove(type)
                     } else {
                         current.add(type)
-                        if (current.size > 2) current.removeAt(0)
+                        // ISF companion series (AutoISF factor breakdown) share one axis and may exceed 2
+                        val allCompanions = current.all { it in GraphConfig.ISF_COMPANION_TYPES }
+                        if (!allCompanions && current.size > 2) current.removeAt(0)
                     }
                     newGraphSeries = current
                 },
@@ -853,6 +870,34 @@ private fun seriesListLabel(seriesList: List<SeriesType>): String {
     return names.joinToString(" / ")
 }
 
+/** Color-coded legend (swatch + short name per series), one line per series, for graphs where color is the only way to tell lines apart. */
+@Composable
+private fun SeriesLegend(seriesTypes: List<SeriesType>, modifier: Modifier = Modifier) {
+    val colors = rememberSeriesColors()
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(2.dp)
+    ) {
+        seriesTypes.forEach { type ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(6.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(width = 14.dp, height = 3.dp)
+                        .background(colors.colorFor(type), RoundedCornerShape(50))
+                )
+                Text(
+                    text = stringResource(seriesShortNameId(type)),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.8f)
+                )
+            }
+        }
+    }
+}
+
 /** String resource ID for the short name of a series type */
 private fun seriesShortNameId(type: SeriesType): TextRef = when (type) {
     SeriesType.IOB             -> CoreUiStrings.iob
@@ -867,6 +912,13 @@ private fun seriesShortNameId(type: SeriesType): TextRef = when (type) {
     SeriesType.STEPS           -> CoreUiStrings.steps_shortname
     SeriesType.ACTIVITY        -> CoreUiStrings.activity_shortname
     SeriesType.PREDICTIONS     -> CoreUiStrings.predictions_shortname
+    SeriesType.ACCE_ISF         -> CoreUiStrings.acceIsf_shortname
+    SeriesType.BG_ISF           -> CoreUiStrings.bgIsf_shortname
+    SeriesType.PP_ISF           -> CoreUiStrings.ppIsf_shortname
+    SeriesType.DRIFT_ISF        -> CoreUiStrings.driftIsf_shortname
+    SeriesType.DURA_ISF         -> CoreUiStrings.duraIsf_shortname
+    SeriesType.FINAL_ISF        -> CoreUiStrings.finalIsf_shortname
+    SeriesType.IOB_TH_EFFECTIVE -> CoreUiStrings.iobThEffective_shortname
 }
 
 /** String resource ID for the full name of a series type, for the graph settings where there is room (#5336) */
@@ -883,6 +935,14 @@ private fun seriesNameId(type: SeriesType): TextRef = when (type) {
     SeriesType.STEPS           -> CoreUiStrings.graph_series_steps
     SeriesType.ACTIVITY        -> CoreUiStrings.graph_series_activity
     SeriesType.PREDICTIONS     -> CoreUiStrings.graph_series_predictions
+    // AutoISF factors: the short names are already the readable ones
+    SeriesType.ACCE_ISF         -> CoreUiStrings.acceIsf_shortname
+    SeriesType.BG_ISF           -> CoreUiStrings.bgIsf_shortname
+    SeriesType.PP_ISF           -> CoreUiStrings.ppIsf_shortname
+    SeriesType.DRIFT_ISF        -> CoreUiStrings.driftIsf_shortname
+    SeriesType.DURA_ISF         -> CoreUiStrings.duraIsf_shortname
+    SeriesType.FINAL_ISF        -> CoreUiStrings.finalIsf_shortname
+    SeriesType.IOB_TH_EFFECTIVE -> CoreUiStrings.iobThEffective_shortname
 }
 
 // =========================================================================

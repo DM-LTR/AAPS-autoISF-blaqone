@@ -33,10 +33,12 @@ import app.aaps.core.interfaces.overview.graph.AapsClientLevel
 import app.aaps.core.interfaces.overview.graph.AapsClientStatusData
 import app.aaps.core.interfaces.overview.graph.AapsClientStatusItem
 import app.aaps.core.interfaces.overview.graph.AbsIobGraphData
+import app.aaps.core.interfaces.overview.graph.AcceIsfGraphData
 import app.aaps.core.interfaces.overview.graph.ActivityGraphData
 import app.aaps.core.interfaces.overview.graph.BasalGraphData
 import app.aaps.core.interfaces.overview.graph.BgDataPoint
 import app.aaps.core.interfaces.overview.graph.BgInfoData
+import app.aaps.core.interfaces.overview.graph.BgIsfGraphData
 import app.aaps.core.interfaces.overview.graph.BgRange
 import app.aaps.core.interfaces.overview.graph.BgiGraphData
 import app.aaps.core.interfaces.overview.graph.BolusGraphPoint
@@ -46,14 +48,19 @@ import app.aaps.core.interfaces.overview.graph.CarbsGraphPoint
 import app.aaps.core.interfaces.overview.graph.CobGraphData
 import app.aaps.core.interfaces.overview.graph.DevSlopeGraphData
 import app.aaps.core.interfaces.overview.graph.DeviationsGraphData
+import app.aaps.core.interfaces.overview.graph.DriftIsfGraphData
+import app.aaps.core.interfaces.overview.graph.DuraIsfGraphData
 import app.aaps.core.interfaces.overview.graph.EpsGraphPoint
 import app.aaps.core.interfaces.overview.graph.ExtendedBolusGraphPoint
+import app.aaps.core.interfaces.overview.graph.FinalIsfGraphData
 import app.aaps.core.interfaces.overview.graph.GraphConfigRepository
 import app.aaps.core.interfaces.overview.graph.GraphDataPoint
 import app.aaps.core.interfaces.overview.graph.HeartRateGraphData
 import app.aaps.core.interfaces.overview.graph.IobGraphData
+import app.aaps.core.interfaces.overview.graph.IobThEffectiveGraphData
 import app.aaps.core.interfaces.overview.graph.OverviewDataCache
 import app.aaps.core.interfaces.overview.graph.ProfileDisplayData
+import app.aaps.core.interfaces.overview.graph.PpIsfGraphData
 import app.aaps.core.interfaces.overview.graph.RatioGraphData
 import app.aaps.core.interfaces.overview.graph.RunningModeDisplayData
 import app.aaps.core.interfaces.overview.graph.RunningModeGraphData
@@ -274,6 +281,23 @@ class OverviewDataCacheImpl(
     override val heartRateGraphFlow: StateFlow<HeartRateGraphData> = _heartRateGraphFlow.asStateFlow()
     private val _stepsGraphFlow = MutableStateFlow(StepsGraphData(emptyList()))
     override val stepsGraphFlow: StateFlow<StepsGraphData> = _stepsGraphFlow.asStateFlow()
+
+    // ISF graph flows
+    private val _acceIsfGraphFlow = MutableStateFlow(AcceIsfGraphData(emptyList()))
+    override val acceIsfGraphFlow: StateFlow<AcceIsfGraphData> = _acceIsfGraphFlow.asStateFlow()
+    private val _bgIsfGraphFlow = MutableStateFlow(BgIsfGraphData(emptyList()))
+    override val bgIsfGraphFlow: StateFlow<BgIsfGraphData> = _bgIsfGraphFlow.asStateFlow()
+    private val _ppIsfGraphFlow = MutableStateFlow(PpIsfGraphData(emptyList()))
+    override val ppIsfGraphFlow: StateFlow<PpIsfGraphData> = _ppIsfGraphFlow.asStateFlow()
+    private val _driftIsfGraphFlow = MutableStateFlow(DriftIsfGraphData(emptyList()))
+    override val driftIsfGraphFlow: StateFlow<DriftIsfGraphData> = _driftIsfGraphFlow.asStateFlow()
+    private val _duraIsfGraphFlow = MutableStateFlow(DuraIsfGraphData(emptyList()))
+    override val duraIsfGraphFlow: StateFlow<DuraIsfGraphData> = _duraIsfGraphFlow.asStateFlow()
+    private val _finalIsfGraphFlow = MutableStateFlow(FinalIsfGraphData(emptyList()))
+    override val finalIsfGraphFlow: StateFlow<FinalIsfGraphData> = _finalIsfGraphFlow.asStateFlow()
+    private val _iobThEffectiveGraphFlow = MutableStateFlow(IobThEffectiveGraphData(emptyList()))
+    override val iobThEffectiveGraphFlow: StateFlow<IobThEffectiveGraphData> = _iobThEffectiveGraphFlow.asStateFlow()
+
     private val _treatmentGraphFlow = MutableStateFlow(TreatmentGraphData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList()))
     override val treatmentGraphFlow: StateFlow<TreatmentGraphData> = _treatmentGraphFlow.asStateFlow()
     private val _epsGraphFlow = MutableStateFlow<List<EpsGraphPoint>>(emptyList())
@@ -850,6 +874,34 @@ class OverviewDataCacheImpl(
         _stepsGraphFlow.value = data
     }
 
+    override fun updateAcceIsfGraph(data: AcceIsfGraphData) {
+        _acceIsfGraphFlow.value = data
+    }
+
+    override fun updateBgIsfGraph(data: BgIsfGraphData) {
+        _bgIsfGraphFlow.value = data
+    }
+
+    override fun updatePpIsfGraph(data: PpIsfGraphData) {
+        _ppIsfGraphFlow.value = data
+    }
+
+    override fun updateDriftIsfGraph(data: DriftIsfGraphData) {
+        _driftIsfGraphFlow.value = data
+    }
+
+    override fun updateDuraIsfGraph(data: DuraIsfGraphData) {
+        _duraIsfGraphFlow.value = data
+    }
+
+    override fun updateFinalIsfGraph(data: FinalIsfGraphData) {
+        _finalIsfGraphFlow.value = data
+    }
+
+    override fun updateIobThEffectiveGraph(data: IobThEffectiveGraphData) {
+        _iobThEffectiveGraphFlow.value = data
+    }
+
     // =========================================================================
     // Category B: Reactive graph builders (treatments, RM, TT, basal)
     // =========================================================================
@@ -1279,6 +1331,13 @@ class OverviewDataCacheImpl(
         _varSensGraphFlow.value = VarSensGraphData(emptyList())
         _heartRateGraphFlow.value = HeartRateGraphData(emptyList())
         _stepsGraphFlow.value = StepsGraphData(emptyList())
+        _acceIsfGraphFlow.value = AcceIsfGraphData(emptyList())
+        _bgIsfGraphFlow.value = BgIsfGraphData(emptyList())
+        _ppIsfGraphFlow.value = PpIsfGraphData(emptyList())
+        _driftIsfGraphFlow.value = DriftIsfGraphData(emptyList())
+        _duraIsfGraphFlow.value = DuraIsfGraphData(emptyList())
+        _finalIsfGraphFlow.value = FinalIsfGraphData(emptyList())
+        _iobThEffectiveGraphFlow.value = IobThEffectiveGraphData(emptyList())
         _treatmentGraphFlow.value = TreatmentGraphData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
         _epsGraphFlow.value = emptyList()
         _basalGraphFlow.value = BasalGraphData(emptyList(), emptyList(), 0.0)

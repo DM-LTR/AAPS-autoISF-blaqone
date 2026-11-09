@@ -207,6 +207,56 @@ data class StepsGraphData(
 )
 
 /**
+ * Accelerometer-based ISF adjustment graph data (AutoISF component).
+ */
+data class AcceIsfGraphData(
+    val acceIsf: List<GraphDataPoint>
+)
+
+/**
+ * Blood Glucose-based ISF adjustment graph data (AutoISF component).
+ */
+data class BgIsfGraphData(
+    val bgIsf: List<GraphDataPoint>
+)
+
+/**
+ * Post-Prandial ISF adjustment graph data (AutoISF component).
+ */
+data class PpIsfGraphData(
+    val ppIsf: List<GraphDataPoint>
+)
+
+/**
+ * Drift ISF adjustment graph data (AutoISF component).
+ */
+data class DriftIsfGraphData(
+    val driftIsf: List<GraphDataPoint>
+)
+
+/**
+ * Duration-based ISF adjustment graph data (AutoISF component).
+ */
+data class DuraIsfGraphData(
+    val duraIsf: List<GraphDataPoint>
+)
+
+/**
+ * Final ISF value graph data (AutoISF component).
+ * Result of all ISF adjustments applied together.
+ */
+data class FinalIsfGraphData(
+    val finalIsf: List<GraphDataPoint>
+)
+
+/**
+ * Effective IOB threshold graph data (AutoISF component).
+ */
+data class IobThEffectiveGraphData(
+    val iobThEffective: List<GraphDataPoint>
+)
+
+/**
  * Basal graph data for BG graph overlay (dual Y-axis).
  * Profile basal: dashed step line (scheduled profile rate).
  * Actual basal: solid step line with area fill (profile rate when no temp, temp absolute when temp active).

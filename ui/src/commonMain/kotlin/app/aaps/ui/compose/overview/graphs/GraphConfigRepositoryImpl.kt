@@ -128,7 +128,8 @@ class GraphConfigRepositoryImpl(
                 if (type == SeriesType.IOB) continue
                 if (type !in series) series.add(type)
             }
-            return series.take(2)
+            // ISF companion series share one axis and may exceed the usual two-series limit
+            return if (series.isNotEmpty() && series.all { it in GraphConfig.ISF_COMPANION_TYPES }) series else series.take(2)
         }
 
         fun fromJson(json: String): GraphConfig {

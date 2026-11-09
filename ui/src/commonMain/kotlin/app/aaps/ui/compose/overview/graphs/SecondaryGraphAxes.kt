@@ -26,6 +26,8 @@ internal fun axisRuleOf(type: SeriesType): AxisRule = when (type) {
     SeriesType.SENSITIVITY                            -> AxisRule.Pivot(100.0, SENS_MIN_DEVIATION)
     SeriesType.DEV_SLOPE                              -> AxisRule.Pivot(0.0)
     SeriesType.VAR_SENSITIVITY, SeriesType.HEART_RATE -> AxisRule.Free
+    // AutoISF factors sit around 1.0, so a zero floor would squash them
+    in GraphConfig.ISF_COMPANION_TYPES                -> AxisRule.Free
     else                                              -> AxisRule.ZeroFloor
 }
 
@@ -41,6 +43,8 @@ internal data class GraphSides(val left: List<SeriesType>, val right: List<Serie
 /** The first series on the left axis, the second on the right one, or on the left as well when the two have the same unit. */
 internal fun graphSides(types: List<SeriesType>): GraphSides {
     val first = types.firstOrNull() ?: return GraphSides(emptyList(), emptyList())
+    // AutoISF factor companions (any number) share one y-scale: all on the left axis
+    if (types.all { it in GraphConfig.ISF_COMPANION_TYPES }) return GraphSides(types, emptyList())
     val second = types.getOrNull(1) ?: return GraphSides(listOf(first), emptyList())
     val sameUnit = SHARED_UNITS.any { first in it && second in it }
     return if (sameUnit) GraphSides(listOf(first, second), emptyList()) else GraphSides(listOf(first), listOf(second))

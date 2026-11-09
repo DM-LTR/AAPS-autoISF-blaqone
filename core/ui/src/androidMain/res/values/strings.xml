@@ -1218,6 +1218,13 @@
     <string name="sensitivity_shortname" comment="Short label for Sensitivity/Autosens graph series">SENS%</string>
     <string name="variable_sensitivity_shortname" comment="Short label for Variable Sensitivity graph series">VSENS</string>
     <string name="steps_shortname" comment="Short label for Steps graph series">STEPS</string>
+    <string name="acceIsf_shortname">acISF</string>
+    <string name="bgIsf_shortname">bgISF</string>
+    <string name="ppIsf_shortname">ppISF</string>
+    <string name="driftIsf_shortname">drISF</string>
+    <string name="duraIsf_shortname">duISF</string>
+    <string name="finalIsf_shortname">fISF</string>
+    <string name="iobThEffective_shortname">IOBth</string>
     <!-- Graph series full names (used in the graph settings, where there is room) -->
     <string name="graph_series_iob">Insulin On Board</string>
     <string name="graph_series_abs_insulin" comment="IOB including the scheduled basal, not only the difference to it">Absolute insulin</string>
