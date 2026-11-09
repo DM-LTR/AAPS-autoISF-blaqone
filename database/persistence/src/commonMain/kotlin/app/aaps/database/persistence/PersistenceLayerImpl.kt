@@ -1,5 +1,6 @@
 package app.aaps.database.persistence
 
+import app.aaps.core.data.model.AIV
 import app.aaps.core.data.model.BCR
 import app.aaps.core.data.model.BS
 import app.aaps.core.data.model.CA
@@ -37,6 +38,7 @@ import app.aaps.core.interfaces.utils.DateUtil
 import app.aaps.core.interfaces.utils.fabric.FabricPrivacy
 import app.aaps.database.AppRepository
 import app.aaps.database.VacuumOutcome
+import app.aaps.database.entities.AutoIsfValues
 import app.aaps.database.entities.Bolus
 import app.aaps.database.entities.BolusCalculatorResult
 import app.aaps.database.entities.CalibrationEntry
@@ -76,6 +78,7 @@ import app.aaps.database.transactions.InsertOrUpdateCalibrationEntryTransaction
 import app.aaps.database.transactions.InsertOrUpdateCarbsTransaction
 import app.aaps.database.transactions.InsertOrUpdateEffectiveProfileSwitchTransaction
 import app.aaps.database.transactions.InsertOrUpdateFoodTransaction
+import app.aaps.database.transactions.InsertOrUpdateAutoIsfValuesTransaction
 import app.aaps.database.transactions.InsertOrUpdateHeartRatesTransaction
 import app.aaps.database.transactions.InsertOrUpdateProfileSwitchTransaction
 import app.aaps.database.transactions.InsertOrUpdateRunningModeTransaction
@@ -236,6 +239,9 @@ class PersistenceLayerImpl(
             HR::class  -> repository.changesOfType<HeartRate>()
                 .map { list -> list.map { it.fromDb() } }
 
+            AIV::class -> repository.changesOfType<AutoIsfValues>()
+                .map { list -> list.map { it.fromDb() } }
+
             SC::class  -> repository.changesOfType<StepsCount>()
                 .map { list -> list.map { it.fromDb() } }
 
@@ -266,6 +272,7 @@ class PersistenceLayerImpl(
                         is RunningMode            -> RM::class
                         is DeviceStatus           -> DS::class
                         is HeartRate              -> HR::class
+                        is AutoIsfValues          -> AIV::class
                         is StepsCount             -> SC::class
                         else                      -> null
                     }
@@ -2406,6 +2413,30 @@ class PersistenceLayerImpl(
             transactionResult
         } catch (e: Exception) {
             aapsLogger.error(LTag.DATABASE, "Error while saving HeartRate batch", e)
+            throw e
+        }
+    }
+
+    override suspend fun getAutoIsfValuesFromTimeToTime(startTime: Long, endTime: Long): List<AIV> = withContext(aapsIoDispatcher) {
+        repository.getAutoIsfValuesFromTimeToTime(startTime, endTime).map { it.fromDb() }
+    }
+
+    override suspend fun insertOrUpdateAutoIsfValues(autoIsfValues: List<AIV>): PersistenceLayer.TransactionResult<AIV> = withContext(aapsIoDispatcher) {
+        if (autoIsfValues.isEmpty()) return@withContext PersistenceLayer.TransactionResult<AIV>()
+        try {
+            val result = repository.runTransactionForResultSuspend(InsertOrUpdateAutoIsfValuesTransaction(autoIsfValues.map { it.toDb() }))
+            val transactionResult = PersistenceLayer.TransactionResult<AIV>()
+            result.inserted.forEach {
+                aapsLogger.debug(LTag.DATABASE, "Inserted AutoIsfValues $it")
+                transactionResult.inserted.add(it.fromDb())
+            }
+            result.updated.forEach {
+                aapsLogger.debug(LTag.DATABASE, "Updated AutoIsfValues $it")
+                transactionResult.updated.add(it.fromDb())
+            }
+            transactionResult
+        } catch (e: Exception) {
+            aapsLogger.error(LTag.DATABASE, "Error while saving AutoIsfValues batch", e)
             throw e
         }
     }

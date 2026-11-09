@@ -1,6 +1,7 @@
 package app.aaps.database
 
 import app.aaps.database.daos.APSResultDao
+import app.aaps.database.daos.AutoIsfValuesDao
 import app.aaps.database.daos.BolusCalculatorResultDao
 import app.aaps.database.daos.BolusDao
 import app.aaps.database.daos.CalibrationEntryDao
@@ -43,6 +44,7 @@ internal interface AppDatabaseDaos {
     val effectiveProfileSwitchDao: EffectiveProfileSwitchDao
     val profileSwitchDao: ProfileSwitchDao
     val apsResultDao: APSResultDao
+    val autoIsfValuesDao: AutoIsfValuesDao
     val versionChangeDao: VersionChangeDao
     val userEntryDao: UserEntryDao
     val preferenceChangeDao: PreferenceChangeDao

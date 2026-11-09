@@ -4,6 +4,7 @@ import androidx.room.Transactor.SQLiteTransactionType
 import androidx.room.useWriterConnection
 import app.aaps.database.daos.ApsResultVariableSens
 import app.aaps.database.entities.APSResult
+import app.aaps.database.entities.AutoIsfValues
 import app.aaps.database.entities.Bolus
 import app.aaps.database.entities.BolusCalculatorResult
 import app.aaps.database.entities.CalibrationEntry
@@ -956,6 +957,9 @@ class AppRepository internal constructor(
 
     suspend fun getHeartRatesFromTimeToTime(startMillis: Long, endMillis: Long): List<HeartRate> =
         database.heartRateDao.getFromTimeToTime(startMillis, endMillis)
+
+    suspend fun getAutoIsfValuesFromTimeToTime(startMillis: Long, endMillis: Long): List<AutoIsfValues> =
+        database.autoIsfValuesDao.getFromTimeToTime(startMillis, endMillis)
 
     suspend fun getStepsCountFromTime(timeMillis: Long): List<StepsCount> =
         database.stepsCountDao.getFromTime(timeMillis)

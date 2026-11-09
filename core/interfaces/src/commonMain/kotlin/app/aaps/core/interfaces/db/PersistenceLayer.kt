@@ -1,5 +1,6 @@
 package app.aaps.core.interfaces.db
 
+import app.aaps.core.data.model.AIV
 import app.aaps.core.data.model.BCR
 import app.aaps.core.data.model.BS
 import app.aaps.core.data.model.CA
@@ -1552,6 +1553,26 @@ interface PersistenceLayer {
      * @return List of inserted/updated records
      */
     suspend fun insertOrUpdateHeartRates(heartRates: List<HR>): TransactionResult<HR>
+
+    // AIV
+    /**
+     * Get AutoISF values in time interval
+     *
+     * @param startTime from
+     * @param endTime to
+     * @return List of AutoISF values
+     */
+    suspend fun getAutoIsfValuesFromTimeToTime(startTime: Long, endTime: Long): List<AIV>
+
+    /**
+     * Insert or update multiple AutoISF records in a single DB transaction. Emits one change event
+     * for the whole batch instead of one per row. Callers with a single row should pass
+     * `listOf(row)`.
+     *
+     * @param autoIsfValues records
+     * @return List of inserted/updated records
+     */
+    suspend fun insertOrUpdateAutoIsfValues(autoIsfValues: List<AIV>): TransactionResult<AIV>
 
     // FD
     /**
