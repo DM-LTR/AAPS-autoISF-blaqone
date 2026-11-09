@@ -134,11 +134,14 @@ class PostCalculationRunner(
      * default). Less than 5 minutes only makes a difference with a source that sends a value more
      * often than every 5 minutes.
      *
-     * Between the 5 minute runs one more rule applies: while SMB is enabled and the SMB interval since
-     * the last bolus is not over, the run is left out. It could not deliver an SMB (`LoopPlugin` and
-     * `CommandSMBBolus` ask the same question), and running then would only push the next run, which
-     * could deliver, a whole loop interval further. A run after 5 minutes or more always happens, so
-     * the loop is never slower than with a 5 minute CGM unless the user set a loop interval above 5.
+     * Between the 5 minute runs one more rule applies, while SMB is enabled: a run is left out when
+     * the SMB interval since the last bolus is not over yet, but will be over before the next normal
+     * run. Such a run could not deliver an SMB (`LoopPlugin` and `CommandSMBBolus` ask the same
+     * question), and it would push the next run, which could deliver, a whole loop interval further.
+     * When the SMB interval ends only after the next normal run anyway, leaving the run out gains
+     * nothing, so it happens. With a loop interval of 1 minute this means a run on every new value.
+     * A run after 5 minutes or more always happens, so the loop is never slower than with a 5 minute
+     * CGM unless the user set a loop interval above 5.
      *
      * [sinceLastRun] is measured between reading timestamps. [READING_JITTER] keeps a reading that
      * comes a few seconds early from pushing the run to the next reading.
@@ -150,7 +153,11 @@ class PostCalculationRunner(
         if (!constraintChecker.isSMBModeEnabled().value()) return true
         val smbInterval = T.mins(preferences.get(IntKey.ApsMaxSmbFrequency).toLong()).msecs()
         val lastBolusTime = persistenceLayer.getNewestBolus()?.timestamp ?: 0L
-        return lastBolusTime + smbInterval <= dateUtil.now()
+        val now = dateUtil.now()
+        val smbFreeAt = lastBolusTime + smbInterval
+        if (smbFreeAt <= now) return true
+        // Blocked now: wait only when the SMB interval ends before the next normal run would come
+        return smbFreeAt >= now + loopInterval - READING_JITTER
     }
 
     private fun preparePredictions(data: PostCalculationData) {
