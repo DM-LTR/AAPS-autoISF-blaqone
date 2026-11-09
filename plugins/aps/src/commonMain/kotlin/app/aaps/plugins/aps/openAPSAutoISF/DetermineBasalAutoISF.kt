@@ -221,7 +221,7 @@ class DetermineBasalAutoISF(
         consoleLog = mutableListOf()
         var rT = RT(
             algorithm = APSResult.Algorithm.AUTO_ISF,
-            runningAutoIsf = true,
+            runningDynamicIsf = autoIsfMode,
             timestamp = currentTime,
             consoleLog = consoleLog,
             consoleError = consoleError
@@ -469,7 +469,7 @@ class DetermineBasalAutoISF(
 
         rT = RT(
             algorithm = APSResult.Algorithm.AUTO_ISF,
-            runningAutoIsf = true,
+            runningDynamicIsf = autoIsfMode,
             timestamp = currentTime,
             bg = bg,
             tick = tick,
