@@ -3,8 +3,11 @@ package app.aaps
 import android.app.Application
 import android.app.LocaleManager
 import android.bluetooth.BluetoothDevice
+import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.hardware.Sensor
+import android.hardware.SensorManager
 import android.net.ConnectivityManager
 import android.net.wifi.WifiManager
 import android.os.Build
@@ -52,6 +55,7 @@ import app.aaps.implementation.receivers.ChargingStateReceiver
 import app.aaps.implementation.receivers.KeepAliveWorker
 import app.aaps.implementation.receivers.NetworkChangeReceiver
 import app.aaps.implementation.receivers.TimeDateOrTZChangeReceiver
+import app.aaps.plugins.aps.openAPSSMB.PhoneMovementDetector
 import app.aaps.settingsstore.AndroidStorage
 import app.aaps.settingsstore.IdleWorkerFactory
 import app.aaps.settingsstore.SettingsUnreadableNotification
@@ -150,6 +154,7 @@ class MainApp : Application(), MetroMemberInjector, MetroViewModelFactoryOwner, 
     private val uiInteraction get() = metroGraphs.uiInteraction
     private val processLifecycleListener get() = metroGraphs.processLifecycleListener
     private val localAlertUtils get() = metroGraphs.localAlertUtils
+    private val activityMonitoringRegistrar get() = metroGraphs.activityMonitoringRegistrar
     private val notificationManager get() = metroGraphs.notificationManager
     private val rh get() = metroGraphs.resourceHelper
     private val loop get() = metroGraphs.loop
@@ -525,6 +530,23 @@ class MainApp : Application(), MetroMemberInjector, MetroViewModelFactoryOwner, 
         exportPasswordResetCheck()
         config.initCompleted()
         rxBus.send(EventAppInitialized())
+
+        activityMonitoringRegistrar.registerIfPermitted(this)
+
+        // Register accelerometer so PhoneMovementDetector can tell AutoISF's activity monitor whether the phone is being carried
+        try {
+            val sensorManager = getSystemService(Context.SENSOR_SERVICE) as SensorManager
+            val accelerometerSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+            if (accelerometerSensor != null) {
+                sensorManager.registerListener(PhoneMovementDetector, accelerometerSensor, SensorManager.SENSOR_DELAY_NORMAL)
+                aapsLogger.debug(LTag.CORE, "Accelerometer sensor registered for phone movement detection")
+            } else {
+                aapsLogger.warn(LTag.CORE, "Accelerometer sensor not available on this device")
+            }
+        } catch (e: Exception) {
+            aapsLogger.error(LTag.CORE, "Failed to register accelerometer sensor", e)
+        }
+
         aapsLogger.debug("doInit end")
     }
 

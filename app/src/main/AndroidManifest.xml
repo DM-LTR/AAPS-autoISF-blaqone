@@ -18,6 +18,7 @@
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="com.android.alarm.permission.SET_ALARM" />
+    <uses-permission android:name="android.permission.ACTIVITY_RECOGNITION" />
 
     <uses-permission-sdk-23 android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
@@ -203,6 +204,9 @@
                 android:value="androidx.startup"
                 tools:node="remove" />
         </provider>
+
+        <receiver android:name=".ActivityRecognitionReceiver"
+                  android:exported="false" />
 
     </application>
 

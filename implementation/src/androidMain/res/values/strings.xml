@@ -25,6 +25,8 @@
     <string name="permission_notifications_description">Required to show alerts, alarms, and pump status updates</string>
     <string name="permission_schedule_exact_alarm_title">Alarms and reminders</string>
     <string name="permission_schedule_exact_alarm_description">Required so alarms can wake the screen while AAPS is in the background, and so reminders ring on time</string>
+    <string name="permission_activity_recognition_title">Physical activity</string>
+    <string name="permission_activity_recognition_description">Required to count steps and detect walking, running or cycling, so AutoISF can adjust sensitivity during exercise</string>
 
     <!--    Notification channels, shown in the Android settings-->
     <string name="alarm_channel_group">AAPS alarms</string>

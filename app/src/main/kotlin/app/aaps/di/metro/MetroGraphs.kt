@@ -1,6 +1,7 @@
 package app.aaps.di.metro
 
 import android.content.Context
+import app.aaps.ActivityMonitoringRegistrar
 import app.aaps.core.interfaces.alerts.EatReminder
 import app.aaps.core.interfaces.alerts.LocalAlertUtils
 import app.aaps.core.interfaces.aps.Loop
@@ -277,6 +278,7 @@ class MetroGraphs(
     val widgetUpdater: WidgetUpdater get() = root.widgetUpdater
     val commandQueue: CommandQueue get() = root.commandQueue
     val localAlertUtils: LocalAlertUtils get() = root.localAlertUtils
+    val activityMonitoringRegistrar: ActivityMonitoringRegistrar get() = root.activityMonitoringRegistrar
     val persistenceLayer: PersistenceLayer get() = root.persistenceLayer
     val appRepository: AppRepository get() = root.appRepository
     val constraintsChecker: ConstraintsChecker get() = root.constraintsChecker

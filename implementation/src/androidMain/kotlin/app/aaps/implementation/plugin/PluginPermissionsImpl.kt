@@ -124,6 +124,17 @@ class PluginPermissionsImpl(
                 special = true,
             )
         )
+
+        // Feeds StepService and ActivityRecognitionReceiver, which AutoISF's activity monitor reads.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            add(
+                PermissionGroup(
+                    permissions = listOf(Manifest.permission.ACTIVITY_RECOGNITION),
+                    rationaleTitle = TextRef.AndroidRes(R.string.permission_activity_recognition_title),
+                    rationaleDescription = TextRef.AndroidRes(R.string.permission_activity_recognition_description),
+                )
+            )
+        }
     }
 
     private fun isPermissionMissing(context: Context, perm: String): Boolean =

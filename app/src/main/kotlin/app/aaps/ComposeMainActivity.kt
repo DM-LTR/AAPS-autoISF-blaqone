@@ -154,6 +154,7 @@ class ComposeMainActivity : MetroAppCompatActivity() {
     @Inject lateinit var exportPasswordDataStore: ExportPasswordDataStore
     @Inject lateinit var activePlugin: ActivePlugin
     @Inject lateinit var pluginPermissions: PluginPermissions
+    @Inject lateinit var activityMonitoringRegistrar: ActivityMonitoringRegistrar
     @Inject lateinit var nsClient: NsClient
     @Inject lateinit var clientControlActionDispatcher: ClientControlActionDispatcher
     @Inject lateinit var automationRuntime: AutomationRuntime
@@ -592,6 +593,7 @@ class ComposeMainActivity : MetroAppCompatActivity() {
     private fun refreshOnResume() {
         manageViewModel.refreshState()
         permissionsViewModel.refresh()
+        activityMonitoringRegistrar.registerIfPermitted(this)
         if (notificationManager.notifications.value.any { it.level.priority <= NotificationLevel.IMPORTANT.priority }) {
             _autoShowNotifications.value = true
         }

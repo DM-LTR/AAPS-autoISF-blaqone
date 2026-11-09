@@ -2,6 +2,7 @@ package app.aaps.di.metro
 
 import android.content.Context
 import androidx.work.WorkManager
+import app.aaps.ActivityMonitoringRegistrar
 import app.aaps.core.interfaces.alerts.EatReminder
 import app.aaps.core.interfaces.alerts.LocalAlertUtils
 import app.aaps.core.interfaces.aps.APSResult
@@ -335,6 +336,7 @@ interface AppRootGraph : MetroViewModelMultibindings {
     val autosensData: AutosensData
     val commandQueue: CommandQueue
     val localAlertUtils: LocalAlertUtils
+    val activityMonitoringRegistrar: ActivityMonitoringRegistrar
     val bolusProgressData: BolusProgressData
     val persistenceLayer: PersistenceLayer
     val cloudStorageManager: CloudStorageManager
