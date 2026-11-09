@@ -958,7 +958,7 @@ fun rememberSeriesColors(): SeriesColors {
             bgIsf = Color(0xFFFFA500),
             ppIsf = Color(0xFFFF69B4),
             duraIsf = Color(0xFF00FA9A),
-            finalIsf = Color(0xFFFFD700),
+            finalIsf = onSurface,                   // white in dark, black in light: gold was too close to bgISF orange
             iobThEffective = Color(0xFF00BFFF)
         )
     }

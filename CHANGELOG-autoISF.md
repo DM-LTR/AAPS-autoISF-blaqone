@@ -5,6 +5,17 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-09 (3) – Loop bei jedem Wert, BZ-Alter in Sekunden
+
+- ⚠ **Loop interval 1 = Loop bei jedem neuen Wert.** Bisher ließ der Loop einen Lauf aus, solange das
+  SMB-Intervall noch lief. Jetzt nur noch, wenn das SMB-Intervall vor dem nächsten regulären Lauf
+  endet (sonst käme der SMB unnötig spät). Bei 1 Minute läuft der Loop damit bei jedem Wert.
+  Das SMB-Intervall gilt unverändert: Ein SMB kommt nie öfter als dort eingestellt.
+- **BZ-Alter in Sekunden:** Oben steht jetzt „vor 47 s“ statt „vor 1 min“, jede Sekunde aktualisiert.
+  Ab 10 Minuten wieder in Minuten.
+- **Diagramm:** fISF hat eine eigene Farbe (weiß im dunklen Design), weil das alte Gold zu ähnlich zu
+  bgISF (orange) war.
+
 ## 2026-11-09 (2) – Loop für 1-Minuten-Werte
 
 - ⚠ **Frische Werte:** Der Loop rechnet mit dem neuesten Messwert und nicht mehr mit dem

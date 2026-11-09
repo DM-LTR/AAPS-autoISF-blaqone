@@ -4,6 +4,7 @@ import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.aaps.core.data.configuration.Constants
+import app.aaps.core.interfaces.InterfacesStrings
 import app.aaps.core.interfaces.logging.AAPSLogger
 import app.aaps.core.interfaces.logging.LTag
 import app.aaps.core.interfaces.overview.graph.BgDataPoint
@@ -148,14 +149,22 @@ class GraphViewModel(
         initialValue = dateUtil.now()
     )
 
-    // BG info UI state - combines bgInfo with periodic timeAgo updates
+    // Ticker for the age of the BG value, which is shown in seconds
+    private val ticker1s = flow {
+        while (true) {
+            emit(dateUtil.now())
+            delay(1_000L)
+        }
+    }
+
+    // BG info UI state - combines bgInfo with the age of the value, updated every second
     val bgInfoState: StateFlow<BgInfoUiState> = combine(
         cache.bgInfoFlow,
-        ticker30s
-    ) { bgInfo, _ ->
+        ticker1s
+    ) { bgInfo, now ->
         BgInfoUiState(
             bgInfo = bgInfo,
-            timeAgoText = dateUtil.minAgo(rh, bgInfo?.timestamp)
+            timeAgoText = bgAgeText(bgInfo?.timestamp, now)
         )
     }.stateIn(
         scope = viewModelScope,
@@ -249,5 +258,21 @@ class GraphViewModel(
     override fun onCleared() {
         super.onCleared()
         aapsLogger.debug(LTag.UI, "GraphViewModel cleared")
+    }
+
+    /**
+     * Age of the BG value: in seconds up to [BG_AGE_SECONDS_LIMIT_MS] (a 1 minute CGM sends a new value
+     * every minute, so whole minutes say too little), above it in minutes.
+     */
+    private fun bgAgeText(timestamp: Long?, now: Long): String {
+        if (timestamp == null) return ""
+        val ageMs = (now - timestamp).coerceAtLeast(0L)
+        return if (ageMs < BG_AGE_SECONDS_LIMIT_MS) rh.gs(InterfacesStrings.secago, (ageMs / 1000L).toInt())
+        else dateUtil.minAgo(rh, timestamp)
+    }
+
+    private companion object {
+
+        const val BG_AGE_SECONDS_LIMIT_MS = 10 * 60 * 1000L
     }
 }
