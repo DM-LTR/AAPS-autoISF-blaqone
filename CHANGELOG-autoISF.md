@@ -5,6 +5,12 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-09 (5) – Bolus-Rechner mit neuestem BZ
+
+- ⚠ **Bolus-Rechner nimmt den neuesten Messwert.** Bisher kam der BZ im Rechner aus dem
+  5-Minuten-Raster und konnte bei 1-Minuten-Sensoren bis zu 4 Minuten alt sein. Jetzt ist es derselbe
+  Wert wie oben in der Anzeige und im Loop. Die Rechnung selbst ist unverändert.
+
 ## 2026-11-09 (4) – Neuester BZ oben, Statuszeile Loop / SMB / TBR
 
 - **BZ-Anzeige zeigt den neuesten Messwert.** Bisher kam der Wert oben aus dem festen 5-Minuten-Raster

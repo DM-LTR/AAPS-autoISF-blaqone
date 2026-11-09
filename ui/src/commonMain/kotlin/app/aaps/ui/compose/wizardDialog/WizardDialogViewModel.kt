@@ -147,7 +147,7 @@ class WizardDialogViewModel(
     private fun followNewReading() {
         val state = uiState.value
         if (!state.initialized || state.bgEdited) return
-        val reading = iobCobCalculator.ads.actualBg() ?: return
+        val reading = iobCobCalculator.ads.actualStatusBg() ?: return
         if (reading.timestamp == followedReading) return
         followedReading = reading.timestamp
         val ageMinutes = ((dateUtil.now() - reading.timestamp) / 60000).toInt()
@@ -198,7 +198,7 @@ class WizardDialogViewModel(
         appliedPercentagePreference = storedPercentage
 
         // Current BG
-        val actualBg = iobCobCalculator.ads.actualBg()
+        val actualBg = iobCobCalculator.ads.actualStatusBg()
         followedReading = actualBg?.timestamp
         val hasBgData = actualBg != null
         val currentBg = actualBg?.valueToUnits(units) ?: 0.0
