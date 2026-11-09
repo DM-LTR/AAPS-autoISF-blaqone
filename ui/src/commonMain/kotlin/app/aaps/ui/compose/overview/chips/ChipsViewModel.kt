@@ -5,17 +5,24 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.aaps.core.interfaces.InterfacesStrings
 import app.aaps.core.data.model.BS
+import app.aaps.core.interfaces.aps.APSResult
 import app.aaps.core.interfaces.aps.Loop
 import app.aaps.core.interfaces.configuration.Config
 import app.aaps.core.interfaces.db.PersistenceLayer
 import app.aaps.core.interfaces.iob.IobCobCalculator
 import app.aaps.core.interfaces.overview.SensitivityOverview
 import app.aaps.core.interfaces.overview.graph.OverviewDataCache
+import app.aaps.core.interfaces.plugin.ActivePlugin
 import app.aaps.core.interfaces.resources.TextResolver
 import app.aaps.core.interfaces.rx.bus.RxBus
 import app.aaps.core.interfaces.rx.events.EventShowDialog
 import app.aaps.core.interfaces.utils.DateUtil
 import app.aaps.core.interfaces.utils.DecimalFormatter
+import app.aaps.core.objects.aps.PARABOLA_MIN_CORRELATION
+import app.aaps.core.objects.aps.ParabolaFitResult
+import app.aaps.core.objects.aps.parabolaFit
+import app.aaps.core.objects.aps.parabolaMinDurationMinutes
+import app.aaps.core.objects.aps.smoothedFitInput
 import app.aaps.core.objects.extensions.round
 import app.aaps.core.ui.CoreUiStrings
 import app.aaps.core.ui.extensions.displayText
@@ -31,6 +38,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 @Stable
 @AssistedInject
@@ -44,7 +52,8 @@ class ChipsViewModel(
     private val rh: TextResolver,
     private val decimalFormatter: DecimalFormatter,
     private val rxBus: RxBus,
-    private val dateUtil: DateUtil
+    private val dateUtil: DateUtil,
+    private val activePlugin: ActivePlugin
 ) : ViewModel() {
 
     @AssistedFactory
@@ -165,6 +174,37 @@ class ChipsViewModel(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = LoopStatusUiState()
+    )
+
+    /**
+     * AutoISF fork, display only: the parabola fit on the raw 1 minute readings and on the UKF-smoothed
+     * ones, side by side. Shown while AutoISF is the active algorithm and the source is smoothed reading
+     * by reading. Updated after each calculation and every 10 s. Not used for dosing.
+     */
+    val parabolaUiState: StateFlow<ParabolaUiState> = combine(loopStatusDataTicker, cache.iobGraphFlow) { _, _ ->
+        buildParabolaUiState()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = ParabolaUiState()
+    )
+
+    private fun buildParabolaUiState(): ParabolaUiState {
+        if (!config.APS || activePlugin.activeAPS?.algorithm != APSResult.Algorithm.AUTO_ISF) return ParabolaUiState()
+        val ads = iobCobCalculator.ads
+        val smoothed = ads.smoothedReadings ?: return ParabolaUiState()
+        val raw = ads.getBgReadingsDataTableCopy()
+        val minDuration = parabolaMinDurationMinutes(raw.map { it.timestamp })
+        val rawFit = parabolaFit(raw.map { it.timestamp to it.value }, minDuration) ?: return ParabolaUiState()
+        val smoothedFit = parabolaFit(smoothed.smoothedFitInput(), minDuration) ?: return ParabolaUiState()
+        return ParabolaUiState(raw = rawFit.toText(), smoothed = smoothedFit.toText())
+    }
+
+    private fun ParabolaFitResult.toText() = ParabolaFitText(
+        acceleration = decimalFormatter.to2Decimal(acceleration),
+        correlation = decimalFormatter.to2Decimal(correlation),
+        minutes = minutes.roundToInt(),
+        usable = correlation >= PARABOLA_MIN_CORRELATION
     )
 
     fun showIobInfo() {

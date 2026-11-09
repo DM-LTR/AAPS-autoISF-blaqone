@@ -220,6 +220,8 @@ class PrepareGraphDataRunner(
             dataLock.withLock {
                 bucketedData = calibratedGrid
                 statusData = calibratedStatus
+                // Kept for the parabola fit comparison only (AutoISF fork), not for dosing
+                smoothedReadings = calibratedObservations.toList()
             }
             return
         }
@@ -229,6 +231,7 @@ class PrepareGraphDataRunner(
         dataLock.withLock {
             bucketedData = smoothed
             statusData = smoothedStatus
+            smoothedReadings = null
         }
     }
 

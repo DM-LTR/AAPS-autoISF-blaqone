@@ -7,6 +7,8 @@ import app.aaps.core.data.model.TrendArrow
 import app.aaps.core.data.time.T
 import app.aaps.core.interfaces.aps.AutosensDataStore
 import app.aaps.core.interfaces.aps.GlucoseStatusAutoIsf
+import app.aaps.core.objects.aps.parabolaFit
+import app.aaps.core.objects.aps.parabolaMinDurationMinutes
 import app.aaps.plugins.aps.openAPS.DeltaCalculator
 import app.aaps.plugins.aps.openAPSAutoISF.GlucoseStatusCalculatorAutoIsf
 import app.aaps.plugins.aps.openAPSAutoISF.extensions.asRounded
@@ -134,6 +136,31 @@ class GlucoseStatusTestAutoIsf : TestBaseWithProfile() {
         val glucoseStatus = GlucoseStatusCalculatorAutoIsf(aapsLogger, iobCobCalculator, dateUtil, deltaCalculator).getGlucoseStatusData(false)!!
         assertThat(glucoseStatus.bgAcceleration).isWithin(0.01).of(-0.21)
         assertThat(glucoseStatus.duraISFminutes).isEqualTo(35.0)
+    }
+
+    // AutoISF fork: the comparison fit on the overview is a copy of the raw branch above. On the same
+    // raw readings it must give exactly what AutoISF uses, or the "raw" side of the comparison lies.
+    @Test fun theComparisonFitGivesTheSameResultAsAutoIsfOnRawReadings() {
+        for (stream in listOf(generateOneMinuteRisingStream(), generateThreeMinuteRawStream())) {
+            whenever(autosensDataStore.getStatusDataCopy()).thenReturn(generateFullyGapFlaggedBgData())
+            whenever(autosensDataStore.getBgReadingsDataTableCopy()).thenReturn(stream)
+            val glucoseStatus = GlucoseStatusCalculatorAutoIsf(aapsLogger, iobCobCalculator, dateUtil, deltaCalculator).getGlucoseStatusData(false)!!
+            val fit = parabolaFit(stream.map { it.timestamp to it.value }, parabolaMinDurationMinutes(stream.map { it.timestamp }))!!
+            assertThat(glucoseStatus.bgAcceleration).isNotEqualTo(0.0)
+            assertThat(fit.acceleration).isWithin(1e-9).of(glucoseStatus.bgAcceleration)
+            assertThat(fit.correlation).isWithin(1e-9).of(glucoseStatus.corrSqu)
+            assertThat(fit.minutes).isWithin(1e-9).of(glucoseStatus.parabolaMinutes)
+        }
+    }
+
+    /** 40 minutes of Libre 3 readings, one per minute, rising faster and faster, with a little noise. */
+    private fun generateOneMinuteRisingStream(): List<GV> {
+        val noise = listOf(0.0, 1.0, -1.0, 2.0, 0.0, -2.0, 1.0, 0.0)
+        return (0 until 40).map { i ->
+            val minutesAgo = i.toDouble()
+            val value = 180.0 - 2.0 * minutesAgo + 0.03 * minutesAgo * minutesAgo + noise[i % noise.size]
+            GV(timestamp = 1514766900000 - T.mins(i.toLong()).msecs(), raw = 0.0, value = value, trendArrow = TrendArrow.FLAT, noise = 0.0, sourceSensor = SourceSensor.LIBRE_3)
+        }
     }
 
     @Test fun averageShouldNotFailOnEmptyArray() {

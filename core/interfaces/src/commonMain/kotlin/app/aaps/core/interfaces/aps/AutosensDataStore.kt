@@ -25,6 +25,13 @@ interface AutosensDataStore {
      * trigger need that newest reading, so they read this list instead. Autosens and the graph do not.
      */
     var statusData: MutableList<InMemoryGlucoseValue>?
+
+    /**
+     * The readings of a fast source (1 minute) after UKF smoothing, newest first, or null when the
+     * source is not fed to the smoother reading by reading. AutoISF fork: only for the parabola fit
+     * comparison on the overview and in the APS tab. Not used for dosing.
+     */
+    var smoothedReadings: List<InMemoryGlucoseValue>?
     var lastUsed5minCalculation: Boolean?
 
     /**

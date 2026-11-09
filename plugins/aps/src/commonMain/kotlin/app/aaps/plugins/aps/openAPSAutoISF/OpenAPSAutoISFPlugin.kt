@@ -49,6 +49,9 @@ import app.aaps.core.keys.KeysStrings
 import app.aaps.core.keys.LongNonKey
 import app.aaps.core.keys.UnitDoubleKey
 import app.aaps.core.keys.interfaces.Preferences
+import app.aaps.core.objects.aps.parabolaFit
+import app.aaps.core.objects.aps.parabolaMinDurationMinutes
+import app.aaps.core.objects.aps.smoothedFitInput
 import app.aaps.core.objects.constraints.ConstraintObject
 import app.aaps.core.objects.extensions.convertedToAbsolute
 import app.aaps.core.objects.extensions.plannedRemainingMinutes
@@ -538,6 +541,23 @@ open class OpenAPSAutoISFPlugin(
     }
 
     // Rounds value to 'digits' decimal places
+    /**
+     * AutoISF fork, display only: the parabola fit on the raw 1 minute readings next to the same fit on
+     * the UKF-smoothed readings, for the APS tab. Null when the source is not smoothed reading by
+     * reading. Nothing here goes into the calculation; acce_ISF uses the fit in the glucose status.
+     */
+    private fun parabolaComparisonLine(): String? {
+        val ads = iobCobCalculator.ads
+        val smoothed = ads.smoothedReadings ?: return null
+        val raw = ads.getBgReadingsDataTableCopy()
+        val minDuration = parabolaMinDurationMinutes(raw.map { it.timestamp })
+        val rawFit = parabolaFit(raw.map { it.timestamp to it.value }, minDuration) ?: return null
+        val smoothedFit = parabolaFit(smoothed.smoothedFitInput(), minDuration) ?: return null
+        return "Parabola compare (display only) raw: acceleration:${round(rawFit.acceleration, 2)}, correlation:${round(rawFit.correlation, 3)}, " +
+            "duration:${round(rawFit.minutes, 1)}m; smoothed: acceleration:${round(smoothedFit.acceleration, 2)}, " +
+            "correlation:${round(smoothedFit.correlation, 3)}, duration:${round(smoothedFit.minutes, 1)}m"
+    }
+
     // different for negative numbers fun round(value: Double, digits: Int): Double = BigDecimal(value).setScale(digits, RoundingMode.HALF_EVEN).toDouble()
     fun round(value: Double, digits: Int): Double {
         // Pass NaN AND ±Infinity through untouched - Math.round saturates at Long.MAX_VALUE, which would
@@ -714,6 +734,7 @@ open class OpenAPSAutoISFPlugin(
         val fit_corr: Double = glucose_status.corrSqu
         val bg_acce: Double = glucose_status.bgAcceleration
         consoleError.add("Parabola fit results were acceleration:${round(bg_acce, 2)}, correlation:$fit_corr, duration:${glucose_status.parabolaMinutes}m")
+        parabolaComparisonLine()?.let { consoleError.add(it) }
         if (glucose_status.a2 != 0.0 && fit_corr >= 0.9) {
             var minmax_delta: Double = -glucose_status.a1 / 2 / glucose_status.a2 * 5      // back from 5min block to 1 min
             val minmax_value: Double = round(glucose_status.a0 - minmax_delta * minmax_delta / 25 * glucose_status.a2, 1)

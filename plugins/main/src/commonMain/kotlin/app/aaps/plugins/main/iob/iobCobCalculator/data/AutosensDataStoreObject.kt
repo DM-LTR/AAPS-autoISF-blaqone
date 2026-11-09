@@ -80,6 +80,10 @@ class AutosensDataStoreObject : AutosensDataStore {
         get() = dataLock.withLock { field }
         set(value) { dataLock.withLock { field = value } }
 
+    override var smoothedReadings: List<InMemoryGlucoseValue>? = null
+        get() = dataLock.withLock { field }
+        set(value) { dataLock.withLock { field = value } }
+
     override fun clone(): AutosensDataStore =
         AutosensDataStoreObject().also {
             dataLock.withLock {
@@ -98,6 +102,7 @@ class AutosensDataStoreObject : AutosensDataStore {
                 it.autosensDataTable = LongSparseArray<AutosensData>(this.autosensDataTable.size).apply { putAll(this@AutosensDataStoreObject.autosensDataTable) }
                 it.bucketedData = this.bucketedData?.toMutableList()
                 it.statusData = this.statusData?.toMutableList()
+                it.smoothedReadings = this.smoothedReadings?.toList()
                 // Without it the published clone always starts with null, so createBucketedData never sees
                 // a change between the 5 minute and the recalculated path and never clears the stale cache.
                 it.lastUsed5minCalculation = this.lastUsed5minCalculation
