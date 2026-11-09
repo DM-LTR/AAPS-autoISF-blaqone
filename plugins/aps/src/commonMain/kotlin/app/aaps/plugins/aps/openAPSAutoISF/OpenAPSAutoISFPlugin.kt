@@ -269,7 +269,9 @@ open class OpenAPSAutoISFPlugin(
         val stepActivityDetected: Boolean
         val stepInactivityDetected: Boolean
         val smbCapFactor: Double
-        if (useActivityClassifier) {
+        // During a temp target the step monitor is off (ratio 1.0). The classifier stays off too, so it cannot
+        // change sensitivity or SMB size while a temp target decides the target.
+        if (useActivityClassifier && !isTempTarget) {
             // ActivityClassifier fuses phone activity + steps + HR for richer classification.
             val avgHrForActivity = persistenceLayer.getHeartRatesFromTime(dateUtil.now() - T.mins(15).msecs())
                 .map { it.beatsPerMinute }.average().takeIf { !it.isNaN() } ?: 0.0
@@ -304,7 +306,7 @@ open class OpenAPSAutoISFPlugin(
         preferences.put(BooleanKey.ActivityMonitorStepsActive, stepActivityDetected)
         preferences.put(BooleanKey.ActivityMonitorStepsInactive, stepInactivityDetected)
         if (autoIsfMode) {
-            variableSensitivity = autoISF(profile)
+            variableSensitivity = autoISF(profile, autosensResult.ratio)
         }
 
         val oapsProfile = OapsProfileAutoIsf(
@@ -411,7 +413,7 @@ open class OpenAPSAutoISFPlugin(
                     sensitivityRatio = round(sensitivityRatio, 2)
                 }
             } else {
-                sensitivityRatio = activitySensitivityRatio(autosensResult.ratio, activityRatio, stepActivityDetected)
+                sensitivityRatio = activitySensitivityRatio(autosensResult.ratio, activityRatio, stepActivityDetected, preferences.get(DoubleKey.AutosensMax))
             }
         }
         var iobTH_reduction_ratio = 1.0
@@ -637,7 +639,12 @@ open class OpenAPSAutoISFPlugin(
         return activityRatio
     }
 
-    suspend fun autoISF(profile: Profile): Double {
+    /**
+     * @param autosensRatio the autosens ratio of this loop run, so the whole run uses one value. Null reads the
+     * last autosens result (for callers outside a run, like tests).
+     */
+    suspend fun autoISF(profile: Profile, autosensRatio: Double? = null): Double {
+        val autosensRatioOfRun = autosensRatio ?: lastAutosensRatio()
         val sens = profile.getProfileIsfMgdl()
         val glucose_status = glucoseStatusCalculatorAutoIsf.getGlucoseStatusData(allowOldData = false)
 
@@ -666,10 +673,10 @@ open class OpenAPSAutoISFPlugin(
                 sensitivityRatio = min(sensitivityRatio, resistanceMax)
                 sensitivityRatio = round(sensitivityRatio, 2)
             } else {
-                sensitivityRatio = activitySensitivityRatio(lastAutosensRatio(), activityRatio, stepActivityDetected)
+                sensitivityRatio = activitySensitivityRatio(autosensRatioOfRun, activityRatio, stepActivityDetected, preferences.get(DoubleKey.AutosensMax))
             }
         } else {
-            sensitivityRatio = lastAutosensRatio()
+            sensitivityRatio = autosensRatioOfRun
         }
         var skipWeights = false
         if (!usingDynamicIsf() || !autoIsfWeights || glucose_status == null) {

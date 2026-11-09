@@ -308,7 +308,7 @@ class DetermineBasalAutoISF(
                 }
                 consoleError.add("Sensitivity ratio set to $sensitivityRatio based on temp target of $target_bg; ")
             } else if (stepActivityDetected || stepInactivityDetected) {
-                sensitivityRatio = activitySensitivityRatio(autosens_data.ratio, activityRatio, stepActivityDetected)
+                sensitivityRatio = activitySensitivityRatio(autosens_data.ratio, activityRatio, stepActivityDetected, profile.autosens_max)
             }
         } else {
             sensitivityRatio = autosens_data.ratio
