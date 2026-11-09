@@ -21,6 +21,13 @@ internal sealed interface AxisRule {
 
     /** No fixed point: only the values decide the range (variable sensitivity, heart rate). */
     data object Free : AxisRule
+
+    /**
+     * Like [Free], but [keep] is always on the axis and the values get at least [minPadding] room above
+     * and below. Without it a flat line (all AutoISF factors at 1.0) lies exactly on the edge of the
+     * axis and cannot be seen.
+     */
+    data class Padded(val keep: Double, val minPadding: Double) : AxisRule
 }
 
 internal fun axisRuleOf(type: SeriesType): AxisRule = when (type) {
@@ -28,7 +35,7 @@ internal fun axisRuleOf(type: SeriesType): AxisRule = when (type) {
     SeriesType.DEV_SLOPE                              -> AxisRule.Pivot(0.0)
     SeriesType.VAR_SENSITIVITY, SeriesType.HEART_RATE -> AxisRule.Free
     // AutoISF factors sit around 1.0, so a zero floor would squash them
-    in GraphConfig.ISF_FACTOR_TYPES                   -> AxisRule.Free
+    in GraphConfig.ISF_FACTOR_TYPES                   -> AxisRule.Padded(keep = 1.0, minPadding = ISF_FACTOR_MIN_PADDING)
     else                                              -> AxisRule.ZeroFloor
 }
 
@@ -81,8 +88,17 @@ internal fun axisRange(rule: AxisRule, values: List<Double>): AxisRange? {
         AxisRule.ZeroFloor -> zeroFloorNiceRange(low, high.coerceAtLeast(0.0)).let { AxisRange(it.min, it.max, 0.0) }
         is AxisRule.Pivot  -> niceScaleAroundPivot(low, high, rule.pivot, rule.minDeviation).let { AxisRange(it.min, it.max, rule.pivot) }
         AxisRule.Free      -> niceScale(low, high).let { AxisRange(it.min, it.max, null) }
+        is AxisRule.Padded -> {
+            val from = minOf(low, rule.keep)
+            val to = maxOf(high, rule.keep)
+            val padding = maxOf(rule.minPadding, (to - from) * 0.1)
+            niceScale(from - padding, to + padding).let { AxisRange(it.min, it.max, null) }
+        }
     }
 }
+
+/** Smallest room above and below the AutoISF factors, so a line at 1.0 is not on the edge. */
+private const val ISF_FACTOR_MIN_PADDING = 0.05
 
 /**
  * Two axes with their references on one height: both zeros on one line, or a zero and SENS' 100 %.

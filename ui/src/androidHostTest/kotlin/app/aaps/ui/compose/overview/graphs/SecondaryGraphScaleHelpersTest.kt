@@ -322,6 +322,22 @@ internal class SecondaryGraphScaleHelpersTest {
         fun `no values, no range`() {
             assertThat(axisRange(AxisRule.ZeroFloor, emptyList())).isNull()
         }
+
+        @Test
+        fun `AutoISF factors keep 1_0 inside the axis, not on its edge`() {
+            // All factors at 1.0: the flat line must not lie on the edge
+            val flat = axisRange(axisRuleOf(SeriesType.FINAL_ISF), listOf(1.0, 1.0))!!
+            assertThat(flat.min).isLessThan(1.0)
+            assertThat(flat.max).isGreaterThan(1.0)
+            // Values above 1: 1.0 stays on the axis, and the top value has room above it
+            val rising = axisRange(axisRuleOf(SeriesType.ACCE_ISF), listOf(1.0, 1.04))!!
+            assertThat(rising.min).isLessThan(1.0)
+            assertThat(rising.max).isGreaterThan(1.04)
+            // acce_ISF far below 1: the axis follows it and still shows 1.0
+            val wide = axisRange(axisRuleOf(SeriesType.ACCE_ISF), listOf(-1.8, 0.9))!!
+            assertThat(wide.min).isLessThan(-1.8)
+            assertThat(wide.max).isGreaterThan(1.0)
+        }
     }
 
     @Nested
