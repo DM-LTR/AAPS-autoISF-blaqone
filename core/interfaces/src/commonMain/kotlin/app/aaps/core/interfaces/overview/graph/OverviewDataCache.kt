@@ -100,6 +100,34 @@ interface OverviewDataCache {
     val stepsGraphFlow: StateFlow<StepsGraphData>
     fun updateStepsGraph(data: StepsGraphData)
 
+    // Accelerometer-based ISF adjustment graph (AutoISF component)
+    val acceIsfGraphFlow: StateFlow<AcceIsfGraphData>
+    fun updateAcceIsfGraph(data: AcceIsfGraphData)
+
+    // Blood Glucose-based ISF adjustment graph (AutoISF component)
+    val bgIsfGraphFlow: StateFlow<BgIsfGraphData>
+    fun updateBgIsfGraph(data: BgIsfGraphData)
+
+    // Post-Prandial ISF adjustment graph (AutoISF component)
+    val ppIsfGraphFlow: StateFlow<PpIsfGraphData>
+    fun updatePpIsfGraph(data: PpIsfGraphData)
+
+    // Drift ISF adjustment graph (AutoISF component)
+    val driftIsfGraphFlow: StateFlow<DriftIsfGraphData>
+    fun updateDriftIsfGraph(data: DriftIsfGraphData)
+
+    // Duration-based ISF adjustment graph (AutoISF component)
+    val duraIsfGraphFlow: StateFlow<DuraIsfGraphData>
+    fun updateDuraIsfGraph(data: DuraIsfGraphData)
+
+    // Final ISF value graph (AutoISF component)
+    val finalIsfGraphFlow: StateFlow<FinalIsfGraphData>
+    fun updateFinalIsfGraph(data: FinalIsfGraphData)
+
+    // Effective IOB threshold graph (AutoISF component)
+    val iobThEffectiveGraphFlow: StateFlow<IobThEffectiveGraphData>
+    fun updateIobThEffectiveGraph(data: IobThEffectiveGraphData)
+
     // =========================================================================
     // Treatment graph flows (main graph overlays)
     // Populated reactively by observing database changes — no worker needed.

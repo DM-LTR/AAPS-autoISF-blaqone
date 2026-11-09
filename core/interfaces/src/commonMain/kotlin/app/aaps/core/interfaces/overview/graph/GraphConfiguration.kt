@@ -25,7 +25,14 @@ enum class SeriesType {
     HEART_RATE,
     STEPS,
     ACTIVITY,
-    PREDICTIONS
+    PREDICTIONS,
+    ACCE_ISF,
+    BG_ISF,
+    PP_ISF,
+    DRIFT_ISF,
+    DURA_ISF,
+    FINAL_ISF,
+    IOB_TH_EFFECTIVE
 }
 
 /**
@@ -73,6 +80,22 @@ data class GraphConfig(
 
         /** Maximum graph height in dp (2.5x default) */
         const val MAX_GRAPH_HEIGHT_DP = 250
+
+        /**
+         * AutoISF ISF-factor component types — all share the same y-scale (multiplier ~0.5–2.5)
+         * and can be grouped together on a single graph axis without normalization.
+         * When all selected series in a panel belong to this set, they render on the primary
+         * axis together (no dual-axis) regardless of series count.
+         */
+        val ISF_COMPANION_TYPES = setOf(
+            SeriesType.ACCE_ISF,
+            SeriesType.BG_ISF,
+            SeriesType.PP_ISF,
+            SeriesType.DRIFT_ISF,
+            SeriesType.DURA_ISF,
+            SeriesType.FINAL_ISF,
+            SeriesType.IOB_TH_EFFECTIVE
+        )
     }
 }
 

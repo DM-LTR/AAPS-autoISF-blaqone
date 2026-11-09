@@ -2,18 +2,25 @@ package app.aaps.ui.compose.testing
 
 import app.aaps.core.interfaces.overview.graph.AapsClientStatusData
 import app.aaps.core.interfaces.overview.graph.AbsIobGraphData
+import app.aaps.core.interfaces.overview.graph.AcceIsfGraphData
 import app.aaps.core.interfaces.overview.graph.ActivityGraphData
 import app.aaps.core.interfaces.overview.graph.BasalGraphData
 import app.aaps.core.interfaces.overview.graph.BgDataPoint
 import app.aaps.core.interfaces.overview.graph.BgInfoData
+import app.aaps.core.interfaces.overview.graph.BgIsfGraphData
 import app.aaps.core.interfaces.overview.graph.BgiGraphData
 import app.aaps.core.interfaces.overview.graph.CobGraphData
 import app.aaps.core.interfaces.overview.graph.DevSlopeGraphData
 import app.aaps.core.interfaces.overview.graph.DeviationsGraphData
+import app.aaps.core.interfaces.overview.graph.DriftIsfGraphData
+import app.aaps.core.interfaces.overview.graph.DuraIsfGraphData
 import app.aaps.core.interfaces.overview.graph.EpsGraphPoint
+import app.aaps.core.interfaces.overview.graph.FinalIsfGraphData
 import app.aaps.core.interfaces.overview.graph.HeartRateGraphData
 import app.aaps.core.interfaces.overview.graph.IobGraphData
+import app.aaps.core.interfaces.overview.graph.IobThEffectiveGraphData
 import app.aaps.core.interfaces.overview.graph.OverviewDataCache
+import app.aaps.core.interfaces.overview.graph.PpIsfGraphData
 import app.aaps.core.interfaces.overview.graph.ProfileDisplayData
 import app.aaps.core.interfaces.overview.graph.RatioGraphData
 import app.aaps.core.interfaces.overview.graph.RunningModeDisplayData
@@ -61,6 +68,13 @@ class FakeOverviewDataCache : OverviewDataCache {
     override val varSensGraphFlow = MutableStateFlow(VarSensGraphData(emptyList()))
     override val heartRateGraphFlow = MutableStateFlow(HeartRateGraphData(emptyList()))
     override val stepsGraphFlow = MutableStateFlow(StepsGraphData(emptyList()))
+    override val acceIsfGraphFlow = MutableStateFlow(AcceIsfGraphData(emptyList()))
+    override val bgIsfGraphFlow = MutableStateFlow(BgIsfGraphData(emptyList()))
+    override val ppIsfGraphFlow = MutableStateFlow(PpIsfGraphData(emptyList()))
+    override val driftIsfGraphFlow = MutableStateFlow(DriftIsfGraphData(emptyList()))
+    override val duraIsfGraphFlow = MutableStateFlow(DuraIsfGraphData(emptyList()))
+    override val finalIsfGraphFlow = MutableStateFlow(FinalIsfGraphData(emptyList()))
+    override val iobThEffectiveGraphFlow = MutableStateFlow(IobThEffectiveGraphData(emptyList()))
 
     override val treatmentGraphFlow = MutableStateFlow(TreatmentGraphData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList()))
     override val epsGraphFlow = MutableStateFlow<List<EpsGraphPoint>>(emptyList())
@@ -92,6 +106,13 @@ class FakeOverviewDataCache : OverviewDataCache {
     override fun updateVarSensGraph(data: VarSensGraphData) { varSensGraphFlow.value = data }
     override fun updateHeartRateGraph(data: HeartRateGraphData) { heartRateGraphFlow.value = data }
     override fun updateStepsGraph(data: StepsGraphData) { stepsGraphFlow.value = data }
+    override fun updateAcceIsfGraph(data: AcceIsfGraphData) { acceIsfGraphFlow.value = data }
+    override fun updateBgIsfGraph(data: BgIsfGraphData) { bgIsfGraphFlow.value = data }
+    override fun updatePpIsfGraph(data: PpIsfGraphData) { ppIsfGraphFlow.value = data }
+    override fun updateDriftIsfGraph(data: DriftIsfGraphData) { driftIsfGraphFlow.value = data }
+    override fun updateDuraIsfGraph(data: DuraIsfGraphData) { duraIsfGraphFlow.value = data }
+    override fun updateFinalIsfGraph(data: FinalIsfGraphData) { finalIsfGraphFlow.value = data }
+    override fun updateIobThEffectiveGraph(data: IobThEffectiveGraphData) { iobThEffectiveGraphFlow.value = data }
 
     override fun reset() = Unit
 }

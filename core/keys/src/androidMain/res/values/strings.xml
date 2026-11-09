@@ -418,6 +418,11 @@
 
     <!-- AutoISF 3.2 activity monitor -->
     <string name="pref_title_aps_activity_detection">Activity monitor (steps)</string>
+    <string name="pref_title_aps_autoisf_use_activity_classifier">Use ActivityClassifier in AutoISF</string>
+    <string name="pref_summary_aps_autoisf_use_activity_classifier">Classify activity from steps and heart rate. Disable to fall back to the reference step-based activity monitor.</string>
+    <string name="pref_title_aps_autoisf_use_activity_target_offset">Use activity target offset in AutoISF</string>
+    <string name="pref_summary_aps_autoisf_use_activity_target_offset">Allow ActivityClassifier to raise glucose targets during detected activity when no Temp Target is active.</string>
+    <string name="activity_resting_hr_title">Resting heart rate (bpm)</string>
     <string name="steps_activity_detected_title">Steps activity detected</string>
     <string name="steps_inactivity_detected_title">Steps inactivity detected</string>
     <string name="steps_graph_from_smartphone_title">Steps graph from smartphone sensor</string>
