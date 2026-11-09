@@ -27,7 +27,7 @@ class DetermineBasalAutoISFTest : TestBaseWithProfile() {
 
     @BeforeEach
     fun setup() {
-        sut = DetermineBasalAutoISF(profileUtil)
+        sut = DetermineBasalAutoISF(profileUtil, preferences)
     }
 
     private fun glucoseStatus() = GlucoseStatusSMB(
