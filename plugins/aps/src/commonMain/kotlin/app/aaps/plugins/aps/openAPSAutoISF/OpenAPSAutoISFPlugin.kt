@@ -45,6 +45,7 @@ import app.aaps.core.interfaces.automation.AutomationStateInterface
 import app.aaps.core.keys.BooleanKey
 import app.aaps.core.keys.DoubleKey
 import app.aaps.core.keys.IntKey
+import app.aaps.core.keys.KeysStrings
 import app.aaps.core.keys.LongNonKey
 import app.aaps.core.keys.UnitDoubleKey
 import app.aaps.core.keys.interfaces.Preferences
@@ -1094,7 +1095,7 @@ open class OpenAPSAutoISFPlugin(
             ),
             PreferenceSubScreenDef(
                 key = "activity_monitor",
-                title = ApsStrings.pref_title_aps_activity_detection,
+                title = KeysStrings.pref_title_aps_activity_detection,
                 items = listOf(
                     BooleanKey.ActivityMonitorDetection,
                     DoubleKey.ActivityScaleFactor,
