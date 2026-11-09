@@ -735,8 +735,8 @@ class AutomationRuntime(
             actionFactory.actionDisableScene(),
             actionFactory.actionSetAutomationState()
         )
-        // Autotune is only offered in engineering builds, as before.
-        if (config.isEngineeringMode() && config.isDev())
+        // Autotune is only offered in engineering mode (dev build no longer required).
+        if (config.isEngineeringMode())
             actions.add(actionFactory.actionRunAutotune())
 
         return actions.toList()

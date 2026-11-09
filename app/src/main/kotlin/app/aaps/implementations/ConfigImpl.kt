@@ -101,7 +101,8 @@ class ConfigImpl(
 
     override fun isEngineeringModeOrRelease(): Boolean = if (!APS) true else isEngineeringMode() || !isDev()
     override fun isEngineeringMode(): Boolean = isEnabled(ExternalOptions.ENGINEERING_MODE)
-    override fun isDev(): Boolean = (VERSION.contains("-") || VERSION.matches(Regex(".*[a-zA-Z]+.*"))) && !VERSION.contains("-beta") && !VERSION.contains("-rc")
+    // AutoISF fork: a "-aisf" build counts as a normal release, so closed loop does not need engineering mode
+    override fun isDev(): Boolean = (VERSION.contains("-") || VERSION.matches(Regex(".*[a-zA-Z]+.*"))) && !VERSION.contains("-beta") && !VERSION.contains("-rc") && !VERSION.contains("-aisf")
     // The override is read first and never cached. The instrumented tests change which options they
     // want between tests, so a cached answer from the first one would stick for the whole run. The file
     // lookup below stays cached - that really is fixed for the life of the process.

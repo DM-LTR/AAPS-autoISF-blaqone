@@ -7,7 +7,6 @@ import app.aaps.core.interfaces.bgQualityCheck.BgQualityCheck
 import app.aaps.core.interfaces.constraints.ConstraintsChecker
 import app.aaps.core.interfaces.db.PersistenceLayer
 import app.aaps.core.interfaces.iob.GlucoseStatusProvider
-import app.aaps.core.interfaces.plugin.EnforcedState
 import app.aaps.core.keys.BooleanKey
 import app.aaps.core.keys.DoubleKey
 import app.aaps.core.keys.IntKey
@@ -45,9 +44,11 @@ class OpenAPSAutoISFPluginTest : TestBaseWithProfile() {
     }
 
     @Test
-    fun `any other build forces it off`() {
+    fun `a normal build without engineering mode also leaves the choice to the user`() {
+        // AutoISF fork: AutoISF must not need engineering mode or a dev build
         whenever(config.isEngineeringMode()).thenReturn(false)
-        assertThat(openAPSAutoISFPlugin.enforcedState()).isEqualTo(EnforcedState.Disabled)
+        whenever(config.isDev()).thenReturn(false)
+        assertThat(openAPSAutoISFPlugin.enforcedState()).isNull()
     }
 
     @Suppress("KotlinConstantConditions")
