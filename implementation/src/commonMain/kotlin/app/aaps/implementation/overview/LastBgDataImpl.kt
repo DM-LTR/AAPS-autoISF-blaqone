@@ -33,7 +33,8 @@ class LastBgDataImpl(
 ) : LastBgData {
 
     override fun lastBg(): InMemoryGlucoseValue? =
-        iobCobCalculator.ads.bucketedData?.firstOrNull()
+        // Status data starts at the newest reading (the bucketed grid can be minutes older with a 1 minute CGM)
+        iobCobCalculator.ads.getStatusDataCopy()?.firstOrNull()
             ?: runBlocking { persistenceLayer.getLastGlucoseValue() }?.let { InMemoryGlucoseValue.fromGv(it) }
 
     override fun isLow(): Boolean =

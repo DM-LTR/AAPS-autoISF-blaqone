@@ -19,7 +19,8 @@ class TrendCalculatorImpl(
 ) : TrendCalculator {
 
     override fun getTrendArrow(autosensDataStore: AutosensDataStore): TrendArrow? {
-        val data = autosensDataStore.getBucketedDataTableCopy() ?: return null
+        // Status data starts at the newest reading, so the arrow matches the value shown
+        val data = autosensDataStore.getStatusDataCopy() ?: return null
         if (data.isEmpty()) return null
         /* Change 4.0.0 - always calculate from bucketed data
         val glucoseValue = data[0]
