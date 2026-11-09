@@ -6,7 +6,6 @@ import app.aaps.core.data.model.AIV
 import app.aaps.core.data.model.GlucoseUnit
 import app.aaps.core.data.model.getPassedDurationToTimeInMinutes
 import app.aaps.core.data.plugin.PluginType
-import app.aaps.core.data.time.SystemTimeZone
 import app.aaps.core.data.time.T
 import app.aaps.core.interfaces.InterfacesStrings
 import app.aaps.core.interfaces.aps.APS
@@ -39,8 +38,8 @@ import app.aaps.core.interfaces.rx.bus.RxBus
 import app.aaps.core.interfaces.rx.events.EventAPSCalculationFinished
 import app.aaps.core.interfaces.utils.DateUtil
 import app.aaps.core.interfaces.utils.HardLimits
-import app.aaps.core.interfaces.utils.MidnightTime
 import app.aaps.core.interfaces.utils.Round
+import app.aaps.core.utils.MidnightUtils
 import app.aaps.core.data.model.SC
 import app.aaps.core.interfaces.automation.AutomationStateInterface
 import app.aaps.core.keys.BooleanKey
@@ -212,7 +211,7 @@ open class OpenAPSAutoISFPlugin(
 
         if (!hardLimits.checkHardLimits(profile.iCfg.dia, InterfacesStrings.profile_dia, hardLimits.diaRange())) return@withContext
         if (!hardLimits.checkHardLimits(
-                profile.getIcTimeFromMidnight(MidnightTime.secondsFromMidnight(SystemTimeZone.current())),
+                profile.getIcTimeFromMidnight(MidnightUtils.secondsFromMidnight()),
                 InterfacesStrings.profile_carbs_ratio_value,
                 hardLimits.icRange()
             )
