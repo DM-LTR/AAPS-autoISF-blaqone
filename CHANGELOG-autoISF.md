@@ -23,6 +23,22 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
     Spätestens nach 5 min läuft er aber immer (außer das Loop-Intervall ist größer als 5).
 - Mit dem Standardwert 5 verhält sich der Loop wie bisher.
 
+**Welche Werte nutzen die AutoISF-Faktoren jetzt?**
+
+| Faktor | Was er braucht | Woher es kommt |
+|---|---|---|
+| acce_ISF | Beschleunigung (Parabel) | echte 1-Minuten-Messwerte |
+| dura_ISF | wie lange der BZ schon flach und hoch ist | echte 1-Minuten-Messwerte |
+| bg_ISF | aktueller BZ | neuester Messwert (früher: der 5-Minuten-Wert davor) |
+| pp_ISF | Delta (Anstieg) | ab dem neuesten Messwert (früher: ab dem 5-Minuten-Wert davor) |
+
+- Das Delta bleibt „Anstieg pro 5 Minuten“: neuester Wert minus Wert 5 Minuten vorher. Darauf sind
+  die pp_ISF-Gewichte eingestellt. Ein Delta über 1 Minute wäre etwa fünfmal kleiner.
+- acce_ISF und dura_ISF nutzen die echten 1-Minuten-Werte nur, wenn AAPS den Sensor erkennt (Libre 2,
+  Libre 2 Native, Libre 3, Sibionics, AiDex, Syai/Ottai oder Dexcom) **und** etwa jede Minute ein Wert
+  kommt. Sonst rechnen sie wie bisher mit dem 5-Minuten-Raster. bg_ISF und pp_ISF sind in jedem Fall
+  frisch.
+
 ## 2026-11-09 (1) – Erster Stand
 
 - AutoISF 3.2.1 auf AAPS 4.0.0, Basis: JetFoxys Branch `autoisf-3.2.1`.
