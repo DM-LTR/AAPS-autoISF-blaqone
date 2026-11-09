@@ -113,6 +113,5 @@
     <!--    autoISF -->
     <string name="autoISF_settings_title">AutoISF settings</string>
     <string name="smb_delivery_settings_title">SMB delivery settings</string>
-    <string name="fslCal_Offset_title">Libre special settings</string>
 
 </resources>

@@ -31,7 +31,6 @@ AUTOMATION_EVENTS|StringNonKey|true
 CARELEVO_BUZZER_REMINDER|CarelevoBooleanPreferenceKey|true
 CARELEVO_LOW_INSULIN_EXPIRATION_REMINDER_HOURS|CarelevoIntPreferenceKey|true
 CARELEVO_PATCH_EXPIRATION_REMINDER_HOURS|CarelevoIntPreferenceKey|true
-Calibration_Duration|IntKey|true
 ConfigBuilder_Enabled_%s|BooleanComposedKey|true
 Diaconn G8|DiaconnStringNonKey|true
 DisabledTo_%s|ObjectivesLongComposedKey|true
@@ -118,8 +117,6 @@ bolussnooze_dia_divisor|DoubleKey|true
 boluswizard_percentage|IntKey|true
 bt_watchdog_last|LongNonKey|true
 bt_watchdog|BooleanKey|true
-calibration_end|BooleanKey|true
-calibration_stops_SMB|BooleanKey|true
 carbsReqThreshold|IntKey|true
 carbs_button_increment_1|IntKey|true
 carbs_button_increment_2|IntKey|true
@@ -212,10 +209,6 @@ export_settings_local_enabled|BooleanNonKey|true
 fill_button1|DoubleKey|true
 fill_button2|DoubleKey|true
 fill_button3|DoubleKey|true
-fslCal_Offset|DoubleKey|true
-fslCal_Slope|DoubleKey|true
-fsl_cal_start_time|LongNonKey|true
-fsl_exp1_factor|DoubleKey|true
 g8_bolusspeed|DiaconnIntKey|true
 garmin_aaps_key|GarminStringKey|true
 google_drive_folder_id|StringNonKey|true

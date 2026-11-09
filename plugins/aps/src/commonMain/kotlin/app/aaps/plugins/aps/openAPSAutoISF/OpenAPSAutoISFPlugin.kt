@@ -156,7 +156,6 @@ open class OpenAPSAutoISFPlugin(
     private val highTemptargetRaisesSensitivity; get() = preferences.get(BooleanKey.ApsAutoIsfHighTtRaisesSens)
     private val useActivityClassifier; get() = preferences.get(BooleanKey.ActivityMonitorDetection) && preferences.get(BooleanKey.ApsAutoIsfUseActivityClassifier)
     private val useActivityTargetOffset; get() = useActivityClassifier && preferences.get(BooleanKey.ApsAutoIsfUseActivityTargetOffset)
-    private val calibrationDuration; get() = preferences.get(IntKey.FslCalibrationDuration)
     private val recentSteps5Minutes ; get() = StepService.getRecentStepCount5Min()
     private val recentSteps10Minutes; get() = StepService.getRecentStepCount10Min()
     private val recentSteps15Minutes; get() = StepService.getRecentStepCount15Min()
@@ -691,12 +690,7 @@ open class OpenAPSAutoISFPlugin(
             sensitivityRatio = lastAutosensRatio()
         }
         var skipWeights = false
-        val calibrationMinutes = calibrationDuration - (dateUtil.now() - preferences.get(LongNonKey.FslCalibrationStart)) / 60000
-        val calibrationStopsSMB = calibrationMinutes > 0 && !preferences.get(BooleanKey.FslCalibrationEnd)
-        if (calibrationStopsSMB) {
-            consoleError.add("AutoISF weights disabled while calibrating")
-            skipWeights = true
-        } else if (!usingDynamicIsf() || !autoIsfWeights || glucose_status == null) {
+        if (!usingDynamicIsf() || !autoIsfWeights || glucose_status == null) {
             consoleError.add("autoISF weights disabled in Preferences")
             skipWeights = true
         }
@@ -989,19 +983,6 @@ open class OpenAPSAutoISFPlugin(
         if (!microBolusAllowed) {
             return "AAPS"                                                 // see message in enable_smb
         }
-        if (preferences.get(BooleanKey.FslCalibrationTrigger)) {
-            preferences.put(LongNonKey.FslCalibrationStart, dateUtil.now())
-            preferences.put(BooleanKey.FslCalibrationTrigger, false)
-            preferences.put(BooleanKey.FslCalibrationEnd, false)
-        }
-        val calibrationMinutes = calibrationDuration - (dateUtil.now() - preferences.get(LongNonKey.FslCalibrationStart)) / 60000
-        val calibrationStopsSMB = calibrationMinutes > 0 && !preferences.get(BooleanKey.FslCalibrationEnd)
-        val CalibrationMsg = "Calibration json: {\"calibrationStart\":${preferences.get(LongNonKey.FslCalibrationStart)},\"calibrationIgnore\":${preferences.get(BooleanKey.FslCalibrationEnd)}}"
-        aapsLogger.debug(LTag.APS, CalibrationMsg)
-        if (calibrationStopsSMB) {
-            consoleLog.add("SMB disabled while calibrating for another ${calibrationMinutes}m")
-            return "blocked"
-        }
         if (enableSMB_EvenOn_OddOff_always) {
             //TODO: cleaner conversion back to original mmol/L if applicable
             var target = convert_bg_to_units(profile.target_bg, profile)
@@ -1154,18 +1135,6 @@ open class OpenAPSAutoISFPlugin(
                     BooleanKey.ApsAutoIsfUseActivityClassifier,
                     BooleanKey.ApsAutoIsfUseActivityTargetOffset,
                     IntKey.ActivityRestingHr
-                )
-            ),
-            PreferenceSubScreenDef(
-                key = "Libre_special_settings",
-                title = ApsStrings.fslCal_Offset_title,
-                items = listOf(
-                    BooleanKey.FslCalibrationTrigger,
-                    BooleanKey.FslCalibrationEnd,
-                    IntKey.FslCalibrationDuration,
-                    DoubleKey.FslCalOffset,
-                    DoubleKey.FslCalSlope,
-                    DoubleKey.FslSmoothAlpha
                 )
             )
         ),

@@ -242,24 +242,6 @@ enum class BooleanKey(
         sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
     ),
 
-    // FSL calibration suppresses SMB/AutoISF weights for a short window
-    FslCalibrationTrigger(
-        "calibration_stops_SMB",
-        false,
-        KeysStrings.calibration_stops_smb_title,
-        KeysStrings.calibration_stops_smb_summary,
-        defaultedBySM = true,
-        sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
-    ),
-    FslCalibrationEnd(
-        "calibration_end",
-        false,
-        KeysStrings.calibration_enable_smb_title,
-        KeysStrings.calibration_enable_smb_summary,
-        defaultedBySM = true,
-        sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
-    ),
-
     MaintenanceEnableFabric("enable_fabric2", true, KeysStrings.pref_title_maintenance_enable_fabric, defaultedBySM = true, hideParentScreenIfHidden = true),
 
     // Master-only (not a follower client): unattended settings export backs up the local config, which on a

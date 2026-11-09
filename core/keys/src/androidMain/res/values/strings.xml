@@ -439,18 +439,6 @@
     <string name="inactivity_idle_end_title">End hour for disabling inactivity monitoring</string>
     <string name="inactivity_idle_end_summary">End hour of sleep when inactivity monitoring is re-enabled again\nDefault in 24h notation is 6</string>
 
-    <!-- FSL/Libre calibration -->
-    <string name="calibration_stops_smb_title" translatable="false">Disable SMB and AutoISF weights for 20m after fresh calibration</string>
-    <string name="calibration_stops_smb_summary" translatable="false">Trigger this once before changing calibration settings</string>
-    <string name="calibration_enable_smb_title" translatable="false">Re-enable SMB and AutoISF weights earlier anyway</string>
-    <string name="calibration_enable_smb_summary" translatable="false">Activate this when suppressing is no longer required because calibration transition was smooth</string>
-    <string name="calibration_duration_title">Calibration window duration (minutes)</string>
-    <string name="fslCal_Offset_title">Offset of Libre calibration versus finger like in xDrip</string>
-    <string name="fslCal_Offset_summary">OFFSET value as in calibration formula\nLibre_calibrated = OFFSET + slope * Libre_raw</string>
-    <string name="fslCal_Slope_title">Slope of Libre calibration versus finger like in xDrip</string>
-    <string name="fslCal_Slope_summary">SLOPE value as in calibration formula\nLibre_calibrated = offset + SLOPE * Libre_raw</string>
-    <string name="fsl_exp1_factor_title">Libre 1st order exponential smoothing factor</string>
-    <string name="fsl_exp1_factor_summary">Used without xDrip 1 minute smoothing in between\n0.0 : max. effect\n1.0 : min. effect</string>
 
     <!-- UnitDoubleKey: Overview preferences -->
     <string name="pref_title_low_mark">Low BG mark</string>

@@ -392,14 +392,6 @@ enum class IntKey(
         dependency = BooleanKey.ActivityMonitorOvernight,
         sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
     ),
-    FslCalibrationDuration(
-        key = "Calibration_Duration",
-        defaultValue = 20,
-        min = 20,
-        max = 20,
-        title = KeysStrings.calibration_duration_title,
-        defaultedBySM = true
-    ),
     ActivityRestingHr(
         key = "activity_resting_hr",
         defaultValue = 60,

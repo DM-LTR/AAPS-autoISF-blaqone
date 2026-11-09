@@ -21,7 +21,6 @@ enum class LongNonKey(
      */
     ActivePumpChangeTimestamp("active_pump_change_timestamp", 0L, exportable = false),
     AppStart("app_start_time", 0L),
-    FslCalibrationStart("fsl_cal_start_time", -1L),
     LastCleanupRun("last_cleanup_run", 0L),
     /**
      * The time before which the last automatic cleanup deleted records. `PeriodicMaintenance` lets
