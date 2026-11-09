@@ -1,6 +1,7 @@
 package app.aaps.implementation.iob
 
 import app.aaps.core.data.iob.InMemoryGlucoseValue
+import app.aaps.core.data.model.GV
 import app.aaps.core.data.model.SourceSensor
 import app.aaps.core.data.model.TrendArrow
 import app.aaps.core.data.time.T
@@ -28,7 +29,7 @@ class GlucoseStatusTestAutoIsf : TestBaseWithProfile() {
     fun prepare() {
         whenever(dateUtil.now()).thenReturn(1514766900000L + T.mins(1).msecs())
         whenever(iobCobCalculator.ads).thenReturn(autosensDataStore)
-        whenever(autosensDataStore.getBgReadingsDataTableCopy()).thenReturn(generateOneCurrentRecordBgData())
+        whenever(autosensDataStore.getBgReadingsDataTableCopy()).thenReturn(generateDummyLibreData())
     }
 
     @Test fun toStringShouldBeOverloaded() {
@@ -129,5 +130,11 @@ class GlucoseStatusTestAutoIsf : TestBaseWithProfile() {
         val list: MutableList<InMemoryGlucoseValue> = ArrayList()
         list.add(InMemoryGlucoseValue(value = 214.0, timestamp = 1514766900000, trendArrow = TrendArrow.FLAT, sourceSensor = SourceSensor.UNKNOWN))
         return list
+    }
+
+    private fun generateDummyLibreData(): MutableList<GV> {
+        val origData: MutableList<GV> = ArrayList()
+        origData.add(GV(timestamp = 1514766900000, value = 214.0, raw = 0.0, noise = 0.0, trendArrow = TrendArrow.FLAT, sourceSensor = SourceSensor.UNKNOWN))
+        return origData
     }
 }
