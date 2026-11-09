@@ -3,6 +3,7 @@ package app.aaps.workflow
 import app.aaps.core.data.iob.InMemoryGlucoseValue
 import app.aaps.core.interfaces.aps.AutosensDataStore
 import app.aaps.core.interfaces.aps.Loop
+import app.aaps.core.interfaces.db.PersistenceLayer
 import app.aaps.core.interfaces.nsclient.ProcessedDeviceStatusData
 import app.aaps.core.interfaces.overview.OverviewData
 import app.aaps.core.interfaces.overview.graph.OverviewDataCache
@@ -35,12 +36,14 @@ class PostCalculationRunnerTest : TestBaseWithProfile() {
     @Mock lateinit var loop: Loop
     @Mock lateinit var widgetUpdater: WidgetUpdater
     @Mock lateinit var processedDeviceStatusData: ProcessedDeviceStatusData
+    @Mock lateinit var persistenceLayer: PersistenceLayer
     @Mock lateinit var sceneExpiryCheck: SceneExpiryCheck
 
     private fun runner() =
         PostCalculationRunner(
             aapsLogger, workflowChainData, iobCobCalculator, loop,
-            widgetUpdater, config, processedDeviceStatusData, profileUtil, preferences, sceneExpiryCheck
+            widgetUpdater, config, processedDeviceStatusData, profileUtil, preferences,
+            persistenceLayer, constraintsChecker, dateUtil, sceneExpiryCheck
         )
 
     // Nothing in these tests stops a run part way.
