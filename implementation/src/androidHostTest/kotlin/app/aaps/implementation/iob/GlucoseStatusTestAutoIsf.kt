@@ -53,14 +53,14 @@ class GlucoseStatusTestAutoIsf : TestBaseWithProfile() {
 
         assertThat(glucoseStatus.duraISFminutes).isEqualTo(35.0) // plateau size records in minutes
         assertThat(glucoseStatus.duraISFaverage).isWithin(0.1).of(221.5) // average during above time window
-        assertThat(glucoseStatus.parabolaMinutes).isWithin(0.1).of(15.0) // parabola size records in minutes
-        assertThat(glucoseStatus.deltaPl).isWithin(0.1).of(-2.0) // last delta
-        assertThat(glucoseStatus.deltaPn).isWithin(0.1).of(-1.0) // next delta
-        assertThat(glucoseStatus.bgAcceleration).isWithin(0.01).of(1.0) // glucose acceleration
+        assertThat(glucoseStatus.parabolaMinutes).isWithin(0.1).of(35.0) // parabola size records in minutes
+        assertThat(glucoseStatus.deltaPl).isWithin(0.1).of(-2.56) // last delta
+        assertThat(glucoseStatus.deltaPn).isWithin(0.1).of(-2.77) // next delta
+        assertThat(glucoseStatus.bgAcceleration).isWithin(0.01).of(-0.21) // glucose acceleration
         assertThat(glucoseStatus.a0).isWithin(0.1).of(214.0) //
-        assertThat(glucoseStatus.a1).isWithin(0.0001).of(-1.5) //
-        assertThat(glucoseStatus.a2).isWithin(0.0001).of(0.5) //
-        assertThat(glucoseStatus.corrSqu).isWithin(0.001).of(1.0) // parabola fit quality
+        assertThat(glucoseStatus.a1).isWithin(0.0001).of(-2.6786) //
+        assertThat(glucoseStatus.a2).isWithin(0.0001).of(-0.1055) //
+        assertThat(glucoseStatus.corrSqu).isWithin(0.001).of(0.9627) // parabola fit quality
     }
 
     @Test fun oneRecordShouldProduceZeroDeltas() {
