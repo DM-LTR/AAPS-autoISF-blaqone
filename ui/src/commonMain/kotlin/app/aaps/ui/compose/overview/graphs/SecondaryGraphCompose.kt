@@ -149,8 +149,8 @@ fun SecondaryGraphCompose(
 
     val hasIob = SeriesType.IOB in seriesTypes
     val hasCob = SeriesType.COB in seriesTypes
-    // The basal band takes the top of the graph, so only when IOB is the graph's only series
-    val hasBasalLayer = sides.left == listOf(SeriesType.IOB) && sides.right.isEmpty()
+    // The basal band takes the top of the graph, so only when IOB is the graph's main series (see hasBasalBand)
+    val hasBasalLayer = hasBasalBand(sides)
 
     val iobData = if (hasIob) viewModel.iobGraphFlow.collectAsStateWithLifecycle().value else null
     val cobData = if (hasCob) viewModel.cobGraphFlow.collectAsStateWithLifecycle().value else null

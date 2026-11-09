@@ -5,6 +5,12 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-09 (6) – iobTH im IOB-Diagramm
+
+- **iobTH im IOB-Diagramm:** Im IOB-Diagramm kann iobTH als zweite Linie dazu. Beide liegen auf
+  derselben Achse in IE, gleich skaliert, und die Basal-Leiste oben bleibt (vorher verschwand sie).
+  Einschalten: Stift-Symbol am IOB-Diagramm → iobTH hinzufügen. Nur Anzeige.
+
 ## 2026-11-09 (5) – Bolus-Rechner mit neuestem BZ
 
 - ⚠ **Bolus-Rechner nimmt den neuesten Messwert.** Bisher kam der BZ im Rechner aus dem

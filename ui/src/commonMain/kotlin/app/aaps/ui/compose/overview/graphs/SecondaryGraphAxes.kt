@@ -45,6 +45,16 @@ private val SHARED_UNITS = listOf(
     setOf(SeriesType.BGI, SeriesType.DEVIATIONS)
 )
 
+/**
+ * Whether the IOB graph keeps its basal band at the top: IOB is the first series and everything else
+ * is drawn against the same axis in U and is a plain line. iobTH qualifies (AutoISF fork: it belongs
+ * next to IOB, on the same scale). A second axis or another series takes the band away, as before.
+ */
+internal fun hasBasalBand(sides: GraphSides): Boolean =
+    sides.right.isEmpty() && sides.left.firstOrNull() == SeriesType.IOB && sides.left.all { it in BASAL_BAND_SERIES }
+
+private val BASAL_BAND_SERIES = setOf(SeriesType.IOB, SeriesType.IOB_TH_EFFECTIVE)
+
 /** The series of one graph, by axis. A side is empty when it has no series. */
 internal data class GraphSides(val left: List<SeriesType>, val right: List<SeriesType>)
 

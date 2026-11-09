@@ -324,6 +324,18 @@ internal class SecondaryGraphScaleHelpersTest {
         }
 
         @Test
+        fun `IOB with iobTH shares one axis and keeps the basal band`() {
+            val sides = graphSides(listOf(SeriesType.IOB, SeriesType.IOB_TH_EFFECTIVE))
+            assertThat(sides).isEqualTo(GraphSides(listOf(SeriesType.IOB, SeriesType.IOB_TH_EFFECTIVE), emptyList()))
+            assertThat(hasBasalBand(sides)).isTrue()
+            assertThat(hasBasalBand(graphSides(listOf(SeriesType.IOB)))).isTrue()
+            // Another unit on the right, or iobTH first: no band, as before
+            assertThat(hasBasalBand(graphSides(listOf(SeriesType.IOB, SeriesType.COB)))).isFalse()
+            assertThat(hasBasalBand(graphSides(listOf(SeriesType.IOB, SeriesType.ABS_IOB)))).isFalse()
+            assertThat(hasBasalBand(graphSides(listOf(SeriesType.IOB_TH_EFFECTIVE, SeriesType.IOB)))).isFalse()
+        }
+
+        @Test
         fun `AutoISF factors keep 1_0 inside the axis, not on its edge`() {
             // All factors at 1.0: the flat line must not lie on the edge
             val flat = axisRange(axisRuleOf(SeriesType.FINAL_ISF), listOf(1.0, 1.0))!!
