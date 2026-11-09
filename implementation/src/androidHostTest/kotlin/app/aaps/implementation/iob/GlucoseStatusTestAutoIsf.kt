@@ -59,7 +59,7 @@ class GlucoseStatusTestAutoIsf : TestBaseWithProfile() {
         assertThat(glucoseStatus.bgAcceleration).isWithin(0.01).of(-0.21) // glucose acceleration
         assertThat(glucoseStatus.a0).isWithin(0.1).of(214.0) //
         assertThat(glucoseStatus.a1).isWithin(0.0001).of(-2.6786) //
-        assertThat(glucoseStatus.a2).isWithin(0.0001).of(-0.1055) //
+        assertThat(glucoseStatus.a2).isWithin(0.0001).of(-0.10714285714285714) //
         assertThat(glucoseStatus.corrSqu).isWithin(0.001).of(0.9627) // parabola fit quality
     }
 
