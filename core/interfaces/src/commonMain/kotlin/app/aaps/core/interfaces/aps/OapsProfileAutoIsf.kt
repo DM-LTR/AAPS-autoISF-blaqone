@@ -24,6 +24,17 @@ data class OapsProfileAutoIsf(
     var adv_target_adjustments: Boolean,
     var exercise_mode: Boolean,
     var half_basal_exercise_target: Int,
+    // Activity monitor
+    val activity_detection: Boolean? = false,
+    val recent_steps_5_minutes: Int? = 0,
+    val recent_steps_10_minutes: Int? = 0,
+    val recent_steps_15_minutes: Int? = 0,
+    val recent_steps_30_minutes: Int? = 0,
+    val recent_steps_60_minutes: Int? = 0,
+    val phone_moved: Boolean? = false,
+    val time_since_start: Long? = 0,
+    val now: Int? = 0,
+    // Activity monitor end
     var maxCOB: Int,
     var skip_neutral_temps: Boolean,
     var remainingCarbsCap: Int,

@@ -471,6 +471,7 @@ class MainApp : Application(), MetroMemberInjector, MetroViewModelFactoryOwner, 
 
     private suspend fun doInit() {
         aapsLogger.debug("doInit")
+        preferences.put(LongNonKey.AppStart, dateUtil.now())
         RxDogTag.install()
         setRxErrorHandler()
         followLanguage()

@@ -384,6 +384,36 @@ enum class DoubleKey(
         unitType = UnitType.DOUBLE_2,
         sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
     ),
+    FslCalOffset(
+        key = "fslCal_Offset",
+        defaultValue = 0.0,
+        min = -50.0,
+        max = 50.0,
+        title = KeysStrings.fslCal_Offset_title,
+        summary = KeysStrings.fslCal_Offset_summary,
+        defaultedBySM = true,
+        unitType = UnitType.DOUBLE_2
+    ),
+    FslCalSlope(
+        key = "fslCal_Slope",
+        defaultValue = 1.0,
+        min = 0.5,
+        max = 1.5,
+        title = KeysStrings.fslCal_Slope_title,
+        summary = KeysStrings.fslCal_Slope_summary,
+        defaultedBySM = true,
+        unitType = UnitType.DOUBLE_2
+    ),
+    FslSmoothAlpha(
+        key = "fsl_exp1_factor",
+        defaultValue = 1.0,
+        min = 0.1,
+        max = 1.0,
+        title = KeysStrings.fsl_exp1_factor_title,
+        summary = KeysStrings.fsl_exp1_factor_summary,
+        defaultedBySM = true,
+        unitType = UnitType.DOUBLE_2
+    ),
 
     ;
 
