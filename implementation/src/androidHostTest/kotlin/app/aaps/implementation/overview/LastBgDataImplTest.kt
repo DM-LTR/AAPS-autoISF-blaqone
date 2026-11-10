@@ -42,21 +42,21 @@ class LastBgDataImplTest : TestBaseWithProfile() {
         val bucketedData: MutableList<InMemoryGlucoseValue> = mutableListOf()
         bucketedData.add(InMemoryGlucoseValue(time, 70.0, sourceSensor = SourceSensor.UNKNOWN))
         // no data
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(null)
+        whenever(autosensDataStore.statusDataHead(1)).thenReturn(emptyList())
         whenever(persistenceLayer.getLastGlucoseValue()).thenReturn(null)
         assertThat(sut.lastBg()).isNull()
         assertThat(sut.isLow()).isFalse()
         assertThat(sut.isHigh()).isFalse()
 
         // no bucketed but in db
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(null)
+        whenever(autosensDataStore.statusDataHead(1)).thenReturn(emptyList())
         whenever(persistenceLayer.getLastGlucoseValue()).thenReturn(glucoseValue)
         assertThat(sut.lastBg()?.value).isEqualTo(200.0)
         assertThat(sut.isLow()).isFalse()
         assertThat(sut.isHigh()).isTrue()
 
         // in bucketed
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(bucketedData)
+        whenever(autosensDataStore.statusDataHead(1)).thenReturn(bucketedData)
         whenever(persistenceLayer.getLastGlucoseValue()).thenReturn(glucoseValue)
         assertThat(sut.lastBg()?.value).isEqualTo(70.0)
         assertThat(sut.isLow()).isTrue()
@@ -66,7 +66,7 @@ class LastBgDataImplTest : TestBaseWithProfile() {
     @Test
     fun isActualBg() = runTest {
         // no bucketed but in db
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(null)
+        whenever(autosensDataStore.statusDataHead(1)).thenReturn(emptyList())
         whenever(persistenceLayer.getLastGlucoseValue()).thenReturn(glucoseValue)
         whenever(dateUtil.now()).thenReturn(time + T.mins(1).msecs())
         assertThat(sut.isActualBg()).isTrue()
@@ -74,7 +74,7 @@ class LastBgDataImplTest : TestBaseWithProfile() {
         assertThat(sut.isActualBg()).isFalse()
 
         // no data
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(null)
+        whenever(autosensDataStore.statusDataHead(1)).thenReturn(emptyList())
         whenever(persistenceLayer.getLastGlucoseValue()).thenReturn(null)
         assertThat(sut.isActualBg()).isFalse()
     }

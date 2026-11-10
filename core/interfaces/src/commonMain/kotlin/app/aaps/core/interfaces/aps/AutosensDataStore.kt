@@ -59,6 +59,13 @@ interface AutosensDataStore {
 
     /** Copy of [statusData], or of [bucketedData] when there is no separate status data. */
     fun getStatusDataCopy(): MutableList<InMemoryGlucoseValue>?
+
+    /**
+     * Only the newest [count] values of [getStatusDataCopy], newest first. For callers that need the newest
+     * value or two (BG display, trend arrow), so they do not copy the whole list on every update. Empty when
+     * there is no data.
+     */
+    fun statusDataHead(count: Int): List<InMemoryGlucoseValue>
     fun createBucketedData(aapsLogger: AAPSLogger, dateUtil: DateUtil)
     fun slowAbsorptionPercentage(timeInMinutes: Int): Double
     /**

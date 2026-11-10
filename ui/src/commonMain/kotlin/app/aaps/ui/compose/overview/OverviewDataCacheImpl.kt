@@ -622,7 +622,7 @@ class OverviewDataCacheImpl(
         // Use bucketed (smoothed) data like legacy, with raw DB fallback. The status data starts at the
         // newest reading; the bucketed grid keeps a fixed phase and can be up to 4 minutes older with a
         // 1 minute CGM. The loop uses the status data too, so the overview shows the value it ran on.
-        val lastBg = iobCobCalculator.ads.getStatusDataCopy()?.firstOrNull()
+        val lastBg = iobCobCalculator.ads.statusDataHead(1).firstOrNull()
         val lastGv = lastBg ?: persistenceLayer.getLastGlucoseValue()?.let { InMemoryGlucoseValue.fromGv(it) }
         if (lastGv == null) {
             _bgInfoFlow.value = null

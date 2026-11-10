@@ -20,7 +20,8 @@ class TrendCalculatorImpl(
 
     override fun getTrendArrow(autosensDataStore: AutosensDataStore): TrendArrow? {
         // Status data starts at the newest reading, so the arrow matches the value shown
-        val data = autosensDataStore.getStatusDataCopy() ?: return null
+        // Only the two newest values are needed for the direction
+        val data = autosensDataStore.statusDataHead(2)
         if (data.isEmpty()) return null
         /* Change 4.0.0 - always calculate from bucketed data
         val glucoseValue = data[0]
@@ -36,7 +37,7 @@ class TrendCalculatorImpl(
     override fun getTrendDescription(autosensDataStore: AutosensDataStore): String =
         rh.gs(getTrendArrow(autosensDataStore).directionToDescription())
 
-    private fun calculateDirection(readings: MutableList<InMemoryGlucoseValue>): TrendArrow {
+    private fun calculateDirection(readings: List<InMemoryGlucoseValue>): TrendArrow {
 
         if (readings.size < 2)
             return TrendArrow.NONE

@@ -26,13 +26,13 @@ class TrendCalculatorImplTest : TestBase() {
 
     @Test
     fun `getTrendArrow returns null when data is null`() {
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(null)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(emptyList())
         assertThat(trendCalculator.getTrendArrow(autosensDataStore)).isNull()
     }
 
     @Test
     fun `getTrendArrow returns null when data is empty`() {
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(mutableListOf())
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(mutableListOf())
         assertThat(trendCalculator.getTrendArrow(autosensDataStore)).isNull()
     }
 
@@ -41,7 +41,7 @@ class TrendCalculatorImplTest : TestBase() {
         val data = mutableListOf(
             createGlucoseValue(100.0, 1000L)
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         assertThat(trendCalculator.getTrendArrow(autosensDataStore)).isEqualTo(TrendArrow.NONE)
     }
 
@@ -54,7 +54,7 @@ class TrendCalculatorImplTest : TestBase() {
             createGlucoseValue(100.0, 300000L, recalculated = 80.0),  // 20 mg/dL drop over 5 min = -4 per minute
             createGlucoseValue(100.0, 0L, recalculated = 100.0)
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         assertThat(trendCalculator.getTrendArrow(autosensDataStore)).isEqualTo(TrendArrow.DOUBLE_DOWN)
     }
 
@@ -66,7 +66,7 @@ class TrendCalculatorImplTest : TestBase() {
             createGlucoseValue(100.0, 300000L, recalculated = 87.5),  // 12.5 mg/dL drop over 5 min = -2.5 per minute
             createGlucoseValue(100.0, 0L, recalculated = 100.0)
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         assertThat(trendCalculator.getTrendArrow(autosensDataStore)).isEqualTo(TrendArrow.SINGLE_DOWN)
     }
 
@@ -78,7 +78,7 @@ class TrendCalculatorImplTest : TestBase() {
             createGlucoseValue(100.0, 300000L, recalculated = 92.5),  // 7.5 mg/dL drop over 5 min = -1.5 per minute
             createGlucoseValue(100.0, 0L, recalculated = 100.0)
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         assertThat(trendCalculator.getTrendArrow(autosensDataStore)).isEqualTo(TrendArrow.FORTY_FIVE_DOWN)
     }
 
@@ -88,7 +88,7 @@ class TrendCalculatorImplTest : TestBase() {
             createGlucoseValue(100.0, 300000L, recalculated = 100.0),
             createGlucoseValue(100.0, 0L, recalculated = 100.0)
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         assertThat(trendCalculator.getTrendArrow(autosensDataStore)).isEqualTo(TrendArrow.FLAT)
     }
 
@@ -100,7 +100,7 @@ class TrendCalculatorImplTest : TestBase() {
             createGlucoseValue(100.0, 300000L, recalculated = 107.5),  // 7.5 mg/dL rise over 5 min = 1.5 per minute
             createGlucoseValue(100.0, 0L, recalculated = 100.0)
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         assertThat(trendCalculator.getTrendArrow(autosensDataStore)).isEqualTo(TrendArrow.FORTY_FIVE_UP)
     }
 
@@ -112,7 +112,7 @@ class TrendCalculatorImplTest : TestBase() {
             createGlucoseValue(100.0, 300000L, recalculated = 112.5),  // 12.5 mg/dL rise over 5 min = 2.5 per minute
             createGlucoseValue(100.0, 0L, recalculated = 100.0)
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         assertThat(trendCalculator.getTrendArrow(autosensDataStore)).isEqualTo(TrendArrow.SINGLE_UP)
     }
 
@@ -124,7 +124,7 @@ class TrendCalculatorImplTest : TestBase() {
             createGlucoseValue(100.0, 300000L, recalculated = 120.0),  // 20 mg/dL rise over 5 min = 4 per minute
             createGlucoseValue(100.0, 0L, recalculated = 100.0)
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         assertThat(trendCalculator.getTrendArrow(autosensDataStore)).isEqualTo(TrendArrow.DOUBLE_UP)
     }
 
@@ -135,7 +135,7 @@ class TrendCalculatorImplTest : TestBase() {
             createGlucoseValue(100.0, 300000L, recalculated = 350.0),  // 250 mg/dL rise over 5 min = 50 per minute
             createGlucoseValue(100.0, 0L, recalculated = 100.0)
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         assertThat(trendCalculator.getTrendArrow(autosensDataStore)).isEqualTo(TrendArrow.NONE)
     }
 
@@ -145,7 +145,7 @@ class TrendCalculatorImplTest : TestBase() {
             createGlucoseValue(100.0, 300000L, recalculated = 110.0),
             createGlucoseValue(100.0, 300000L, recalculated = 100.0)  // Same timestamp
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         assertThat(trendCalculator.getTrendArrow(autosensDataStore)).isEqualTo(TrendArrow.FLAT)
     }
 
@@ -155,7 +155,7 @@ class TrendCalculatorImplTest : TestBase() {
             createGlucoseValue(100.0, 300000L, recalculated = 112.5, trendArrow = TrendArrow.FLAT),  // Smoothed value differs
             createGlucoseValue(95.0, 0L, recalculated = 100.0)
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         // Should recalculate and get SINGLE_UP (12.5 mg/dL rise over 5 min = 2.5 per minute)
         assertThat(trendCalculator.getTrendArrow(autosensDataStore)).isEqualTo(TrendArrow.SINGLE_UP)
     }
@@ -166,7 +166,7 @@ class TrendCalculatorImplTest : TestBase() {
             createGlucoseValue(100.0, 300000L, recalculated = 80.0),
             createGlucoseValue(100.0, 0L, recalculated = 100.0)
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         assertThat(trendCalculator.getTrendDescription(autosensDataStore)).isEqualTo("falling rapidly")
     }
 
@@ -176,7 +176,7 @@ class TrendCalculatorImplTest : TestBase() {
             createGlucoseValue(100.0, 300000L, recalculated = 87.5),
             createGlucoseValue(100.0, 0L, recalculated = 100.0)
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         assertThat(trendCalculator.getTrendDescription(autosensDataStore)).isEqualTo("falling")
     }
 
@@ -186,7 +186,7 @@ class TrendCalculatorImplTest : TestBase() {
             createGlucoseValue(100.0, 300000L, recalculated = 92.5),
             createGlucoseValue(100.0, 0L, recalculated = 100.0)
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         assertThat(trendCalculator.getTrendDescription(autosensDataStore)).isEqualTo("falling slowly")
     }
 
@@ -196,7 +196,7 @@ class TrendCalculatorImplTest : TestBase() {
             createGlucoseValue(100.0, 300000L, recalculated = 100.0),
             createGlucoseValue(100.0, 0L, recalculated = 100.0)
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         assertThat(trendCalculator.getTrendDescription(autosensDataStore)).isEqualTo("stable")
     }
 
@@ -206,7 +206,7 @@ class TrendCalculatorImplTest : TestBase() {
             createGlucoseValue(100.0, 300000L, recalculated = 107.5),
             createGlucoseValue(100.0, 0L, recalculated = 100.0)
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         assertThat(trendCalculator.getTrendDescription(autosensDataStore)).isEqualTo("rising slowly")
     }
 
@@ -216,7 +216,7 @@ class TrendCalculatorImplTest : TestBase() {
             createGlucoseValue(100.0, 300000L, recalculated = 112.5),
             createGlucoseValue(100.0, 0L, recalculated = 100.0)
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         assertThat(trendCalculator.getTrendDescription(autosensDataStore)).isEqualTo("rising")
     }
 
@@ -226,7 +226,7 @@ class TrendCalculatorImplTest : TestBase() {
             createGlucoseValue(100.0, 300000L, recalculated = 120.0),
             createGlucoseValue(100.0, 0L, recalculated = 100.0)
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         assertThat(trendCalculator.getTrendDescription(autosensDataStore)).isEqualTo("rising rapidly")
     }
 
@@ -235,13 +235,13 @@ class TrendCalculatorImplTest : TestBase() {
         val data = mutableListOf(
             createGlucoseValue(100.0, 1000L)
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         assertThat(trendCalculator.getTrendDescription(autosensDataStore)).isEqualTo("none")
     }
 
     @Test
     fun `getTrendDescription handles null data`() {
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(null)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(emptyList())
         assertThat(trendCalculator.getTrendDescription(autosensDataStore)).isEqualTo("unknown")
     }
 
@@ -252,7 +252,7 @@ class TrendCalculatorImplTest : TestBase() {
             createGlucoseValue(100.0, 300000L, recalculated = 82.5),  // -17.5 mg/dL over 5 min
             createGlucoseValue(100.0, 0L, recalculated = 100.0)
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         assertThat(trendCalculator.getTrendArrow(autosensDataStore)).isEqualTo(TrendArrow.DOUBLE_DOWN)
     }
 
@@ -263,7 +263,7 @@ class TrendCalculatorImplTest : TestBase() {
             createGlucoseValue(100.0, 300000L, recalculated = 90.0),  // -10 mg/dL over 5 min
             createGlucoseValue(100.0, 0L, recalculated = 100.0)
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         assertThat(trendCalculator.getTrendArrow(autosensDataStore)).isEqualTo(TrendArrow.SINGLE_DOWN)
     }
 
@@ -274,7 +274,7 @@ class TrendCalculatorImplTest : TestBase() {
             createGlucoseValue(100.0, 300000L, recalculated = 95.0),  // -5 mg/dL over 5 min
             createGlucoseValue(100.0, 0L, recalculated = 100.0)
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         assertThat(trendCalculator.getTrendArrow(autosensDataStore)).isEqualTo(TrendArrow.FORTY_FIVE_DOWN)
     }
 
@@ -285,7 +285,7 @@ class TrendCalculatorImplTest : TestBase() {
             createGlucoseValue(100.0, 300000L, recalculated = 105.0),  // 5 mg/dL over 5 min
             createGlucoseValue(100.0, 0L, recalculated = 100.0)
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         assertThat(trendCalculator.getTrendArrow(autosensDataStore)).isEqualTo(TrendArrow.FLAT)
     }
 
@@ -296,7 +296,7 @@ class TrendCalculatorImplTest : TestBase() {
             createGlucoseValue(100.0, 300000L, recalculated = 110.0),  // 10 mg/dL over 5 min
             createGlucoseValue(100.0, 0L, recalculated = 100.0)
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         assertThat(trendCalculator.getTrendArrow(autosensDataStore)).isEqualTo(TrendArrow.FORTY_FIVE_UP)
     }
 
@@ -307,7 +307,7 @@ class TrendCalculatorImplTest : TestBase() {
             createGlucoseValue(100.0, 300000L, recalculated = 117.5),  // 17.5 mg/dL over 5 min
             createGlucoseValue(100.0, 0L, recalculated = 100.0)
         )
-        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(data)
+        whenever(autosensDataStore.statusDataHead(2)).thenReturn(data)
         assertThat(trendCalculator.getTrendArrow(autosensDataStore)).isEqualTo(TrendArrow.SINGLE_UP)
     }
 

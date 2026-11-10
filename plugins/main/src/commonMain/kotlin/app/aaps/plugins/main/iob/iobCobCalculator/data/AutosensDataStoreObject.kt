@@ -111,6 +111,7 @@ class AutosensDataStoreObject : AutosensDataStore {
 
     override fun getBucketedDataTableCopy(): MutableList<InMemoryGlucoseValue>? = dataLock.withLock { bucketedData?.toMutableList() }
     override fun getStatusDataCopy(): MutableList<InMemoryGlucoseValue>? = dataLock.withLock { (statusData ?: bucketedData)?.toMutableList() }
+    override fun statusDataHead(count: Int): List<InMemoryGlucoseValue> = dataLock.withLock { (statusData ?: bucketedData)?.take(count) ?: emptyList() }
     override fun getBgReadingsDataTableCopy(): List<GV> = dataLock.withLock { bgReadings.toMutableList() }
 
     override fun reset() {
