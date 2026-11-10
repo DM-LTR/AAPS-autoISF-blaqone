@@ -182,7 +182,12 @@ fun OverviewScreenTablet(
                     }
                 }
 
-                AutoIsfChip(state = autoIsfFactorsUiState, onNavigate = onNavigate)
+                AutoIsfChip(
+                    state = autoIsfFactorsUiState,
+                    onNavigate = onNavigate,
+                    onExpandedChange = chipsViewModel::setAutoIsfChipExpanded,
+                    onTogglePin = chipsViewModel::toggleAutoIsfPin
+                )
 
                 OverviewStatusSection(
                     sensorStatus = statusState.sensorStatus,
