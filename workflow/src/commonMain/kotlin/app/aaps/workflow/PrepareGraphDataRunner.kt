@@ -35,6 +35,7 @@ import app.aaps.core.interfaces.overview.graph.FinalIsfGraphData
 import app.aaps.core.interfaces.overview.graph.GraphDataPoint
 import app.aaps.core.interfaces.overview.graph.IobGraphData
 import app.aaps.core.interfaces.overview.graph.IobThEffectiveGraphData
+import app.aaps.core.interfaces.overview.graph.ParabolaGraphData
 import app.aaps.core.interfaces.overview.graph.PpIsfGraphData
 import app.aaps.core.interfaces.overview.graph.RatioGraphData
 import app.aaps.core.interfaces.overview.graph.TimeRange
@@ -908,6 +909,8 @@ class PrepareGraphDataRunner(
         val duraIsfListCompose: MutableList<GraphDataPoint> = ArrayList()
         val finalIsfListCompose: MutableList<GraphDataPoint> = ArrayList()
         val iobThEffectiveListCompose: MutableList<GraphDataPoint> = ArrayList()
+        val parabolaRawListCompose: MutableList<GraphDataPoint> = ArrayList()
+        val parabolaSmoothedListCompose: MutableList<GraphDataPoint> = ArrayList()
         persistenceLayer.getAutoIsfFactors(fromTime, endTime).forEach { row ->
             val f = row.factors
             f.acceIsf?.let { acceIsfListCompose.add(GraphDataPoint(row.timestamp, it)) }
@@ -916,6 +919,8 @@ class PrepareGraphDataRunner(
             f.duraIsf?.let { duraIsfListCompose.add(GraphDataPoint(row.timestamp, it)) }
             f.finalIsf?.let { finalIsfListCompose.add(GraphDataPoint(row.timestamp, it)) }
             f.iobThEffective?.let { iobThEffectiveListCompose.add(GraphDataPoint(row.timestamp, it)) }
+            f.parabolaRaw?.let { parabolaRawListCompose.add(GraphDataPoint(row.timestamp, it)) }
+            f.parabolaSmoothed?.let { parabolaSmoothedListCompose.add(GraphDataPoint(row.timestamp, it)) }
         }
 
         data.cache.updateIobGraph(IobGraphData(iob = iobListCompose, predictions = iobPredictionsListCompose))
@@ -938,6 +943,7 @@ class PrepareGraphDataRunner(
         data.cache.updateDuraIsfGraph(DuraIsfGraphData(duraIsf = duraIsfListCompose))
         data.cache.updateFinalIsfGraph(FinalIsfGraphData(finalIsf = finalIsfListCompose))
         data.cache.updateIobThEffectiveGraph(IobThEffectiveGraphData(iobThEffective = iobThEffectiveListCompose))
+        data.cache.updateParabolaGraph(ParabolaGraphData(raw = parabolaRawListCompose, smoothed = parabolaSmoothedListCompose))
 
         data.signals.emitProgress(CalculationWorkflow.ProgressData.PREPARE_IOB_AUTOSENS_DATA, 100)
     }

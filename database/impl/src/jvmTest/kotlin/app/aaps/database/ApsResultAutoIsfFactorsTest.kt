@@ -37,8 +37,8 @@ class ApsResultAutoIsfFactorsTest {
         database.apsResultDao.insert(apsResult(NOW - 1, """{"autoIsf":{"finalIsf":2.0}}"""))
 
         assertThat(database.apsResultDao.getAutoIsfFactors(NOW, NOW + FIVE_MIN)).containsExactly(
-            ApsResultAutoIsfFactors(NOW, -1.8, null, null, null, 0.9, null),
-            ApsResultAutoIsfFactors(NOW + FIVE_MIN, 1.3, 1.1, 1.0, 1.05, 1.2, 4.5)
+            ApsResultAutoIsfFactors(NOW, -1.8, null, null, null, 0.9, null, null, null),
+            ApsResultAutoIsfFactors(NOW + FIVE_MIN, 1.3, 1.1, 1.0, 1.05, 1.2, 4.5, null, null)
         ).inOrder()
     }
 
@@ -48,7 +48,7 @@ class ApsResultAutoIsfFactorsTest {
         database.apsResultDao.insert(apsResult(NOW + FIVE_MIN, """{"autoIsf":{"finalIsf":1.0}}"""))
 
         assertThat(database.apsResultDao.getAutoIsfFactors(NOW, NOW + FIVE_MIN)).containsExactly(
-            ApsResultAutoIsfFactors(NOW + FIVE_MIN, null, null, null, null, 1.0, null)
+            ApsResultAutoIsfFactors(NOW + FIVE_MIN, null, null, null, null, 1.0, null, null, null)
         )
     }
 

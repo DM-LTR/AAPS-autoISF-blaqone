@@ -57,6 +57,7 @@ import app.aaps.core.interfaces.overview.graph.GraphDataPoint
 import app.aaps.core.interfaces.overview.graph.HeartRateGraphData
 import app.aaps.core.interfaces.overview.graph.IobGraphData
 import app.aaps.core.interfaces.overview.graph.IobThEffectiveGraphData
+import app.aaps.core.interfaces.overview.graph.ParabolaGraphData
 import app.aaps.core.interfaces.overview.graph.OverviewDataCache
 import app.aaps.core.interfaces.overview.graph.ProfileDisplayData
 import app.aaps.core.interfaces.overview.graph.PpIsfGraphData
@@ -294,6 +295,8 @@ class OverviewDataCacheImpl(
     override val finalIsfGraphFlow: StateFlow<FinalIsfGraphData> = _finalIsfGraphFlow.asStateFlow()
     private val _iobThEffectiveGraphFlow = MutableStateFlow(IobThEffectiveGraphData(emptyList()))
     override val iobThEffectiveGraphFlow: StateFlow<IobThEffectiveGraphData> = _iobThEffectiveGraphFlow.asStateFlow()
+    private val _parabolaGraphFlow = MutableStateFlow(ParabolaGraphData(emptyList(), emptyList()))
+    override val parabolaGraphFlow: StateFlow<ParabolaGraphData> = _parabolaGraphFlow.asStateFlow()
 
     private val _treatmentGraphFlow = MutableStateFlow(TreatmentGraphData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList()))
     override val treatmentGraphFlow: StateFlow<TreatmentGraphData> = _treatmentGraphFlow.asStateFlow()
@@ -897,6 +900,10 @@ class OverviewDataCacheImpl(
         _iobThEffectiveGraphFlow.value = data
     }
 
+    override fun updateParabolaGraph(data: ParabolaGraphData) {
+        _parabolaGraphFlow.value = data
+    }
+
     // =========================================================================
     // Category B: Reactive graph builders (treatments, RM, TT, basal)
     // =========================================================================
@@ -1332,6 +1339,7 @@ class OverviewDataCacheImpl(
         _duraIsfGraphFlow.value = DuraIsfGraphData(emptyList())
         _finalIsfGraphFlow.value = FinalIsfGraphData(emptyList())
         _iobThEffectiveGraphFlow.value = IobThEffectiveGraphData(emptyList())
+        _parabolaGraphFlow.value = ParabolaGraphData(emptyList(), emptyList())
         _treatmentGraphFlow.value = TreatmentGraphData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList())
         _epsGraphFlow.value = emptyList()
         _basalGraphFlow.value = BasalGraphData(emptyList(), emptyList(), 0.0)

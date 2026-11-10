@@ -52,7 +52,9 @@ internal interface APSResultDao : TraceableDao<APSResult> {
             "json_extract(resultJson, '\$.autoIsf.ppIsf') AS ppIsf, " +
             "json_extract(resultJson, '\$.autoIsf.duraIsf') AS duraIsf, " +
             "json_extract(resultJson, '\$.autoIsf.finalIsf') AS finalIsf, " +
-            "json_extract(resultJson, '\$.autoIsf.iobThEffective') AS iobThEffective " +
+            "json_extract(resultJson, '\$.autoIsf.iobThEffective') AS iobThEffective, " +
+            "json_extract(resultJson, '\$.autoIsf.parabolaRaw') AS parabolaRaw, " +
+            "json_extract(resultJson, '\$.autoIsf.parabolaSmoothed') AS parabolaSmoothed " +
             "FROM $TABLE_APS_RESULTS WHERE timestamp >= :start AND timestamp <= :end " +
             "AND json_extract(resultJson, '\$.autoIsf') IS NOT NULL ORDER BY timestamp ASC"
     )
@@ -67,7 +69,9 @@ data class ApsResultAutoIsfFactors(
     val ppIsf: Double?,
     val duraIsf: Double?,
     val finalIsf: Double?,
-    val iobThEffective: Double?
+    val iobThEffective: Double?,
+    val parabolaRaw: Double?,
+    val parabolaSmoothed: Double?
 )
 
 /** One row of [APSResultDao.getVariableSens]. [variableSens] is in mg/dL, null when the result has no value. */
