@@ -37,8 +37,26 @@ This fork brings **AutoISF 3.2.1** to **AndroidAPS 4.0.0** and adds features for
 that send a value every minute (for example Libre 3 through Juggluco).
 
 - Based on AndroidAPS 4.0.0 and JetFoxy's branch `autoisf-3.2.1` – many thanks to JetFoxy!
-- Branch: `aaps4-autoisf`
+- Goal: AutoISF stays **as close to the original as possible**.
 - All changes in detail: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md) (German)
+
+## Branches – which one is for me?
+
+| Branch | What it is | For whom |
+|---|---|---|
+| [`aaps4-autoisf`](https://github.com/blaqone/AAPS-autoISF/tree/aaps4-autoisf) | **Normal version.** AutoISF 3.2.1 as close to the original as possible. | Start here. |
+| [`aaps4-autoisf-dev`](https://github.com/blaqone/AAPS-autoISF/tree/aaps4-autoisf-dev) | **Test version.** The normal version plus features that are still being tested (at the moment: the parabola comparison raw / smoothed). | Only for testers, may change at any time. |
+| [`aaps4-autoisf-sport`](https://github.com/blaqone/AAPS-autoISF/tree/aaps4-autoisf-sport) | **Sport version** (planned). Today the same as the normal version. Later: exercise mode in scenes and automations. | Not ready yet. |
+
+How new things get in:
+
+1. A new feature or fix is made on its own branch (`feature/...` or `fix/...`), starting from the
+   normal version.
+2. It is tested in `aaps4-autoisf-dev`.
+3. Only when it works well, it goes into `aaps4-autoisf` (and `aaps4-autoisf-sport`).
+
+The dev version is never merged into the normal version as a whole, so the normal version only
+gets features that were tested.
 
 ## Features
 
@@ -60,7 +78,9 @@ that send a value every minute (for example Libre 3 through Juggluco).
 - default as in the original: parabola fit on raw values
 - switch: parabola on **UKF-smoothed values** (calmer, but later)
 - slider: **shortest parabola** 5–20 minutes (default 10)
-- raw and smoothed fit side by side on the main screen, in the APS tab and as a graph
+- when the switch is on, the APS tab shows which values the parabola uses
+- *dev version only:* raw and smoothed fit side by side on the main screen, in the APS tab and as
+  a graph
 
 ### CGM correction
 - **Only slope and offset – no calibration, no extra smoothing**
@@ -79,14 +99,15 @@ that send a value every minute (for example Libre 3 through Juggluco).
 - BG age in seconds
 - status line: last loop run, last SMB, running temporary basal
 - AutoISF values of the last loop run on the main screen
-- graphs for the AutoISF factors, iobTH (also in the IOB graph) and the parabola
+- graphs for the AutoISF factors and iobTH (also in the IOB graph)
 
 Everything that only concerns AutoISF (graph lines, scene section, automations, main screen
 lines) is hidden when AutoISF is not the active APS plugin.
 
 ## Building
 
-1. Install Android Studio, clone this repository, check out the branch `aaps4-autoisf`
+1. Install Android Studio, clone this repository, check out the branch you want
+   (normally `aaps4-autoisf`, see [Branches](#branches--which-one-is-for-me))
 2. Build `fullDebug` (for testing) or a signed `fullRelease` with your own keystore
 3. Copy the APK to the phone and install it
 
