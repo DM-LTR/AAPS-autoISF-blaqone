@@ -7,8 +7,11 @@ import app.aaps.core.data.model.TrendArrow
 import app.aaps.core.data.time.T
 import app.aaps.core.interfaces.aps.AutosensDataStore
 import app.aaps.core.interfaces.aps.GlucoseStatusAutoIsf
+import app.aaps.core.keys.BooleanKey
+import app.aaps.core.keys.IntKey
 import app.aaps.core.objects.aps.parabolaFit
 import app.aaps.core.objects.aps.parabolaMinDurationMinutes
+import app.aaps.core.objects.aps.smoothedFitInput
 import app.aaps.plugins.aps.openAPS.DeltaCalculator
 import app.aaps.plugins.aps.openAPSAutoISF.GlucoseStatusCalculatorAutoIsf
 import app.aaps.plugins.aps.openAPSAutoISF.extensions.asRounded
@@ -32,6 +35,9 @@ class GlucoseStatusTestAutoIsf : TestBaseWithProfile() {
         whenever(dateUtil.now()).thenReturn(1514766900000L + T.mins(1).msecs())
         whenever(iobCobCalculator.ads).thenReturn(autosensDataStore)
         whenever(autosensDataStore.getBgReadingsDataTableCopy()).thenReturn(generateDummyLibreData())
+        // AutoISF fork settings at their defaults: the original AutoISF
+        whenever(preferences.get(IntKey.ApsAutoIsfParabolaMinMinutes)).thenReturn(10)
+        whenever(preferences.get(BooleanKey.ApsAutoIsfParabolaSmoothed)).thenReturn(false)
     }
 
     @Test fun toStringShouldBeOverloaded() {
@@ -46,7 +52,7 @@ class GlucoseStatusTestAutoIsf : TestBaseWithProfile() {
 
     @Test fun calculateValidGlucoseStatusAutoIsf() {
         whenever(autosensDataStore.getStatusDataCopy()).thenReturn(generateValidBgData())
-        val glucoseStatus = GlucoseStatusCalculatorAutoIsf(aapsLogger, iobCobCalculator, dateUtil, deltaCalculator).getGlucoseStatusData(false)!!
+        val glucoseStatus = GlucoseStatusCalculatorAutoIsf(aapsLogger, iobCobCalculator, dateUtil, deltaCalculator, preferences).getGlucoseStatusData(false)!!
         assertThat(glucoseStatus.glucose).isWithin(0.001).of(214.0)
         assertThat(glucoseStatus.delta).isWithin(0.001).of(-2.0)
         assertThat(glucoseStatus.shortAvgDelta).isWithin(0.001).of(-2.5) // -2 -2.5 -3 deltas are relative to current value
@@ -67,7 +73,7 @@ class GlucoseStatusTestAutoIsf : TestBaseWithProfile() {
 
     @Test fun oneRecordShouldProduceZeroDeltas() {
         whenever(autosensDataStore.getStatusDataCopy()).thenReturn(generateOneCurrentRecordBgData())
-        val glucoseStatus = GlucoseStatusCalculatorAutoIsf(aapsLogger, iobCobCalculator, dateUtil, deltaCalculator).getGlucoseStatusData(false)!!
+        val glucoseStatus = GlucoseStatusCalculatorAutoIsf(aapsLogger, iobCobCalculator, dateUtil, deltaCalculator, preferences).getGlucoseStatusData(false)!!
         assertThat(glucoseStatus.glucose).isWithin(0.001).of(214.0)
         assertThat(glucoseStatus.delta).isWithin(0.001).of(0.0)
         assertThat(glucoseStatus.shortAvgDelta).isWithin(0.001).of(0.0) // -2 -2.5 -3 deltas are relative to current value
@@ -84,19 +90,19 @@ class GlucoseStatusTestAutoIsf : TestBaseWithProfile() {
 
     @Test fun insufficientDataShouldReturnNull() {
         whenever(autosensDataStore.getStatusDataCopy()).thenReturn(generateInsufficientBgData())
-        val glucoseStatus = GlucoseStatusCalculatorAutoIsf(aapsLogger, iobCobCalculator, dateUtil, deltaCalculator).getGlucoseStatusData(false)
+        val glucoseStatus = GlucoseStatusCalculatorAutoIsf(aapsLogger, iobCobCalculator, dateUtil, deltaCalculator, preferences).getGlucoseStatusData(false)
         assertThat(glucoseStatus).isNull()
     }
 
     @Test fun oldDataShouldReturnNull() {
         whenever(autosensDataStore.getStatusDataCopy()).thenReturn(generateOldBgData())
-        val glucoseStatus = GlucoseStatusCalculatorAutoIsf(aapsLogger, iobCobCalculator, dateUtil, deltaCalculator).getGlucoseStatusData(false)
+        val glucoseStatus = GlucoseStatusCalculatorAutoIsf(aapsLogger, iobCobCalculator, dateUtil, deltaCalculator, preferences).getGlucoseStatusData(false)
         assertThat(glucoseStatus).isNull()
     }
 
     @Test fun returnOldDataIfAllowed() {
         whenever(autosensDataStore.getStatusDataCopy()).thenReturn(generateOldBgData())
-        val glucoseStatus = GlucoseStatusCalculatorAutoIsf(aapsLogger, iobCobCalculator, dateUtil, deltaCalculator).getGlucoseStatusData(true)
+        val glucoseStatus = GlucoseStatusCalculatorAutoIsf(aapsLogger, iobCobCalculator, dateUtil, deltaCalculator, preferences).getGlucoseStatusData(true)
         assertThat(glucoseStatus).isNotNull()
     }
 
@@ -106,7 +112,7 @@ class GlucoseStatusTestAutoIsf : TestBaseWithProfile() {
     @Test fun aThreeMinuteTrustedNonLibreSourceUsesTheRawStreamNotTheStarvedGrid() {
         whenever(autosensDataStore.getStatusDataCopy()).thenReturn(generateFullyGapFlaggedBgData())
         whenever(autosensDataStore.getBgReadingsDataTableCopy()).thenReturn(generateThreeMinuteRawStream())
-        val glucoseStatus = GlucoseStatusCalculatorAutoIsf(aapsLogger, iobCobCalculator, dateUtil, deltaCalculator).getGlucoseStatusData(false)!!
+        val glucoseStatus = GlucoseStatusCalculatorAutoIsf(aapsLogger, iobCobCalculator, dateUtil, deltaCalculator, preferences).getGlucoseStatusData(false)!!
         assertThat(glucoseStatus.duraISFminutes).isGreaterThan(0.0)
         assertThat(glucoseStatus.parabolaMinutes).isGreaterThan(0.0)
         assertThat(glucoseStatus.corrSqu).isGreaterThan(0.0)
@@ -117,7 +123,7 @@ class GlucoseStatusTestAutoIsf : TestBaseWithProfile() {
     @Test fun aThreeMinuteUntrustedSourceStaysOnTheStarvedGrid() {
         whenever(autosensDataStore.getStatusDataCopy()).thenReturn(generateFullyGapFlaggedBgData())
         whenever(autosensDataStore.getBgReadingsDataTableCopy()).thenReturn(generateThreeMinuteRawStream(sourceSensor = SourceSensor.UNKNOWN))
-        val glucoseStatus = GlucoseStatusCalculatorAutoIsf(aapsLogger, iobCobCalculator, dateUtil, deltaCalculator).getGlucoseStatusData(false)!!
+        val glucoseStatus = GlucoseStatusCalculatorAutoIsf(aapsLogger, iobCobCalculator, dateUtil, deltaCalculator, preferences).getGlucoseStatusData(false)!!
         assertThat(glucoseStatus.duraISFminutes).isEqualTo(0.0)
         assertThat(glucoseStatus.parabolaMinutes).isEqualTo(0.0)
         assertThat(glucoseStatus.bgAcceleration).isEqualTo(0.0)
@@ -133,7 +139,7 @@ class GlucoseStatusTestAutoIsf : TestBaseWithProfile() {
                 GV(id = 0, timestamp = 1514766900000 - T.mins(12).msecs(), raw = 0.0, value = 228.0, trendArrow = TrendArrow.FLAT, noise = 0.0, sourceSensor = SourceSensor.DEXCOM_G6),
             )
         )
-        val glucoseStatus = GlucoseStatusCalculatorAutoIsf(aapsLogger, iobCobCalculator, dateUtil, deltaCalculator).getGlucoseStatusData(false)!!
+        val glucoseStatus = GlucoseStatusCalculatorAutoIsf(aapsLogger, iobCobCalculator, dateUtil, deltaCalculator, preferences).getGlucoseStatusData(false)!!
         assertThat(glucoseStatus.bgAcceleration).isWithin(0.01).of(-0.21)
         assertThat(glucoseStatus.duraISFminutes).isEqualTo(35.0)
     }
@@ -144,13 +150,34 @@ class GlucoseStatusTestAutoIsf : TestBaseWithProfile() {
         for (stream in listOf(generateOneMinuteRisingStream(), generateThreeMinuteRawStream())) {
             whenever(autosensDataStore.getStatusDataCopy()).thenReturn(generateFullyGapFlaggedBgData())
             whenever(autosensDataStore.getBgReadingsDataTableCopy()).thenReturn(stream)
-            val glucoseStatus = GlucoseStatusCalculatorAutoIsf(aapsLogger, iobCobCalculator, dateUtil, deltaCalculator).getGlucoseStatusData(false)!!
+            val glucoseStatus = GlucoseStatusCalculatorAutoIsf(aapsLogger, iobCobCalculator, dateUtil, deltaCalculator, preferences).getGlucoseStatusData(false)!!
             val fit = parabolaFit(stream.map { it.timestamp to it.value }, parabolaMinDurationMinutes(stream.map { it.timestamp }))!!
             assertThat(glucoseStatus.bgAcceleration).isNotEqualTo(0.0)
             assertThat(fit.acceleration).isWithin(1e-9).of(glucoseStatus.bgAcceleration)
             assertThat(fit.correlation).isWithin(1e-9).of(glucoseStatus.corrSqu)
             assertThat(fit.minutes).isWithin(1e-9).of(glucoseStatus.parabolaMinutes)
         }
+    }
+
+    // AutoISF fork: with "parabola on smoothed values" on, AutoISF fits the UKF-smoothed readings, and the
+    // shortest parabola follows the setting.
+    @Test fun theSettingsSwitchTheParabolaToTheSmoothedReadings() {
+        val stream = generateOneMinuteRisingStream()
+        val smoothed = stream.mapIndexed { i, gv ->
+            InMemoryGlucoseValue(timestamp = gv.timestamp, value = gv.value, smoothed = 180.0 - 2.0 * i + 0.03 * i * i, sourceSensor = SourceSensor.LIBRE_3)
+        }
+        whenever(autosensDataStore.getStatusDataCopy()).thenReturn(generateFullyGapFlaggedBgData())
+        whenever(autosensDataStore.getBgReadingsDataTableCopy()).thenReturn(stream)
+        whenever(autosensDataStore.smoothedReadings).thenReturn(smoothed)
+        whenever(preferences.get(BooleanKey.ApsAutoIsfParabolaSmoothed)).thenReturn(true)
+        whenever(preferences.get(IntKey.ApsAutoIsfParabolaMinMinutes)).thenReturn(15)
+        val glucoseStatus = GlucoseStatusCalculatorAutoIsf(aapsLogger, iobCobCalculator, dateUtil, deltaCalculator, preferences).getGlucoseStatusData(false)!!
+        val expected = parabolaFit(smoothed.smoothedFitInput(), 15)!!
+        assertThat(glucoseStatus.bgAcceleration).isWithin(1e-9).of(expected.acceleration)
+        assertThat(glucoseStatus.corrSqu).isWithin(1e-9).of(expected.correlation)
+        assertThat(glucoseStatus.parabolaMinutes).isAtLeast(15.0)
+        // and it differs from the raw fit
+        assertThat(glucoseStatus.bgAcceleration).isNotEqualTo(parabolaFit(stream.map { it.timestamp to it.value }, 15)!!.acceleration)
     }
 
     /** 40 minutes of Libre 3 readings, one per minute, rising faster and faster, with a little noise. */

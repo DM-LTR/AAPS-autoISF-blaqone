@@ -369,6 +369,17 @@ enum class IntKey(
         unitType = UnitType.MGDL,
         sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
     ),
+    // AutoISF fork: shortest parabola that counts with a 1 minute CGM (original: 10 minutes)
+    ApsAutoIsfParabolaMinMinutes(
+        key = "autoisf_parabola_min_minutes",
+        defaultValue = 10,
+        min = 5,
+        max = 20,
+        title = KeysStrings.pref_title_autoisf_parabola_min_minutes,
+        summary = KeysStrings.pref_summary_autoisf_parabola_min_minutes,
+        unitType = UnitType.MIN,
+        sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
+    ),
     ApsAutoIsfIobThPercent(
         key = "iob_threshold_percent",
         defaultValue = 100,

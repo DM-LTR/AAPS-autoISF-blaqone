@@ -7,6 +7,10 @@ import app.aaps.core.interfaces.iob.IobCobCalculator
 import app.aaps.core.interfaces.logging.AAPSLogger
 import app.aaps.core.interfaces.logging.LTag
 import app.aaps.core.interfaces.utils.DateUtil
+import app.aaps.core.keys.BooleanKey
+import app.aaps.core.keys.IntKey
+import app.aaps.core.keys.interfaces.Preferences
+import app.aaps.core.objects.aps.smoothedFitInput
 import app.aaps.plugins.aps.openAPS.DeltaCalculator
 import app.aaps.plugins.aps.openAPSAutoISF.extensions.asRounded
 import dev.zacsweers.metro.AppScope
@@ -23,6 +27,7 @@ class GlucoseStatusCalculatorAutoIsf(
     private val iobCobCalculator: IobCobCalculator,
     private val dateUtil: DateUtil,
     private val deltaCalculator: DeltaCalculator,
+    private val preferences: Preferences,
 ) {
 
     fun getGlucoseStatusData(allowOldData: Boolean): GlucoseStatusAutoIsf? {
@@ -65,10 +70,17 @@ class GlucoseStatusCalculatorAutoIsf(
             val recentSpacingMs = (orig[0].timestamp - orig[2].timestamp) / 2.0
             if (sourceTrusted && recentSpacingMs < 4 * 60_000) {
                 useRawFit = true
-                sizeRecords = orig.size
-                fslMinDur = if (recentSpacingMs < 90_000) 10 else 15
+                // AutoISF fork: the shortest parabola for a 1 minute CGM is a setting, 10 minutes as in the original
+                fslMinDur = if (recentSpacingMs < 90_000) preferences.get(IntKey.ApsAutoIsfParabolaMinMinutes) else 15
             }
         }
+        // AutoISF fork: the readings the parabola and dura_ISF use on the raw path. The raw readings as in the
+        // original, or, with the setting on and the UKF smoothing each reading, the smoothed readings.
+        val smoothedForFit =
+            if (useRawFit && preferences.get(BooleanKey.ApsAutoIsfParabolaSmoothed)) iobCobCalculator.ads.smoothedReadings?.takeIf { it.size > 2 }
+            else null
+        val fitSource: List<Pair<Long, Double>> = smoothedForFit?.smoothedFitInput() ?: orig.map { it.timestamp to it.value }
+        if (useRawFit) sizeRecords = fitSource.size
 
         if (data.size == 1) {
             aapsLogger.debug(LTag.GLUCOSE, "sizeRecords==1")
@@ -99,19 +111,19 @@ class GlucoseStatusCalculatorAutoIsf(
         // Raw readings are never filledGap (they are real measurements by definition), and the
         // reference point is the raw newest reading rather than the bucketed one: on a fast source the
         // bucketed nowDate can be stale by close to a bucket width.
-        val nowDateForSteadyState = if (useRawFit) orig[0].timestamp else nowDate
+        val nowDateForSteadyState = if (useRawFit) fitSource[0].first else nowDate
         val bw = 0.05
-        var sumBG: Double = if (useRawFit) orig[0].value else now.recalculated
+        var sumBG: Double = if (useRawFit) fitSource[0].second else now.recalculated
         var oldAvg: Double = sumBG
         var minutesDur = 0L
         var n = 1
         for (i in 1 until sizeRecords) {
-            val thenValue = if (useRawFit) orig[i].value else data[i].value
+            val thenValue = if (useRawFit) fitSource[i].second else data[i].value
             val thenIsGap = !useRawFit && data[i].filledGap
             if (thenValue > 39 && !thenIsGap) {
                 n += 1
-                val thenDate: Long = if (useRawFit) orig[i].timestamp else data[i].timestamp
-                val thenRecalculated = if (useRawFit) orig[i].value else data[i].recalculated
+                val thenDate: Long = if (useRawFit) fitSource[i].first else data[i].timestamp
+                val thenRecalculated = if (useRawFit) fitSource[i].second else data[i].recalculated
                 //  stop the series if there was a CGM gap greater than 13 minutes, i.e. 2 regular readings
                 //  needs shorter gap for Libre?
                 if (((nowDateForSteadyState - thenDate) / (1000.0 * 60)).roundToInt() - minutesDur > 13) {
@@ -141,7 +153,7 @@ class GlucoseStatusCalculatorAutoIsf(
         var a1 = 0.0
         var a2 = 0.0
         //var b = 0.0
-        aapsLogger.debug(LTag.GLUCOSE, "BgReadings stamp=$fslDate; raw=$fslRaw; value=$fslValue; rawFit=$useRawFit; fitMinutes=$fslMinDur; fslSmooth=$fslSmooth; " +
+        aapsLogger.debug(LTag.GLUCOSE, "BgReadings stamp=$fslDate; raw=$fslRaw; value=$fslValue; rawFit=$useRawFit; smoothedFit=${smoothedForFit != null}; fitMinutes=$fslMinDur; fslSmooth=$fslSmooth; " +
             "BgBucketed value=$nowValue; recalc=$recalc; smooth=$smooth; filled=$filled; CGM=$cgm")
 
         if (sizeRecords > 3) {
@@ -152,7 +164,7 @@ class GlucoseStatusCalculatorAutoIsf(
             var sx4 = 0.0 // x^4
             var sxy = 0.0 // x*y
             var sx2y = 0.0 // x^2*y
-            val time0 = if (useRawFit) orig[0].timestamp else data[0].timestamp
+            val time0 = if (useRawFit) fitSource[0].first else data[0].timestamp
             var tiLast = 0.0
             //# for best numerical accuracy time and bg must be of same order of magnitude
             val scaleTime = 1.0 // was 00.0 // in 5m; values are  0, -1, -2, -3, -4, ...
@@ -162,15 +174,15 @@ class GlucoseStatusCalculatorAutoIsf(
             var n = 0
             for (i in 0 until sizeRecords) {
                 val noGap = if (useRawFit) true else !data[i].filledGap
-                val usableValue = if (useRawFit) orig[i].value else data[i].value
+                val usableValue = if (useRawFit) fitSource[i].second else data[i].value
                 if (usableValue > 39 && noGap) {
                     n += 1
                     val thenDate: Long
                     var bg: Double
                     if (useRawFit) {
-                        val then = orig[i]
-                        thenDate = then.timestamp
-                        bg = then.value / scaleBg
+                        val then = fitSource[i]
+                        thenDate = then.first
+                        bg = then.second / scaleBg
                     } else {    // all other including standard 5m CGM smoothed
                         val then = data[i]
                         thenDate = then.timestamp
@@ -221,10 +233,10 @@ class GlucoseStatusCalculatorAutoIsf(
                         //var rawBg: Double
                         for (j in 0..i) {
                             if (useRawFit) {
-                                val before = orig[j]
-                                val scaledBg = before.value / scaleBg
+                                val before = fitSource[j]
+                                val scaledBg = before.second / scaleBg
                                 sSquares += (scaledBg - yMean).pow(2.0)
-                                val deltaT: Double = (before.timestamp - time0) / 1000.0 / 300
+                                val deltaT: Double = (before.first - time0) / 1000.0 / 300
                                 val bgj: Double = a * deltaT.pow(2.0) + b * deltaT + c
                                 sResidualSquares += (scaledBg - bgj/scaleBg).pow(2.0)
                             } else {                            // default case anyway

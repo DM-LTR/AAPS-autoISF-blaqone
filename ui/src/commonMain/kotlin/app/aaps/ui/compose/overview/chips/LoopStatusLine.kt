@@ -9,6 +9,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import app.aaps.core.interfaces.InterfacesStrings
 import app.aaps.core.keys.interfaces.TextRef
 import app.aaps.core.ui.CoreUiStrings
@@ -96,9 +97,10 @@ private fun ageText(timestamp: Long, now: Long): String {
 /**
  * One parabola fit as text, formatted in the ViewModel.
  * [usable] is true when the correlation reaches the level where AutoISF uses the fit for acce_ISF.
+ * [active] is true for the fit AutoISF uses (setting "parabola on smoothed values"); it is shown in bold.
  */
 @Immutable
-data class ParabolaFitText(val acceleration: String, val correlation: String, val minutes: Int, val usable: Boolean)
+data class ParabolaFitText(val acceleration: String, val correlation: String, val minutes: Int, val usable: Boolean, val active: Boolean = false)
 
 /** Both parabola fits for [ParabolaLine], null when there is nothing to compare. Display only. */
 @Immutable
@@ -123,8 +125,8 @@ fun ParabolaLine(state: ParabolaUiState, modifier: Modifier = Modifier) {
             .padding(horizontal = AapsSpacing.medium),
         horizontalArrangement = Arrangement.spacedBy(AapsSpacing.medium)
     ) {
-        Text(text = parabolaText(UiStrings.overview_parabola_raw, raw), style = style, color = fitColor(raw))
-        Text(text = parabolaText(UiStrings.overview_parabola_smoothed, smoothed), style = style, color = fitColor(smoothed))
+        Text(text = parabolaText(UiStrings.overview_parabola_raw, raw), style = style, color = fitColor(raw), fontWeight = fitWeight(raw))
+        Text(text = parabolaText(UiStrings.overview_parabola_smoothed, smoothed), style = style, color = fitColor(smoothed), fontWeight = fitWeight(smoothed))
     }
 }
 
@@ -135,3 +137,43 @@ private fun fitColor(fit: ParabolaFitText) =
 @Composable
 private fun parabolaText(template: TextRef, fit: ParabolaFitText): String =
     stringResource(template, fit.acceleration, fit.correlation, stringResource(CoreUiStrings.format_mins, fit.minutes))
+
+private fun fitWeight(fit: ParabolaFitText) = if (fit.active) FontWeight.Bold else FontWeight.Normal
+
+/** The AutoISF factors of the last loop run as text, "-" where the run has none. Display only. */
+@Immutable
+data class AutoIsfFactorsUiState(
+    val acce: String? = null,
+    val bg: String = "-",
+    val pp: String = "-",
+    val dura: String = "-",
+    val final: String = "-",
+    val iobTh: String = "-"
+)
+
+/**
+ * AutoISF fork: one line with the factors of the last loop run (acce, bg, pp, dura, final ISF and the
+ * effective iobTH). Shown above the status lights while AutoISF is active. Display only.
+ */
+@Composable
+fun AutoIsfFactorsLine(state: AutoIsfFactorsUiState, modifier: Modifier = Modifier) {
+    val acce = state.acce ?: return
+    val style = MaterialTheme.typography.bodySmall
+    FlowRow(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = AapsSpacing.medium),
+        horizontalArrangement = Arrangement.spacedBy(AapsSpacing.medium)
+    ) {
+        Text(
+            text = stringResource(UiStrings.overview_autoisf_factors, acce, state.bg, state.pp, state.dura, state.final),
+            style = style,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+        Text(
+            text = stringResource(UiStrings.overview_autoisf_iobth, state.iobTh),
+            style = style,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}

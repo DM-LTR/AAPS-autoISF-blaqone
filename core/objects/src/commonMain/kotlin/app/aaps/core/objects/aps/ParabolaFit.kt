@@ -103,11 +103,14 @@ fun parabolaFit(readings: List<Pair<Long, Double>>, minDurationMinutes: Int): Pa
     return ParabolaFitResult(acceleration = bgAcceleration, correlation = corrMax, minutes = duraP)
 }
 
-/** The shortest parabola that counts, as AutoISF chooses it: 10 minutes for about 1 minute readings, else 15. */
-fun parabolaMinDurationMinutes(newestFirstTimestamps: List<Long>): Int {
+/**
+ * The shortest parabola that counts, as AutoISF chooses it: [oneMinuteMinutes] (the setting, 10 in the
+ * original) for about 1 minute readings, else 15.
+ */
+fun parabolaMinDurationMinutes(newestFirstTimestamps: List<Long>, oneMinuteMinutes: Int = 10): Int {
     if (newestFirstTimestamps.size <= 2) return 15
     val recentSpacingMs = (newestFirstTimestamps[0] - newestFirstTimestamps[2]) / 2.0
-    return if (recentSpacingMs < 90_000) 10 else 15
+    return if (recentSpacingMs < 90_000) oneMinuteMinutes else 15
 }
 
 /** UKF-smoothed readings as fit input: the smoothed value where there is one, else the reading itself. */

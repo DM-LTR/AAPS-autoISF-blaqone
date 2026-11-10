@@ -551,11 +551,13 @@ open class OpenAPSAutoISFPlugin(
         val ads = iobCobCalculator.ads
         val smoothed = ads.smoothedReadings ?: return null
         val raw = ads.getBgReadingsDataTableCopy()
-        val minDuration = parabolaMinDurationMinutes(raw.map { it.timestamp })
+        val minDuration = parabolaMinDurationMinutes(raw.map { it.timestamp }, preferences.get(IntKey.ApsAutoIsfParabolaMinMinutes))
         val rawFit = parabolaFit(raw.map { it.timestamp to it.value }, minDuration) ?: return null
         val smoothedFit = parabolaFit(smoothed.smoothedFitInput(), minDuration) ?: return null
+        autoIsfFactors.parabolaRaw = rawFit.acceleration
         autoIsfFactors.parabolaSmoothed = smoothedFit.acceleration
-        return "Parabola compare (display only) raw: acceleration:${round(rawFit.acceleration, 2)}, correlation:${round(rawFit.correlation, 3)}, " +
+        val used = if (preferences.get(BooleanKey.ApsAutoIsfParabolaSmoothed)) "smoothed" else "raw"
+        return "Parabola uses $used values, shortest $minDuration m. Parabola compare (display only) raw: acceleration:${round(rawFit.acceleration, 2)}, correlation:${round(rawFit.correlation, 3)}, " +
             "duration:${round(rawFit.minutes, 1)}m; smoothed: acceleration:${round(smoothedFit.acceleration, 2)}, " +
             "correlation:${round(smoothedFit.correlation, 3)}, duration:${round(smoothedFit.minutes, 1)}m"
     }
@@ -1116,6 +1118,8 @@ open class OpenAPSAutoISFPlugin(
                     DoubleKey.ApsAutoIsfMax,
                     DoubleKey.ApsAutoIsfBgAccelWeight,
                     DoubleKey.ApsAutoIsfBgBrakeWeight,
+                    BooleanKey.ApsAutoIsfParabolaSmoothed,
+                    IntKey.ApsAutoIsfParabolaMinMinutes,
                     DoubleKey.ApsAutoIsfLowBgWeight,
                     DoubleKey.ApsAutoIsfHighBgWeight,
                     DoubleKey.ApsAutoIsfPpWeight,

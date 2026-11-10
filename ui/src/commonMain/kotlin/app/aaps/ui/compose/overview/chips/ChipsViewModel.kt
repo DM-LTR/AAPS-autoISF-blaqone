@@ -7,6 +7,7 @@ import app.aaps.core.interfaces.InterfacesStrings
 import app.aaps.core.data.model.BS
 import app.aaps.core.interfaces.aps.APSResult
 import app.aaps.core.interfaces.aps.Loop
+import app.aaps.core.interfaces.aps.RT
 import app.aaps.core.interfaces.configuration.Config
 import app.aaps.core.interfaces.db.PersistenceLayer
 import app.aaps.core.interfaces.iob.IobCobCalculator
@@ -18,6 +19,9 @@ import app.aaps.core.interfaces.rx.bus.RxBus
 import app.aaps.core.interfaces.rx.events.EventShowDialog
 import app.aaps.core.interfaces.utils.DateUtil
 import app.aaps.core.interfaces.utils.DecimalFormatter
+import app.aaps.core.keys.BooleanKey
+import app.aaps.core.keys.IntKey
+import app.aaps.core.keys.interfaces.Preferences
 import app.aaps.core.objects.aps.PARABOLA_MIN_CORRELATION
 import app.aaps.core.objects.aps.ParabolaFitResult
 import app.aaps.core.objects.aps.parabolaFit
@@ -53,7 +57,8 @@ class ChipsViewModel(
     private val decimalFormatter: DecimalFormatter,
     private val rxBus: RxBus,
     private val dateUtil: DateUtil,
-    private val activePlugin: ActivePlugin
+    private val activePlugin: ActivePlugin,
+    private val preferences: Preferences
 ) : ViewModel() {
 
     @AssistedFactory
@@ -189,23 +194,53 @@ class ChipsViewModel(
         initialValue = ParabolaUiState()
     )
 
+    private fun isAutoIsfActive() = config.APS && activePlugin.activeAPS?.algorithm == APSResult.Algorithm.AUTO_ISF
+
     private fun buildParabolaUiState(): ParabolaUiState {
-        if (!config.APS || activePlugin.activeAPS?.algorithm != APSResult.Algorithm.AUTO_ISF) return ParabolaUiState()
+        if (!isAutoIsfActive()) return ParabolaUiState()
         val ads = iobCobCalculator.ads
         val smoothed = ads.smoothedReadings ?: return ParabolaUiState()
         val raw = ads.getBgReadingsDataTableCopy()
-        val minDuration = parabolaMinDurationMinutes(raw.map { it.timestamp })
+        val minDuration = parabolaMinDurationMinutes(raw.map { it.timestamp }, preferences.get(IntKey.ApsAutoIsfParabolaMinMinutes))
         val rawFit = parabolaFit(raw.map { it.timestamp to it.value }, minDuration) ?: return ParabolaUiState()
         val smoothedFit = parabolaFit(smoothed.smoothedFitInput(), minDuration) ?: return ParabolaUiState()
-        return ParabolaUiState(raw = rawFit.toText(), smoothed = smoothedFit.toText())
+        val smoothedUsed = preferences.get(BooleanKey.ApsAutoIsfParabolaSmoothed)
+        return ParabolaUiState(raw = rawFit.toText(active = !smoothedUsed), smoothed = smoothedFit.toText(active = smoothedUsed))
     }
 
-    private fun ParabolaFitResult.toText() = ParabolaFitText(
+    private fun ParabolaFitResult.toText(active: Boolean) = ParabolaFitText(
         acceleration = decimalFormatter.to2Decimal(acceleration),
         correlation = decimalFormatter.to2Decimal(correlation),
         minutes = minutes.roundToInt(),
-        usable = correlation >= PARABOLA_MIN_CORRELATION
+        usable = correlation >= PARABOLA_MIN_CORRELATION,
+        active = active
     )
+
+    /**
+     * AutoISF fork, display only: the AutoISF factors of the last loop run, as stored in its result
+     * (RT.autoIsf). They come out of the parabola the settings chose. Updated after each calculation.
+     */
+    val autoIsfFactorsUiState: StateFlow<AutoIsfFactorsUiState> = combine(loopStatusDataTicker, cache.iobGraphFlow) { _, _ ->
+        buildAutoIsfFactorsUiState()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = AutoIsfFactorsUiState()
+    )
+
+    private fun buildAutoIsfFactorsUiState(): AutoIsfFactorsUiState {
+        if (!isAutoIsfActive()) return AutoIsfFactorsUiState()
+        val factors = (loop.lastRun?.request?.rawData() as? RT)?.autoIsf ?: return AutoIsfFactorsUiState()
+        fun f(value: Double?) = value?.let { decimalFormatter.to2Decimal(it) } ?: "-"
+        return AutoIsfFactorsUiState(
+            acce = f(factors.acceIsf),
+            bg = f(factors.bgIsf),
+            pp = f(factors.ppIsf),
+            dura = f(factors.duraIsf),
+            final = f(factors.finalIsf),
+            iobTh = factors.iobThEffective?.let { rh.gs(InterfacesStrings.format_insulin_units, it) } ?: "-"
+        )
+    }
 
     fun showIobInfo() {
         viewModelScope.launch {

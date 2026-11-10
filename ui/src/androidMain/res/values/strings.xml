@@ -387,5 +387,7 @@
     <string name="overview_status_no_tbr" comment="Overview status line when no temporary basal rate is running">No TBR</string>
     <string name="overview_parabola_raw" comment="AutoISF parabola fit on raw CGM values. %1$s = acceleration, %2$s = correlation r squared (0 to 1), %3$s = duration with unit. Example: Parabola raw 2.30, r² 0.92, 17 min">Parabola raw %1$s, r² %2$s, %3$s</string>
     <string name="overview_parabola_smoothed" comment="AutoISF parabola fit on smoothed CGM values, shown next to the raw one. %1$s = acceleration, %2$s = correlation r squared (0 to 1), %3$s = duration with unit. Example: smoothed 2.60, r² 0.97, 15 min">smoothed %1$s, r² %2$s, %3$s</string>
+    <string name="overview_autoisf_factors" comment="AutoISF factors of the last loop run, all numbers like 1.04. %1$s = acce_ISF, %2$s = bg_ISF, %3$s = pp_ISF, %4$s = dura_ISF, %5$s = final ISF factor. Example: AutoISF acce 1.20, bg 1.04, pp 1.00, dura 1.00, final 1.04">AutoISF acce %1$s, bg %2$s, pp %3$s, dura %4$s, final %5$s</string>
+    <string name="overview_autoisf_iobth" comment="Effective IOB threshold of AutoISF. %1$s = insulin with unit. Example: iobTH 3.50 U">iobTH %1$s</string>
 
 </resources>

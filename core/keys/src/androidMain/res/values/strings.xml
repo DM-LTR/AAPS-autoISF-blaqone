@@ -396,6 +396,10 @@
     <string name="pref_title_autoisf_max">AutoISF max</string>
     <string name="openapsama_autoISF_max_summary">Similar to autosens_max this defines how strong ISF can become.\n\nThe default value 1.0 effectively shuts off this effect.\n\nWARNING: Be extremely careful when using values above 2.5</string>
     <string name="pref_title_bg_accel_weight">BG acceleration ISF weight</string>
+    <string name="pref_title_autoisf_parabola_smoothed">Parabola on smoothed values</string>
+    <string name="pref_summary_autoisf_parabola_smoothed">Off (default, original AutoISF): the parabola for acce_ISF and dura_ISF use the raw 1 minute CGM values. They see a rise earlier but are more nervous. On: they use the values smoothed by the UKF. Calmer, but later. Needs the UKF smoothing and a 1 minute CGM, otherwise the raw values are used. Can change the insulin given.</string>
+    <string name="pref_title_autoisf_parabola_min_minutes">Shortest parabola (1 minute CGM)</string>
+    <string name="pref_summary_autoisf_parabola_min_minutes">How many minutes the parabola must cover at least before AutoISF uses it, with a 1 minute CGM. 10 min is the original. Shorter reacts faster but more nervous, longer is calmer but later. Can change the insulin given.</string>
     <string name="openapsama_bgAccel_ISF_weight_summary">This is the weight applied while glucose accelerates and which strengthens ISF thereby potentially increasing insulin delivery.\n\nThe default value 0.0 effectively shuts off this effect.</string>
     <string name="pref_title_bg_brake_weight">BG brake ISF weight</string>
     <string name="openapsama_bgBrake_ISF_weight_summary">This is the weight applied while glucose decelerates and which weakens ISF thereby potentially reducing insulin delivery.\n\nThe default value 0.0 effectively shuts off this effect.</string>

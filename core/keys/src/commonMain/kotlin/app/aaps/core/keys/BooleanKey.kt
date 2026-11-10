@@ -193,6 +193,14 @@ enum class BooleanKey(
         sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
     ),
     ApsUseAutoIsfWeights("openapsama_enable_autoISF", false, KeysStrings.pref_title_aps_use_autoisf_weights, KeysStrings.pref_summary_aps_use_autoisf_weights, defaultedBySM = true, sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)),
+    // AutoISF fork: parabola fit (acce_ISF) and dura_ISF on the UKF-smoothed 1 minute readings instead of the raw ones
+    ApsAutoIsfParabolaSmoothed(
+        "autoisf_parabola_smoothed",
+        false,
+        KeysStrings.pref_title_autoisf_parabola_smoothed,
+        KeysStrings.pref_summary_autoisf_parabola_smoothed,
+        sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
+    ),
     ApsAutoIsfSmbOnEvenTarget(
         "Enable alternative activation of SMB always",
         false,

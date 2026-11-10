@@ -5,6 +5,20 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-10 (9) – Parabel: Schalter und Regler, AutoISF-Wertezeile
+
+- ⚠ **Schalter „Parabola on smoothed values“** (AutoISF-Einstellungen, Standard **aus** = Original):
+  Parabel (acce_ISF) und dura_ISF rechnen mit den UKF-geglätteten 1-Minuten-Werten statt mit den
+  Rohwerten. Ruhiger, aber später. Braucht UKF-Glättung und einen 1-Minuten-Sensor, sonst Rohwerte.
+- ⚠ **Regler „Shortest parabola“** 5–20 min (Standard **10** = Original): wie viele Minuten die Parabel
+  mindestens abdecken muss (nur 1-Minuten-Sensoren). Kürzer = schneller, aber nervöser; länger =
+  ruhiger, aber später.
+- Mit beiden Standardwerten rechnet AutoISF exakt wie bisher (per Test gesichert).
+- Hauptseite: die von AutoISF benutzte Parabel ist **fett**. APS-Tab: Zeile mit Quelle und Mindestdauer.
+- Diagramm „acc raw / acc smooth“ zeigt weiter beide, egal welche benutzt wird.
+- **Neue Zeile mit den AutoISF-Werten** des letzten Loop-Laufs: acce, bg, pp, dura, final, iobTH.
+- Offen: die r²-Schwelle 0,9 filtert bei geglätteten Werten kaum, noch nicht einstellbar.
+
 ## 2026-11-10 (8) – Parabel-Vergleich als Diagramm
 
 - **Neues Diagramm „Parabola acceleration“:** zwei Linien über die Zeit, die Beschleunigung, die
