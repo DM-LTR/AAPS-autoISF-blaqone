@@ -258,6 +258,16 @@ class PrepareGraphDataRunner(
         }
     }
 
+    /**
+     * AutoISF fork: the values the coloured BG dots are drawn from. The smoothed readings of a 1 minute
+     * source when there are any (one dot per reading), otherwise the 5 minute grid as before.
+     * Internal so it can be unit-tested.
+     */
+    internal fun graphGlucoseValues(
+        grid: List<InMemoryGlucoseValue>,
+        smoothedReadings: List<InMemoryGlucoseValue>?
+    ): List<InMemoryGlucoseValue> = if (smoothedReadings.isNullOrEmpty()) grid else smoothedReadings
+
     // ---------- Phase 2 (PrepareBucketedDataWorker logic) ----------
 
     private fun prepareBucketedData(data: PrepareGraphData) {
@@ -276,7 +286,10 @@ class PrepareGraphDataRunner(
         val highMark = preferences.get(UnitDoubleKey.OverviewHighMark)
         val lowMark = preferences.get(UnitDoubleKey.OverviewLowMark)
 
-        val bucketedDataPoints = bucketedData
+        // AutoISF fork: with a 1 minute source smoothed reading by reading (UKF), the coloured dots show
+        // the smoothed value of every reading, not only the 5 minute grid. Display only: autosens,
+        // IOB/COB and the loop keep using the grid and the newest reading as before.
+        val bucketedDataPoints = graphGlucoseValues(bucketedData, data.iobCobCalculator.ads.smoothedReadings)
             .filter { it.timestamp in newFromTime..newToTime }
             .map { value ->
                 val valueInUnits = profileUtil.fromMgdlToUnits(value.recalculated)
