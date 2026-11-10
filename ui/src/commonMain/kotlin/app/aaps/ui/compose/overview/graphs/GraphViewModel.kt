@@ -5,6 +5,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.aaps.core.data.configuration.Constants
 import app.aaps.core.interfaces.InterfacesStrings
+import app.aaps.core.interfaces.aps.APSResult
+import app.aaps.core.interfaces.configuration.Config
 import app.aaps.core.interfaces.logging.AAPSLogger
 import app.aaps.core.interfaces.logging.LTag
 import app.aaps.core.interfaces.overview.graph.BgDataPoint
@@ -12,6 +14,7 @@ import app.aaps.core.interfaces.overview.graph.GraphConfig
 import app.aaps.core.interfaces.overview.graph.GraphConfigRepository
 import app.aaps.core.interfaces.overview.graph.OverviewDataCache
 import app.aaps.core.interfaces.overview.graph.SeriesType
+import app.aaps.core.interfaces.plugin.ActivePlugin
 import app.aaps.core.interfaces.resources.TextResolver
 import app.aaps.core.interfaces.utils.DateUtil
 import app.aaps.core.keys.BooleanNonKey
@@ -29,6 +32,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -55,7 +59,9 @@ class GraphViewModel(
     private val aapsLogger: AAPSLogger,
     private val preferences: Preferences,
     private val dateUtil: DateUtil,
-    private val rh: TextResolver
+    private val rh: TextResolver,
+    private val activePlugin: ActivePlugin,
+    private val config: Config
 ) : ViewModel() {
 
     @AssistedFactory
@@ -149,6 +155,19 @@ class GraphViewModel(
         started = SharingStarted.WhileSubscribed(5000),
         initialValue = dateUtil.now()
     )
+
+    /**
+     * AutoISF fork: true while AutoISF is the active APS algorithm. On a client always true: it shows what
+     * the master sends, and the master may run AutoISF. Checked every 30 s, so a plugin change shows soon.
+     */
+    val autoIsfActive: StateFlow<Boolean> = ticker30s.map { isAutoIsfActive() }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5000),
+        initialValue = isAutoIsfActive()
+    )
+
+    private fun isAutoIsfActive(): Boolean =
+        config.AAPSCLIENT || activePlugin.activeAPS?.algorithm == APSResult.Algorithm.AUTO_ISF
 
     // Ticker for the age of the BG value, which is shown in seconds
     private val ticker1s = flow {

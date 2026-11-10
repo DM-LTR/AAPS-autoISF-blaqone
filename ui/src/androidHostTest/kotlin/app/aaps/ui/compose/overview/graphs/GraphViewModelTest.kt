@@ -27,6 +27,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.mock
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -54,7 +55,7 @@ internal class GraphViewModelTest {
         whenever(preferences.observe(UnitDoubleKey.OverviewHighMark)).thenReturn(MutableStateFlow(180.0))
         whenever(preferences.observe(UnitDoubleKey.OverviewLowMark)).thenReturn(MutableStateFlow(72.0))
         // fullWindow = false: the overview behaviour, where the axis hugs the data.
-        sut = GraphViewModel(cache, false, graphConfigRepository, aapsLogger, preferences, dateUtil, rh)
+        sut = GraphViewModel(cache, false, graphConfigRepository, aapsLogger, preferences, dateUtil, rh, mock(), mock())
     }
 
     @AfterEach
@@ -87,7 +88,7 @@ internal class GraphViewModelTest {
         whenever(cache.predictionsFlow).thenReturn(MutableStateFlow(predictions))
         whenever(cache.timeRangeFlow).thenReturn(MutableStateFlow(TimeRange(fromTime = windowStart, toTime = now, endTime = now + 2 * 3600_000L)))
         whenever(graphConfigRepository.graphConfigFlow).thenReturn(MutableStateFlow(GraphConfig()))
-        val vm = GraphViewModel(cache, false, graphConfigRepository, aapsLogger, preferences, dateUtil, rh)
+        val vm = GraphViewModel(cache, false, graphConfigRepository, aapsLogger, preferences, dateUtil, rh, mock(), mock())
 
         val range = vm.derivedTimeRange.filterNotNull().first()
 

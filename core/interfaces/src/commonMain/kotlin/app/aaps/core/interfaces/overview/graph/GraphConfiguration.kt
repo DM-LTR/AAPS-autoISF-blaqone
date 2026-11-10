@@ -54,7 +54,7 @@ data class SecondaryGraph(
  *   overlay (toggled via [iobOverlays]).
  *
  * @param bgOverlays       Overlay toggles for the BG graph (currently only [SeriesType.ACTIVITY]).
- * @param iobOverlays      Overlay toggles for the fixed IOB graph (currently only [SeriesType.ACTIVITY]).
+ * @param iobOverlays      Overlay toggles for the fixed IOB graph ([SeriesType.ACTIVITY], and [SeriesType.IOB_TH_EFFECTIVE] with AutoISF).
  * @param secondaryGraphs  Ordered list of user-configurable secondary graph configurations.
  *   IOB cannot appear here (it has a dedicated fixed slot). Each graph is a List (not Set) to
  *   preserve selection order:
@@ -98,6 +98,12 @@ data class GraphConfig(
          * threshold. IOBth is in U, not a factor, so it is drawn against its own axis on the right.
          */
         val ISF_COMPANION_TYPES = ISF_FACTOR_TYPES + SeriesType.IOB_TH_EFFECTIVE
+
+        /**
+         * AutoISF fork: series that only AutoISF fills. They are not drawn and not offered while AutoISF is
+         * not the active APS algorithm; the saved graph settings keep them for when it is active again.
+         */
+        val AUTOISF_ONLY_TYPES = ISF_COMPANION_TYPES + SeriesType.PARABOLA_RAW + SeriesType.PARABOLA_SMOOTHED
     }
 }
 

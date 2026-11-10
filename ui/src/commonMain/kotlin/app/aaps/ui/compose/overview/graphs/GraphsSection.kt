@@ -235,6 +235,9 @@ fun GraphsSection(
     val savedGraphConfig by graphViewModel.graphConfigFlow.collectAsStateWithLifecycle()
     // In simple mode: fixed layout (BG, IOB+BAS, COB — no overlays, no editing)
     val graphConfig = if (isSimpleMode) SIMPLE_MODE_CONFIG else savedGraphConfig
+    // AutoISF fork: AutoISF series are only drawn and offered while AutoISF is the active algorithm
+    val autoIsfActive by graphViewModel.autoIsfActive.collectAsStateWithLifecycle()
+    val configurableSeries = if (autoIsfActive) CONFIGURABLE_SERIES else CONFIGURABLE_SERIES.filter { it !in GraphConfig.AUTOISF_ONLY_TYPES }
 
     // Zoom.x(...) allocates a fresh (non-equal, unmemoized) lambda instance on every call.
     // rememberVicoZoomState's underlying rememberSaveable is keyed on initialZoom/minZoom/maxZoom
@@ -652,7 +655,9 @@ fun GraphsSection(
         ) {
             SecondaryGraphCompose(
                 viewModel = graphViewModel,
-                seriesTypes = listOf(SeriesType.IOB),
+                // AutoISF fork: iobTH next to IOB, on the same axis, while AutoISF is active
+                seriesTypes = if (autoIsfActive && SeriesType.IOB_TH_EFFECTIVE in graphConfig.iobOverlays)
+                    listOf(SeriesType.IOB, SeriesType.IOB_TH_EFFECTIVE) else listOf(SeriesType.IOB),
                 scrollState = iobScrollState,
                 zoomState = iobZoomState,
                 derivedTimeRange = derivedTimeRange,
@@ -677,7 +682,7 @@ fun GraphsSection(
             GraphSeriesBottomSheet(
                 title = stringResource(InterfacesStrings.values_with_slash, stringResource(CoreUiStrings.iob), stringResource(CoreUiStrings.basal_shortname)),
                 selectedSeries = graphConfig.iobOverlays,
-                availableSeries = listOf(SeriesType.ACTIVITY),
+                availableSeries = if (autoIsfActive) listOf(SeriesType.ACTIVITY, SeriesType.IOB_TH_EFFECTIVE) else listOf(SeriesType.ACTIVITY),
                 height = graphConfig.iobHeight,
                 onHeightChange = { h ->
                     graphViewModel.updateGraphConfig(graphConfig.copy(iobHeight = h))
@@ -694,7 +699,10 @@ fun GraphsSection(
         // Secondary graphs — config-driven (labels start at "Graph 2")
         var editingGraphIndex by remember { mutableIntStateOf(-1) }
         for (i in 0 until activeCount) {
-            val secondary = graphConfig.secondaryGraphs[i]
+            val saved = graphConfig.secondaryGraphs[i]
+            // AutoISF fork: without AutoISF its series are left out, and a graph of only those is not shown
+            val secondary = if (autoIsfActive) saved else saved.copy(series = saved.series.filter { it !in GraphConfig.AUTOISF_ONLY_TYPES })
+            if (secondary.series.isEmpty()) continue
             Box(
                 modifier = Modifier
                     .pullUp(GRAPH_OVERLAP)
@@ -742,7 +750,7 @@ fun GraphsSection(
             GraphSeriesBottomSheet(
                 title = stringResource(CoreUiStrings.graph_number, index + 2),
                 selectedSeries = editing.series,
-                availableSeries = CONFIGURABLE_SERIES,
+                availableSeries = configurableSeries,
                 height = editing.height,
                 onHeightChange = { h ->
                     // The current config, not the captured one: after "Remove graph" the captured
@@ -800,7 +808,7 @@ fun GraphsSection(
             GraphSeriesBottomSheet(
                 title = stringResource(CoreUiStrings.graph_new),
                 selectedSeries = newGraphSeries,
-                availableSeries = CONFIGURABLE_SERIES,
+                availableSeries = configurableSeries,
                 height = newGraphHeight,
                 onHeightChange = { newGraphHeight = it },
                 onToggle = { type ->
