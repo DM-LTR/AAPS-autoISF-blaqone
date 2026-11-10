@@ -10,6 +10,7 @@ import app.aaps.core.data.ue.Sources
 import app.aaps.core.interfaces.db.PersistenceLayer
 import app.aaps.core.interfaces.receivers.Intents
 import app.aaps.core.keys.BooleanKey
+import app.aaps.core.keys.DoubleKey
 import app.aaps.core.utils.receivers.DataInbox
 import app.aaps.shared.tests.BundleMock
 import app.aaps.shared.tests.TestBaseWithProfile
@@ -37,6 +38,9 @@ class XdripSourceWorkerTest : TestBaseWithProfile() {
     @BeforeEach
     fun setupMock() {
         whenever(workerParameters.inputData).thenReturn(workDataOf())
+        // AutoISF fork: CGM correction at its defaults, values pass through unchanged
+        whenever(preferences.get(DoubleKey.BgSourceCorrectionSlope)).thenReturn(1.0)
+        whenever(preferences.get(DoubleKey.BgSourceCorrectionOffset)).thenReturn(0.0)
         worker = XdripSourcePlugin.XdripSourceWorker(context, workerParameters, aapsLogger, fabricPrivacy, xdripSourcePlugin, persistenceLayer, preferences, dateUtil, dataInbox)
     }
 

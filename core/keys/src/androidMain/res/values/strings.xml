@@ -396,6 +396,11 @@
     <string name="pref_title_autoisf_max">AutoISF max</string>
     <string name="openapsama_autoISF_max_summary">Similar to autosens_max this defines how strong ISF can become.\n\nThe default value 1.0 effectively shuts off this effect.\n\nWARNING: Be extremely careful when using values above 2.5</string>
     <string name="pref_title_bg_accel_weight">BG acceleration ISF weight</string>
+    <string name="pref_title_bg_correction">CGM correction (slope and offset)</string>
+    <string name="pref_title_bg_correction_slope">CGM correction: slope</string>
+    <string name="pref_summary_bg_correction_slope">Only a fixed correction, no calibration and no smoothing: every value that comes in through xDrip (also Juggluco) is stored as value × slope + offset. 1.00 = no change. Smoothing stays with the smoothing plugin (UKF). Always applies, whatever APS algorithm is active, and also shows in Nightscout. Changes the BG the loop doses on.</string>
+    <string name="pref_title_bg_correction_offset">CGM correction: offset (mg/dL)</string>
+    <string name="pref_summary_bg_correction_offset">Only a fixed correction, no calibration and no smoothing: added to every value that comes in through xDrip (also Juggluco) after the slope, in mg/dL (−50 to +50). 0 = no change. Example: the sensor reads 30 mg/dL too low, offset +30. Always applies, whatever APS algorithm is active. Changes the BG the loop doses on.</string>
     <string name="pref_title_autoisf_parabola_smoothed">Parabola on smoothed values</string>
     <string name="pref_summary_autoisf_parabola_smoothed">Off (default, original AutoISF): the parabola for acce_ISF and dura_ISF use the raw 1 minute CGM values. They see a rise earlier but are more nervous. On: they use the values smoothed by the UKF. Calmer, but later. Needs the UKF smoothing and a 1 minute CGM, otherwise the raw values are used. Can change the insulin given.</string>
     <string name="pref_title_autoisf_parabola_min_minutes">Shortest parabola (1 minute CGM)</string>

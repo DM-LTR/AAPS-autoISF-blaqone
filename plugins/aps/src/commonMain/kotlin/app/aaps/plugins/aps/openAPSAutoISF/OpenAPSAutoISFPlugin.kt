@@ -1120,6 +1120,16 @@ open class OpenAPSAutoISFPlugin(
                     IntKey.ApsAutoIsfIobThPercent
                 )
             ),
+            // AutoISF fork: the same CGM correction settings as in the xDrip source, shown here too so
+            // everything is in one place. They always apply, whatever APS algorithm is active.
+            PreferenceSubScreenDef(
+                key = "autoisf_cgm_correction",
+                title = KeysStrings.pref_title_bg_correction,
+                items = listOf(
+                    DoubleKey.BgSourceCorrectionSlope,
+                    DoubleKey.BgSourceCorrectionOffset
+                )
+            ),
             PreferenceSubScreenDef(
                 key = "smb_delivery_settings",
                 title = ApsStrings.smb_delivery_settings_title,

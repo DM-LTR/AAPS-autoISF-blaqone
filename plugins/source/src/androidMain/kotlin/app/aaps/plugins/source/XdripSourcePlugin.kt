@@ -26,8 +26,10 @@ import app.aaps.core.interfaces.source.XDripSource
 import app.aaps.core.interfaces.utils.DateUtil
 import app.aaps.core.interfaces.utils.fabric.FabricPrivacy
 import app.aaps.core.keys.BooleanKey
+import app.aaps.core.keys.DoubleKey
 import app.aaps.core.keys.interfaces.Preferences
 import app.aaps.core.keys.interfaces.TextRef
+import app.aaps.core.ui.compose.preference.PreferenceSubScreenDef
 import app.aaps.core.objects.workflow.LoggingWorker
 import app.aaps.core.objects.workflow.MetroWorkerCreator
 import app.aaps.core.ui.compose.icons.IcXDrip
@@ -77,6 +79,19 @@ class XdripSourcePlugin(
     preferences = preferences,
     notificationManager = notificationManager
 ), BgSource, XDripSource {
+
+    // AutoISF fork: the base settings plus the fixed CGM correction (slope and offset, no smoothing)
+    override fun getPreferenceScreenContent() = PreferenceSubScreenDef(
+        key = "bg_source_with_sensor_settings",
+        title = TextRef.AndroidRes(R.string.source_xdrip),
+        items = listOf(
+            BooleanKey.BgSourceUploadToNs,
+            BooleanKey.BgSourceCreateSensorChange,
+            DoubleKey.BgSourceCorrectionSlope,
+            DoubleKey.BgSourceCorrectionOffset
+        ),
+        icon = IcXDrip
+    )
 
     override var sensorBatteryLevel = -1
 
@@ -156,10 +171,18 @@ class XdripSourcePlugin(
         private suspend fun processBundle(bundle: Bundle) {
             aapsLogger.debug(LTag.BGSOURCE, "Received xDrip data: $bundle")
             val glucoseValues = mutableListOf<GV>()
+            // AutoISF fork: optional fixed correction, value x slope + offset. No smoothing. The value as it
+            // came from xDrip/Juggluco is kept in raw when xDrip sends no raw value of its own.
+            val received = round(bundle.getDouble(Intents.EXTRA_BG_ESTIMATE, 0.0))
+            val receivedRaw = round(bundle.getDouble(Intents.EXTRA_RAW, 0.0))
+            val slope = preferences.get(DoubleKey.BgSourceCorrectionSlope)
+            val offset = preferences.get(DoubleKey.BgSourceCorrectionOffset)
+            val corrected = BgSlopeOffset.apply(received, slope, offset)
+            if (corrected != received) aapsLogger.debug(LTag.BGSOURCE, "CGM correction: $received x $slope + $offset = $corrected mg/dL")
             glucoseValues += GV(
                 timestamp = bundle.getLong(Intents.EXTRA_TIMESTAMP, 0),
-                value = round(bundle.getDouble(Intents.EXTRA_BG_ESTIMATE, 0.0)),
-                raw = round(bundle.getDouble(Intents.EXTRA_RAW, 0.0)),
+                value = corrected,
+                raw = if (corrected != received && receivedRaw == 0.0) received else receivedRaw,
                 noise = null,
                 trendArrow = TrendArrow.fromString(bundle.getString(Intents.EXTRA_BG_SLOPE_NAME)),
                 sourceSensor = SourceSensor.fromString(bundle.getString(Intents.XDRIP_DATA_SOURCE) ?: "")

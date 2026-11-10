@@ -230,6 +230,27 @@ enum class DoubleKey(
         unitType = UnitType.DOUBLE,
         sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
     ),
+    // AutoISF fork: fixed correction of xDrip CGM values, value x slope + offset. Only slope and offset, no smoothing.
+    BgSourceCorrectionSlope(
+        key = "bgsource_correction_slope",
+        defaultValue = 1.0,
+        min = 0.5,
+        max = 1.5,
+        title = KeysStrings.pref_title_bg_correction_slope,
+        summary = KeysStrings.pref_summary_bg_correction_slope,
+        unitType = UnitType.DOUBLE_2,
+        sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
+    ),
+    BgSourceCorrectionOffset(
+        key = "bgsource_correction_offset",
+        defaultValue = 0.0,
+        min = -50.0,
+        max = 50.0,
+        title = KeysStrings.pref_title_bg_correction_offset,
+        summary = KeysStrings.pref_summary_bg_correction_offset,
+        unitType = UnitType.DOUBLE,
+        sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
+    ),
     ApsAutoIsfBgAccelWeight(
         key = "bgAccel_ISF_weight",
         defaultValue = 0.0,
