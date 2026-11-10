@@ -243,6 +243,15 @@ data class FinalIsfGraphData(
 )
 
 /**
+ * AutoISF fork: the BG parabola on the BG graph, in the units of the graph. [fit] is the part AutoISF
+ * fitted to the readings, [extrapolation] goes on from the newest reading. Both empty when there is none.
+ */
+data class BgParabolaGraphData(
+    val fit: List<GraphDataPoint>,
+    val extrapolation: List<GraphDataPoint>
+)
+
+/**
  * Effective IOB threshold graph data (AutoISF component).
  */
 data class IobThEffectiveGraphData(
