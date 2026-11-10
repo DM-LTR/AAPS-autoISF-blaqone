@@ -137,6 +137,18 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
+### 2026-11-10 (19) – Pinke BG-Parabel im BZ-Graph (nur dev, im Test)
+
+- Wie in AutoISF 3.2.1: Die Parabel, die AutoISF für acce_ISF an die BZ-Werte legt, wird als
+  **pinke Linie** im BZ-Graph gezeichnet. **Durchgezogen** über die Minuten, auf die sie gelegt wurde,
+  **gestrichelt** 20 Minuten in die Zukunft (nur wenn die Vorhersagen eingeschaltet sind).
+- **Glatt:** ein Punkt pro Minute, bei 1-Minuten-CGM also an jedem Wert. Die Linie wird **bei jedem
+  neuen Wert** neu berechnet, unabhängig vom Loop-Intervall. Sie zeigt die Parabel, die AutoISF
+  wirklich benutzt (roh oder geglättet, je nach Schalter).
+- Ein-/ausschaltbar mit dem Stift am BZ-Graph („BG parabola (AutoISF)“), nur mit AutoISF. Bei neuer
+  Einstellung ist sie an; wer seine Graph-Einstellung schon gespeichert hat, schaltet sie dort ein.
+- Reine Anzeige, keine Änderung an der Dosierung.
+
 ### 2026-11-10 (18) – AutoISF-Chip: Abstände (nur dev, im Test)
 
 - Über und unter dem AutoISF-Chip ist jetzt derselbe kleine Abstand (2 dp) wie zwischen IOB/COB
@@ -167,13 +179,6 @@ The newest changes. ⚠ = this change can affect insulin dosing.
 
 - Unten in der README stehen jetzt die 5 neuesten Changelog-Einträge, darunter der Link auf den
   ganzen Changelog.
-- Keine Änderung am Code.
-
-### 2026-11-10 (14) – README: Übersicht der Zweige
-
-- Die README erklärt jetzt die drei Zweige (normal, dev, sport) mit Links und wie neue Features
-  hineinkommen.
-- Der Parabel-Vergleich roh/geglättet ist in der README als „nur dev“ markiert.
 - Keine Änderung am Code.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)

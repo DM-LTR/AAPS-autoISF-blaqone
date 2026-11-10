@@ -944,6 +944,7 @@ data class SeriesColors(
         SeriesType.IOB_TH_EFFECTIVE -> iobThEffective
         SeriesType.PARABOLA_RAW -> parabolaRaw
         SeriesType.PARABOLA_SMOOTHED -> parabolaSmoothed
+        SeriesType.BG_PARABOLA      -> activity // unused - BG_PARABOLA is a BG overlay, not a secondary series
     }
 }
 

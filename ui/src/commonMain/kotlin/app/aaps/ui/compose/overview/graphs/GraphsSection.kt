@@ -207,11 +207,11 @@ private val PREDICTION_SPOKEN_ORDER = listOf(
 )
 
 /** Series types available as BG graph overlays */
-private val BG_OVERLAY_SERIES = listOf(SeriesType.ACTIVITY, SeriesType.PREDICTIONS)
+private val BG_OVERLAY_SERIES = listOf(SeriesType.ACTIVITY, SeriesType.PREDICTIONS, SeriesType.BG_PARABOLA)
 
 /** Series types available for user-configurable secondary graphs (IOB + UI-only overlays excluded) */
 private val CONFIGURABLE_SERIES = SeriesType.entries.filter {
-    it != SeriesType.IOB && it != SeriesType.PREDICTIONS
+    it != SeriesType.IOB && it != SeriesType.PREDICTIONS && it != SeriesType.BG_PARABOLA
 }
 
 @OptIn(FlowPreview::class)
@@ -571,7 +571,7 @@ fun GraphsSection(
         ) {
             BgGraphCompose(
                 viewModel = graphViewModel,
-                bgOverlays = graphConfig.bgOverlays,
+                bgOverlays = if (autoIsfActive) graphConfig.bgOverlays else graphConfig.bgOverlays.filter { it !in GraphConfig.AUTOISF_ONLY_TYPES },
                 scrollState = bgScrollState,
                 zoomState = bgZoomState,
                 derivedTimeRange = derivedTimeRange,
@@ -632,7 +632,7 @@ fun GraphsSection(
             GraphSeriesBottomSheet(
                 title = stringResource(CoreUiStrings.graph_bg),
                 selectedSeries = graphConfig.bgOverlays,
-                availableSeries = BG_OVERLAY_SERIES,
+                availableSeries = if (autoIsfActive) BG_OVERLAY_SERIES else BG_OVERLAY_SERIES.filter { it !in GraphConfig.AUTOISF_ONLY_TYPES },
                 height = graphConfig.bgHeight,
                 onHeightChange = { h ->
                     graphViewModel.updateGraphConfig(graphConfig.copy(bgHeight = h))
@@ -928,6 +928,7 @@ private fun seriesShortNameId(type: SeriesType): TextRef = when (type) {
     SeriesType.IOB_TH_EFFECTIVE -> CoreUiStrings.iobThEffective_shortname
     SeriesType.PARABOLA_RAW      -> CoreUiStrings.parabolaRaw_shortname
     SeriesType.PARABOLA_SMOOTHED -> CoreUiStrings.parabolaSmoothed_shortname
+    SeriesType.BG_PARABOLA      -> CoreUiStrings.bgParabola_shortname
 }
 
 /** String resource ID for the full name of a series type, for the graph settings where there is room (#5336) */
@@ -953,6 +954,7 @@ private fun seriesNameId(type: SeriesType): TextRef = when (type) {
     SeriesType.IOB_TH_EFFECTIVE -> CoreUiStrings.iobThEffective_shortname
     SeriesType.PARABOLA_RAW      -> CoreUiStrings.graph_series_parabola_raw
     SeriesType.PARABOLA_SMOOTHED -> CoreUiStrings.graph_series_parabola_smoothed
+    SeriesType.BG_PARABOLA      -> CoreUiStrings.graph_series_bg_parabola
 }
 
 // =========================================================================
