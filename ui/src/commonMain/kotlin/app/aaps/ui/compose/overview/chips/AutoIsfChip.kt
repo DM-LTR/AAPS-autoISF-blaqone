@@ -128,7 +128,8 @@ fun AutoIsfChip(
         color = ElementType.SENSITIVITY.color().copy(alpha = 0.2f),
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = AapsSpacing.medium)
+            // The same gap above and below as between the chips next to the BG.
+            .padding(horizontal = AapsSpacing.medium, vertical = AapsSpacing.extraSmall)
             .combinedClickable(
                 onClickLabel = toggleLabel,
                 onLongClickLabel = openLabel,

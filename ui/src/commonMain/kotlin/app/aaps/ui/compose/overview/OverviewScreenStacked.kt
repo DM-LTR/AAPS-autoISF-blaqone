@@ -109,7 +109,8 @@ fun OverviewScreenStacked(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 8.dp),
+                // With the AutoISF chip below, the chip brings its own small gap, as between the chips.
+                .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = if (autoIsfFactorsUiState.visible) 0.dp else 8.dp),
             verticalAlignment = Alignment.Bottom
         ) {
             Column(
