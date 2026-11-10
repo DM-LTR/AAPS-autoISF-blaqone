@@ -137,6 +137,16 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
+### 2026-11-10 (17) – AutoISF-Chip zum Aufklappen (nur dev, im Test)
+
+- Der AutoISF-Chip ist jetzt **zugeklappt einzeilig**: AutoISF-Symbol und die angehefteten Werte,
+  rechtsbündig. **Tippen** klappt ihn auf und zu, **lang drücken** öffnet den AutoISF-Bildschirm.
+- **Aufgeklappt** stehen alle Werte (acce, bg, pp, dura, final, iobTH) in einem Raster.
+  **Antippen** eines Wertes heftet ihn an die zugeklappte Zeile an oder löst ihn (höchstens 4,
+  Standard: final und iobTH). Auswahl und auf/zu werden gespeichert und kommen mit dem Export mit.
+- Farben: Faktor über 1 (stärker, mehr Insulin) orange/gelb, unter 1 (schwächer) grün.
+- Nur sichtbar, wenn AutoISF das aktive APS ist. Reine Anzeige, keine Änderung an der Dosierung.
+
 ### 2026-11-10 (16) – AutoISF-Chip auf der Hauptseite (nur dev, im Test)
 
 - Die AutoISF-Werte des letzten Loop-Laufs (acce, bg, pp, dura, final, iobTH) stehen jetzt in einem
@@ -170,16 +180,6 @@ The newest changes. ⚠ = this change can affect insulin dosing.
 - Bewusst **kein Import-Filter**: Ein Import stellt den Stand genau so wieder her, wie er exportiert
   wurde.
 - In allen drei Zweigen (normal, dev, sport).
-
-### 2026-11-10 (12) – Zweige: normal, dev, sport
-
-- **`aaps4-autoisf` (normal):** ohne den Parabel-Vergleich (Anzeige roh/geglättet auf der Hauptseite,
-  im APS-Tab und das Diagramm „acc raw / acc smooth“). Schalter und Regler für die Parabel bleiben;
-  ist der Schalter an, steht im APS-Tab, welche Werte die Parabel benutzt.
-- **`aaps4-autoisf-dev` (Testversion):** normal plus Test-Features, zur Zeit der Parabel-Vergleich.
-- **`aaps4-autoisf-sport`:** Grundlage für eine spätere Sport-Version.
-- Neue Features entstehen auf eigenen Feature-Zweigen vom normalen Zweig, werden in dev getestet und
-  erst danach in den normalen Zweig übernommen.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->

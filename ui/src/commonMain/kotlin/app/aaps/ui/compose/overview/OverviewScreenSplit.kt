@@ -179,8 +179,13 @@ fun OverviewScreenSplit(
                     }
                 }
 
-                AutoIsfChip(state = autoIsfFactorsUiState, onNavigate = onNavigate)
-                ParabolaLine(state = parabolaUiState)
+                AutoIsfChip(
+                    state = autoIsfFactorsUiState,
+                    onNavigate = onNavigate,
+                    onExpandedChange = chipsViewModel::setAutoIsfChipExpanded,
+                    onTogglePin = chipsViewModel::toggleAutoIsfPin,
+                    extraContent = { ParabolaLine(state = parabolaUiState) }
+                )
 
                 OverviewStatusSection(
                     sensorStatus = statusState.sensorStatus,

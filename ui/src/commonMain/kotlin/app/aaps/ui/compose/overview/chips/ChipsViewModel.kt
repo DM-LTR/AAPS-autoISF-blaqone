@@ -18,7 +18,9 @@ import app.aaps.core.interfaces.rx.bus.RxBus
 import app.aaps.core.interfaces.rx.events.EventShowDialog
 import app.aaps.core.interfaces.utils.DecimalFormatter
 import app.aaps.core.keys.BooleanKey
+import app.aaps.core.keys.BooleanNonKey
 import app.aaps.core.keys.IntKey
+import app.aaps.core.keys.StringNonKey
 import app.aaps.core.keys.interfaces.Preferences
 import app.aaps.core.objects.aps.PARABOLA_MIN_CORRELATION
 import app.aaps.core.objects.aps.ParabolaFitResult
@@ -28,10 +30,12 @@ import app.aaps.core.objects.aps.smoothedFitInput
 import app.aaps.core.objects.extensions.round
 import app.aaps.core.ui.CoreUiStrings
 import app.aaps.core.ui.extensions.displayText
+import app.aaps.ui.UiStrings
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -171,6 +175,19 @@ class ChipsViewModel(
         return ParabolaUiState(raw = rawFit.toText(active = !smoothedUsed), smoothed = smoothedFit.toText(active = smoothedUsed))
     }
 
+    /** Dev version: the parabola fit AutoISF uses, as a value that can be pinned to the AutoISF chip. */
+    private fun parabolaValue(): AutoIsfValue? {
+        val parabola = buildParabolaUiState()
+        val used = listOfNotNull(parabola.raw, parabola.smoothed).firstOrNull { it.active } ?: return null
+        val smoothedUsed = used === parabola.smoothed
+        return AutoIsfValue(
+            key = PARABOLA,
+            value = used.acceleration,
+            tone = AutoIsfTone.NEUTRAL,
+            label = rh.gs(if (smoothedUsed) UiStrings.overview_autoisf_parabola_smoothed else UiStrings.overview_autoisf_parabola_raw)
+        )
+    }
+
     private fun ParabolaFitResult.toText(active: Boolean) = ParabolaFitText(
         acceleration = decimalFormatter.to2Decimal(acceleration),
         correlation = decimalFormatter.to2Decimal(correlation),
@@ -179,11 +196,14 @@ class ChipsViewModel(
         active = active
     )
 
+    /** Moves when the user changes the AutoISF chip (open/closed, pinned values), so the chip follows at once. */
+    private val autoIsfChipChanged = MutableStateFlow(0)
+
     /**
      * AutoISF fork, display only: the AutoISF factors of the last loop run, as stored in its result
-     * (RT.autoIsf). They come out of the parabola the settings chose. Updated after each calculation.
+     * (RT.autoIsf), and how the AutoISF chip shows them. Updated after each calculation and every 10 s.
      */
-    val autoIsfFactorsUiState: StateFlow<AutoIsfFactorsUiState> = combine(autoIsfTicker, cache.iobGraphFlow) { _, _ ->
+    val autoIsfFactorsUiState: StateFlow<AutoIsfFactorsUiState> = combine(autoIsfTicker, cache.iobGraphFlow, autoIsfChipChanged) { _, _, _ ->
         buildAutoIsfFactorsUiState()
     }.stateIn(
         scope = viewModelScope,
@@ -194,16 +214,63 @@ class ChipsViewModel(
     private fun buildAutoIsfFactorsUiState(): AutoIsfFactorsUiState {
         if (!isAutoIsfActive()) return AutoIsfFactorsUiState()
         val factors = (loop.lastRun?.request?.rawData() as? RT)?.autoIsf ?: return AutoIsfFactorsUiState()
-        fun f(value: Double?) = value?.let { decimalFormatter.to2Decimal(it) } ?: "-"
+        fun factor(key: String, value: Double?) = AutoIsfValue(
+            key = key,
+            value = value?.let { decimalFormatter.to2Decimal(it) } ?: "-",
+            tone = AutoIsfTone.of(value)
+        )
+        val values = listOf(
+            factor(AutoIsfValue.ACCE, factors.acceIsf),
+            factor(AutoIsfValue.BG, factors.bgIsf),
+            factor(AutoIsfValue.PP, factors.ppIsf),
+            factor(AutoIsfValue.DURA, factors.duraIsf),
+            factor(AutoIsfValue.FINAL, factors.finalIsf),
+            AutoIsfValue(
+                key = AutoIsfValue.IOBTH,
+                label = "iobTH",
+                value = factors.iobThEffective?.let { rh.gs(InterfacesStrings.format_insulin_units, it) } ?: "-",
+                tone = AutoIsfTone.NEUTRAL
+            )
+        ) + listOfNotNull(parabolaValue())
         return AutoIsfFactorsUiState(
-            acce = f(factors.acceIsf),
-            bg = f(factors.bgIsf),
-            pp = f(factors.ppIsf),
-            dura = f(factors.duraIsf),
-            final = f(factors.finalIsf),
-            iobTh = factors.iobThEffective?.let { rh.gs(InterfacesStrings.format_insulin_units, it) } ?: "-",
+            visible = true,
+            values = values,
+            pinned = pinnedAutoIsfValues(values.map { it.key }),
+            expanded = preferences.get(BooleanNonKey.OverviewAutoIsfChipExpanded),
             apsPluginClassName = activePlugin.activeAPS?.let { it::class.simpleName }
         )
+    }
+
+    private companion object {
+
+        const val PARABOLA = "parabola"
+    }
+
+    /** The pinned keys in their saved order, only those that exist, at most [AUTOISF_MAX_PINNED]. */
+    private fun pinnedAutoIsfValues(known: List<String>): List<String> =
+        preferences.get(StringNonKey.OverviewAutoIsfChipPinned)
+            .split(',')
+            .map { it.trim() }
+            .filter { it in known }
+            .distinct()
+            .take(AUTOISF_MAX_PINNED)
+
+    /** Opens or closes the AutoISF chip. The state is kept over an app restart. */
+    fun setAutoIsfChipExpanded(expanded: Boolean) {
+        preferences.put(BooleanNonKey.OverviewAutoIsfChipExpanded, expanded)
+        autoIsfChipChanged.value++
+    }
+
+    /** Pins [key] to the closed AutoISF chip or removes it. Nothing happens when [AUTOISF_MAX_PINNED] are pinned already. */
+    fun toggleAutoIsfPin(key: String) {
+        val pinned = autoIsfFactorsUiState.value.pinned
+        val newPinned = when {
+            key in pinned                    -> pinned - key
+            pinned.size < AUTOISF_MAX_PINNED -> pinned + key
+            else                             -> return
+        }
+        preferences.put(StringNonKey.OverviewAutoIsfChipPinned, newPinned.joinToString(","))
+        autoIsfChipChanged.value++
     }
 
     fun showIobInfo() {
