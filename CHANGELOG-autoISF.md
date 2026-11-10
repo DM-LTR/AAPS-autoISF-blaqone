@@ -5,6 +5,17 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-10 (13) – Automation-States nach dem Import
+
+- **States werden jetzt immer frisch gelesen.** Nach einem Einstellungs-Import gelten die importierten
+  States sofort, ohne App-Neustart. Vorher konnte die nächste Änderung die alten States wieder über
+  den Import schreiben.
+- Der **States-Bildschirm aktualisiert sich live**, wenn sich ein State ändert (auch durch eine
+  Automation oder einen Import).
+- Bewusst **kein Import-Filter**: Ein Import stellt den Stand genau so wieder her, wie er exportiert
+  wurde.
+- In allen drei Zweigen (normal, dev, sport).
+
 ## 2026-11-10 (12) – Zweige: normal, dev, sport
 
 - **`aaps4-autoisf` (normal):** ohne den Parabel-Vergleich (Anzeige roh/geglättet auf der Hauptseite,
