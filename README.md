@@ -129,3 +129,69 @@ ideally with a screenshot of the APS tab and the time.
 
 Same as AndroidAPS: GNU Affero General Public License v3.0 (AGPL-3.0).
 This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by applicable law.
+
+---
+
+<!-- changelog:start -->
+## Changelog (German)
+
+The newest changes. ⚠ = this change can affect insulin dosing.
+
+### 2026-11-10 (15) – README zeigt die neuesten Änderungen
+
+- Unten in der README stehen jetzt die 5 neuesten Changelog-Einträge, darunter der Link auf den
+  ganzen Changelog.
+- Keine Änderung am Code.
+
+### 2026-11-10 (14) – README: Übersicht der Zweige
+
+- Die README erklärt jetzt die drei Zweige (normal, dev, sport) mit Links und wie neue Features
+  hineinkommen.
+- Der Parabel-Vergleich roh/geglättet ist in der README als „nur dev“ markiert.
+- Keine Änderung am Code.
+
+### 2026-11-10 (13) – Automation-States nach dem Import
+
+- **States werden jetzt immer frisch gelesen.** Nach einem Einstellungs-Import gelten die importierten
+  States sofort, ohne App-Neustart. Vorher konnte die nächste Änderung die alten States wieder über
+  den Import schreiben.
+- Der **States-Bildschirm aktualisiert sich live**, wenn sich ein State ändert (auch durch eine
+  Automation oder einen Import).
+- Bewusst **kein Import-Filter**: Ein Import stellt den Stand genau so wieder her, wie er exportiert
+  wurde.
+- In allen drei Zweigen (normal, dev, sport).
+
+### 2026-11-10 (12) – Zweige: normal, dev, sport
+
+- **`aaps4-autoisf` (normal):** ohne den Parabel-Vergleich (Anzeige roh/geglättet auf der Hauptseite,
+  im APS-Tab und das Diagramm „acc raw / acc smooth“). Schalter und Regler für die Parabel bleiben;
+  ist der Schalter an, steht im APS-Tab, welche Werte die Parabel benutzt.
+- **`aaps4-autoisf-dev` (Testversion):** normal plus Test-Features, zur Zeit der Parabel-Vergleich.
+- **`aaps4-autoisf-sport`:** Grundlage für eine spätere Sport-Version.
+- Neue Features entstehen auf eigenen Feature-Zweigen vom normalen Zweig, werden in dev getestet und
+  erst danach in den normalen Zweig übernommen.
+
+### 2026-11-10 (11) – AutoISF in Szenen und Automationen, CGM-Korrektur
+
+- ⚠ **Szenen:** Im Szenen-Assistenten (Seite „SMB“) gibt es den Bereich **„AutoISF“**. Eine Szene kann
+  für ihre Dauer AutoISF an/aus schalten, das acce-Gewicht (0–1) und iobTH (10–100 %) setzen.
+  Am Ende der Szene (von Hand oder nach Ablauf) kommen die vorherigen Werte automatisch zurück,
+  auch nach einem App-Neustart.
+- ⚠ **Automationen** wie in AutoISF 3.2.1: Aktionen „AutoISF aktivieren/deaktivieren“,
+  „acce-Gewicht setzen“, „iobTH setzen“, Auslöser „acce-Gewicht“ und „iobTH“. Regeln aus
+  AAPS 3.4.2.6 + AutoISF lassen sich lesen.
+- ⚠ **CGM-Korrektur: nur Slope und Offset – keine Kalibrierung, keine zusätzliche Glättung.**
+  Jeder Wert, der über xDrip (auch Juggluco) ankommt, wird als `Wert × Slope + Offset` gespeichert
+  (Slope 0,5–1,5, Offset −50 bis +50 mg/dl, nie unter 40 mg/dl). Standard 1,00 / 0 = keine
+  Änderung. Einstellbar in den xDrip-Einstellungen und im AutoISF-Bildschirm. Wirkt immer, egal
+  welches APS-Plugin aktiv ist, und wird so auch an Nightscout geschickt. Die Glättung macht weiter
+  der UKF.
+- **Ohne AutoISF ausgeblendet:** AutoISF-Diagrammlinien (Faktoren, iobTH, Parabel), der
+  AutoISF-Bereich im Szenen-Assistenten, die AutoISF-Automationen und die AutoISF-Zeilen auf der
+  Hauptseite, solange AutoISF nicht das aktive APS-Plugin ist. Gespeicherte Einstellungen bleiben
+  erhalten.
+- **Korrektur:** iobTH lässt sich jetzt wirklich im IOB-Diagramm einschalten (Stift-Symbol am
+  IOB-Diagramm → IOBth). Vorher wurde es dort nicht angeboten.
+
+All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
+<!-- changelog:end -->
