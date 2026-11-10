@@ -380,6 +380,10 @@ class SceneListViewModel(
                 is SceneAction.CarePortalEvent -> {
                     hasCarePortal = true
                 }
+
+                is SceneAction.AutoIsfSettings -> {
+                    summaries.add(rh.gs(CoreUiStrings.scene_revert_autoisf))
+                }
             }
         }
 
