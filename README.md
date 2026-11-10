@@ -137,6 +137,12 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
+### 2026-11-10 (18) – AutoISF-Chip: Abstände (nur dev, im Test)
+
+- Über und unter dem AutoISF-Chip ist jetzt derselbe kleine Abstand (2 dp) wie zwischen IOB/COB
+  und Sensitivity. Ohne AutoISF bleibt die Hauptseite wie vorher.
+- Reine Anzeige.
+
 ### 2026-11-10 (17) – AutoISF-Chip zum Aufklappen (nur dev, im Test)
 
 - Der AutoISF-Chip ist jetzt **zugeklappt einzeilig**: AutoISF-Symbol und die angehefteten Werte,
@@ -169,17 +175,6 @@ The newest changes. ⚠ = this change can affect insulin dosing.
   hineinkommen.
 - Der Parabel-Vergleich roh/geglättet ist in der README als „nur dev“ markiert.
 - Keine Änderung am Code.
-
-### 2026-11-10 (13) – Automation-States nach dem Import
-
-- **States werden jetzt immer frisch gelesen.** Nach einem Einstellungs-Import gelten die importierten
-  States sofort, ohne App-Neustart. Vorher konnte die nächste Änderung die alten States wieder über
-  den Import schreiben.
-- Der **States-Bildschirm aktualisiert sich live**, wenn sich ein State ändert (auch durch eine
-  Automation oder einen Import).
-- Bewusst **kein Import-Filter**: Ein Import stellt den Stand genau so wieder her, wie er exportiert
-  wurde.
-- In allen drei Zweigen (normal, dev, sport).
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->
