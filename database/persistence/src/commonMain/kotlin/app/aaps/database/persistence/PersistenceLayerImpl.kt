@@ -2663,9 +2663,7 @@ class PersistenceLayerImpl(
                     ppIsf = row.ppIsf,
                     duraIsf = row.duraIsf,
                     finalIsf = row.finalIsf,
-                    iobThEffective = row.iobThEffective,
-                    parabolaRaw = row.parabolaRaw,
-                    parabolaSmoothed = row.parabolaSmoothed
+                    iobThEffective = row.iobThEffective
                 ).finiteOnly()
             )
         }

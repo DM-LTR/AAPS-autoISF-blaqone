@@ -926,8 +926,6 @@ private fun seriesShortNameId(type: SeriesType): TextRef = when (type) {
     SeriesType.DURA_ISF         -> CoreUiStrings.duraIsf_shortname
     SeriesType.FINAL_ISF        -> CoreUiStrings.finalIsf_shortname
     SeriesType.IOB_TH_EFFECTIVE -> CoreUiStrings.iobThEffective_shortname
-    SeriesType.PARABOLA_RAW      -> CoreUiStrings.parabolaRaw_shortname
-    SeriesType.PARABOLA_SMOOTHED -> CoreUiStrings.parabolaSmoothed_shortname
 }
 
 /** String resource ID for the full name of a series type, for the graph settings where there is room (#5336) */
@@ -951,8 +949,6 @@ private fun seriesNameId(type: SeriesType): TextRef = when (type) {
     SeriesType.DURA_ISF         -> CoreUiStrings.duraIsf_shortname
     SeriesType.FINAL_ISF        -> CoreUiStrings.finalIsf_shortname
     SeriesType.IOB_TH_EFFECTIVE -> CoreUiStrings.iobThEffective_shortname
-    SeriesType.PARABOLA_RAW      -> CoreUiStrings.graph_series_parabola_raw
-    SeriesType.PARABOLA_SMOOTHED -> CoreUiStrings.graph_series_parabola_smoothed
 }
 
 // =========================================================================

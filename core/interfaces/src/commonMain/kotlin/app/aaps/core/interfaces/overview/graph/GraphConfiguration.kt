@@ -31,9 +31,7 @@ enum class SeriesType {
     PP_ISF,
     DURA_ISF,
     FINAL_ISF,
-    IOB_TH_EFFECTIVE,
-    PARABOLA_RAW,
-    PARABOLA_SMOOTHED
+    IOB_TH_EFFECTIVE
 }
 
 /**
@@ -103,7 +101,7 @@ data class GraphConfig(
          * AutoISF fork: series that only AutoISF fills. They are not drawn and not offered while AutoISF is
          * not the active APS algorithm; the saved graph settings keep them for when it is active again.
          */
-        val AUTOISF_ONLY_TYPES = ISF_COMPANION_TYPES + SeriesType.PARABOLA_RAW + SeriesType.PARABOLA_SMOOTHED
+        val AUTOISF_ONLY_TYPES = ISF_COMPANION_TYPES
     }
 }
 

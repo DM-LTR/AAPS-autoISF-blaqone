@@ -127,7 +127,6 @@ class GraphViewModel(
     val duraIsfGraphFlow = cache.duraIsfGraphFlow
     val finalIsfGraphFlow = cache.finalIsfGraphFlow
     val iobThEffectiveGraphFlow = cache.iobThEffectiveGraphFlow
-    val parabolaGraphFlow = cache.parabolaGraphFlow
     val treatmentGraphFlow = cache.treatmentGraphFlow
     val epsGraphFlow = cache.epsGraphFlow
     val basalGraphFlow = cache.basalGraphFlow

@@ -18,7 +18,6 @@ import app.aaps.core.interfaces.overview.graph.FinalIsfGraphData
 import app.aaps.core.interfaces.overview.graph.HeartRateGraphData
 import app.aaps.core.interfaces.overview.graph.IobGraphData
 import app.aaps.core.interfaces.overview.graph.IobThEffectiveGraphData
-import app.aaps.core.interfaces.overview.graph.ParabolaGraphData
 import app.aaps.core.interfaces.overview.graph.OverviewDataCache
 import app.aaps.core.interfaces.overview.graph.PpIsfGraphData
 import app.aaps.core.interfaces.overview.graph.ProfileDisplayData
@@ -74,7 +73,6 @@ class FakeOverviewDataCache : OverviewDataCache {
     override val duraIsfGraphFlow = MutableStateFlow(DuraIsfGraphData(emptyList()))
     override val finalIsfGraphFlow = MutableStateFlow(FinalIsfGraphData(emptyList()))
     override val iobThEffectiveGraphFlow = MutableStateFlow(IobThEffectiveGraphData(emptyList()))
-    override val parabolaGraphFlow = MutableStateFlow(ParabolaGraphData(emptyList(), emptyList()))
 
     override val treatmentGraphFlow = MutableStateFlow(TreatmentGraphData(emptyList(), emptyList(), emptyList(), emptyList(), emptyList()))
     override val epsGraphFlow = MutableStateFlow<List<EpsGraphPoint>>(emptyList())
@@ -112,7 +110,6 @@ class FakeOverviewDataCache : OverviewDataCache {
     override fun updateDuraIsfGraph(data: DuraIsfGraphData) { duraIsfGraphFlow.value = data }
     override fun updateFinalIsfGraph(data: FinalIsfGraphData) { finalIsfGraphFlow.value = data }
     override fun updateIobThEffectiveGraph(data: IobThEffectiveGraphData) { iobThEffectiveGraphFlow.value = data }
-    override fun updateParabolaGraph(data: ParabolaGraphData) { parabolaGraphFlow.value = data }
 
     override fun reset() = Unit
 }

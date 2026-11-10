@@ -32,7 +32,6 @@ import app.aaps.ui.compose.overview.aapsClient.AapsClientStatusCard
 import app.aaps.ui.compose.overview.chips.ChipsViewModel
 import app.aaps.ui.compose.overview.chips.AutoIsfFactorsLine
 import app.aaps.ui.compose.overview.chips.LoopStatusLine
-import app.aaps.ui.compose.overview.chips.ParabolaLine
 import app.aaps.ui.compose.overview.graphs.GraphViewModel
 import app.aaps.ui.compose.overview.graphs.GraphsSection
 import app.aaps.ui.compose.overview.statusLights.StatusViewModel
@@ -86,7 +85,6 @@ fun OverviewScreenStacked(
     val iobUiState by chipsViewModel.iobUiState.collectAsStateWithLifecycle()
     val cobUiState by chipsViewModel.cobUiState.collectAsStateWithLifecycle()
     val loopStatusUiState by chipsViewModel.loopStatusUiState.collectAsStateWithLifecycle()
-    val parabolaUiState by chipsViewModel.parabolaUiState.collectAsStateWithLifecycle()
     val autoIsfFactorsUiState by chipsViewModel.autoIsfFactorsUiState.collectAsStateWithLifecycle()
     val statusState by statusViewModel.uiState.collectAsStateWithLifecycle()
 
@@ -154,7 +152,6 @@ fun OverviewScreenStacked(
         }
 
         LoopStatusLine(state = loopStatusUiState)
-        ParabolaLine(state = parabolaUiState)
         AutoIsfFactorsLine(state = autoIsfFactorsUiState)
 
         OverviewStatusSection(

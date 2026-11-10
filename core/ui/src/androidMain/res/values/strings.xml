@@ -1224,10 +1224,6 @@
     <string name="duraIsf_shortname">duISF</string>
     <string name="finalIsf_shortname">fISF</string>
     <string name="iobThEffective_shortname">IOBth</string>
-    <string name="parabolaRaw_shortname" comment="Short graph label: BG acceleration of the AutoISF parabola fit on raw CGM values">acc raw</string>
-    <string name="parabolaSmoothed_shortname" comment="Short graph label: BG acceleration of the AutoISF parabola fit on smoothed CGM values">acc smooth</string>
-    <string name="graph_series_parabola_raw">Parabola acceleration (raw)</string>
-    <string name="graph_series_parabola_smoothed">Parabola acceleration (smoothed)</string>
     <!-- Graph series full names (used in the graph settings, where there is room) -->
     <string name="graph_series_iob">Insulin On Board</string>
     <string name="graph_series_abs_insulin" comment="IOB including the scheduled basal, not only the difference to it">Absolute insulin</string>

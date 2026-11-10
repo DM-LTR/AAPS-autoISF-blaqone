@@ -124,10 +124,6 @@ interface OverviewDataCache {
     val iobThEffectiveGraphFlow: StateFlow<IobThEffectiveGraphData>
     fun updateIobThEffectiveGraph(data: IobThEffectiveGraphData)
 
-    // Parabola fit acceleration, raw and smoothed (AutoISF fork, comparison only)
-    val parabolaGraphFlow: StateFlow<ParabolaGraphData>
-    fun updateParabolaGraph(data: ParabolaGraphData)
-
     // =========================================================================
     // Treatment graph flows (main graph overlays)
     // Populated reactively by observing database changes — no worker needed.

@@ -5,6 +5,16 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-10 (12) – Zweige: normal, dev, sport
+
+- **`aaps4-autoisf` (normal):** ohne den Parabel-Vergleich (Anzeige roh/geglättet auf der Hauptseite,
+  im APS-Tab und das Diagramm „acc raw / acc smooth“). Schalter und Regler für die Parabel bleiben;
+  ist der Schalter an, steht im APS-Tab, welche Werte die Parabel benutzt.
+- **`aaps4-autoisf-dev` (Testversion):** normal plus Test-Features, zur Zeit der Parabel-Vergleich.
+- **`aaps4-autoisf-sport`:** Grundlage für eine spätere Sport-Version.
+- Neue Features entstehen auf eigenen Feature-Zweigen vom normalen Zweig, werden in dev getestet und
+  erst danach in den normalen Zweig übernommen.
+
 ## 2026-11-10 (11) – AutoISF in Szenen und Automationen, CGM-Korrektur
 
 - ⚠ **Szenen:** Im Szenen-Assistenten (Seite „SMB“) gibt es den Bereich **„AutoISF“**. Eine Szene kann

@@ -19,14 +19,6 @@ import app.aaps.core.interfaces.rx.bus.RxBus
 import app.aaps.core.interfaces.rx.events.EventShowDialog
 import app.aaps.core.interfaces.utils.DateUtil
 import app.aaps.core.interfaces.utils.DecimalFormatter
-import app.aaps.core.keys.BooleanKey
-import app.aaps.core.keys.IntKey
-import app.aaps.core.keys.interfaces.Preferences
-import app.aaps.core.objects.aps.PARABOLA_MIN_CORRELATION
-import app.aaps.core.objects.aps.ParabolaFitResult
-import app.aaps.core.objects.aps.parabolaFit
-import app.aaps.core.objects.aps.parabolaMinDurationMinutes
-import app.aaps.core.objects.aps.smoothedFitInput
 import app.aaps.core.objects.extensions.round
 import app.aaps.core.ui.CoreUiStrings
 import app.aaps.core.ui.extensions.displayText
@@ -42,7 +34,6 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import kotlin.math.roundToInt
 
 @Stable
 @AssistedInject
@@ -57,8 +48,7 @@ class ChipsViewModel(
     private val decimalFormatter: DecimalFormatter,
     private val rxBus: RxBus,
     private val dateUtil: DateUtil,
-    private val activePlugin: ActivePlugin,
-    private val preferences: Preferences
+    private val activePlugin: ActivePlugin
 ) : ViewModel() {
 
     @AssistedFactory
@@ -181,40 +171,7 @@ class ChipsViewModel(
         initialValue = LoopStatusUiState()
     )
 
-    /**
-     * AutoISF fork, display only: the parabola fit on the raw 1 minute readings and on the UKF-smoothed
-     * ones, side by side. Shown while AutoISF is the active algorithm and the source is smoothed reading
-     * by reading. Updated after each calculation and every 10 s. Not used for dosing.
-     */
-    val parabolaUiState: StateFlow<ParabolaUiState> = combine(loopStatusDataTicker, cache.iobGraphFlow) { _, _ ->
-        buildParabolaUiState()
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = ParabolaUiState()
-    )
-
     private fun isAutoIsfActive() = config.APS && activePlugin.activeAPS?.algorithm == APSResult.Algorithm.AUTO_ISF
-
-    private fun buildParabolaUiState(): ParabolaUiState {
-        if (!isAutoIsfActive()) return ParabolaUiState()
-        val ads = iobCobCalculator.ads
-        val smoothed = ads.smoothedReadings ?: return ParabolaUiState()
-        val raw = ads.getBgReadingsDataTableCopy()
-        val minDuration = parabolaMinDurationMinutes(raw.map { it.timestamp }, preferences.get(IntKey.ApsAutoIsfParabolaMinMinutes))
-        val rawFit = parabolaFit(raw.map { it.timestamp to it.value }, minDuration) ?: return ParabolaUiState()
-        val smoothedFit = parabolaFit(smoothed.smoothedFitInput(), minDuration) ?: return ParabolaUiState()
-        val smoothedUsed = preferences.get(BooleanKey.ApsAutoIsfParabolaSmoothed)
-        return ParabolaUiState(raw = rawFit.toText(active = !smoothedUsed), smoothed = smoothedFit.toText(active = smoothedUsed))
-    }
-
-    private fun ParabolaFitResult.toText(active: Boolean) = ParabolaFitText(
-        acceleration = decimalFormatter.to2Decimal(acceleration),
-        correlation = decimalFormatter.to2Decimal(correlation),
-        minutes = minutes.roundToInt(),
-        usable = correlation >= PARABOLA_MIN_CORRELATION,
-        active = active
-    )
 
     /**
      * AutoISF fork, display only: the AutoISF factors of the last loop run, as stored in its result

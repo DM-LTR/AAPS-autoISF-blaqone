@@ -250,15 +250,6 @@ data class IobThEffectiveGraphData(
 )
 
 /**
- * AutoISF fork: BG acceleration of the parabola fit, as AutoISF used it ([raw]) and the same fit on the
- * UKF-smoothed 1 minute readings ([smoothed]). For comparing the two over time; display only.
- */
-data class ParabolaGraphData(
-    val raw: List<GraphDataPoint>,
-    val smoothed: List<GraphDataPoint>
-)
-
-/**
  * Basal graph data for BG graph overlay (dual Y-axis).
  * Profile basal: dashed step line (scheduled profile rate).
  * Actual basal: solid step line with area fill (profile rate when no temp, temp absolute when temp active).
