@@ -9,6 +9,8 @@ import kotlinx.serialization.Serializable
  * A factor of 1.0 is neutral. [acceIsf] is the raw factor from the BG acceleration (parabola fit) before
  * the AutoISF limits, so it can be far from 1.0. [finalIsf] is the factor that was applied.
  * [iobThEffective] is the effective IOB threshold in U.
+ * [parabolaRaw] is the BG acceleration AutoISF used (parabola fit). [parabolaSmoothed] is the same fit on the
+ * UKF-smoothed 1 minute readings, only for the comparison graph, not used for dosing.
  */
 @Serializable
 data class AutoIsfFactors(
@@ -17,7 +19,9 @@ data class AutoIsfFactors(
     var ppIsf: Double? = null,
     var duraIsf: Double? = null,
     var finalIsf: Double? = null,
-    var iobThEffective: Double? = null
+    var iobThEffective: Double? = null,
+    var parabolaRaw: Double? = null,
+    var parabolaSmoothed: Double? = null
 ) {
 
     /**
@@ -30,7 +34,9 @@ data class AutoIsfFactors(
         ppIsf = ppIsf.finiteOrNull(),
         duraIsf = duraIsf.finiteOrNull(),
         finalIsf = finalIsf.finiteOrNull(),
-        iobThEffective = iobThEffective.finiteOrNull()
+        iobThEffective = iobThEffective.finiteOrNull(),
+        parabolaRaw = parabolaRaw.finiteOrNull(),
+        parabolaSmoothed = parabolaSmoothed.finiteOrNull()
     )
 
     private fun Double?.finiteOrNull(): Double? = this?.takeIf { it.isFinite() }

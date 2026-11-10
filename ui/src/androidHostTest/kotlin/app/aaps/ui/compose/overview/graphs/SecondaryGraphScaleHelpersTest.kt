@@ -324,6 +324,16 @@ internal class SecondaryGraphScaleHelpersTest {
         }
 
         @Test
+        fun `raw and smoothed parabola acceleration share one axis centered on 0`() {
+            assertThat(graphSides(listOf(SeriesType.PARABOLA_RAW, SeriesType.PARABOLA_SMOOTHED)))
+                .isEqualTo(GraphSides(listOf(SeriesType.PARABOLA_RAW, SeriesType.PARABOLA_SMOOTHED), emptyList()))
+            val range = axisRange(axisRuleOf(SeriesType.PARABOLA_RAW), listOf(-1.0, 14.4))!!
+            assertThat(range.reference).isEqualTo(0.0)
+            assertThat(range.min).isAtMost(-1.0)
+            assertThat(range.max).isAtLeast(14.4)
+        }
+
+        @Test
         fun `IOB with iobTH shares one axis and keeps the basal band`() {
             val sides = graphSides(listOf(SeriesType.IOB, SeriesType.IOB_TH_EFFECTIVE))
             assertThat(sides).isEqualTo(GraphSides(listOf(SeriesType.IOB, SeriesType.IOB_TH_EFFECTIVE), emptyList()))

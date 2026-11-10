@@ -33,6 +33,8 @@ internal sealed interface AxisRule {
 internal fun axisRuleOf(type: SeriesType): AxisRule = when (type) {
     SeriesType.SENSITIVITY                            -> AxisRule.Pivot(100.0, SENS_MIN_DEVIATION)
     SeriesType.DEV_SLOPE                              -> AxisRule.Pivot(0.0)
+    // Parabola acceleration: 0 means the BG neither speeds up nor slows down
+    SeriesType.PARABOLA_RAW, SeriesType.PARABOLA_SMOOTHED -> AxisRule.Pivot(0.0)
     SeriesType.VAR_SENSITIVITY, SeriesType.HEART_RATE -> AxisRule.Free
     // AutoISF factors sit around 1.0, so a zero floor would squash them
     in GraphConfig.ISF_FACTOR_TYPES                   -> AxisRule.Padded(keep = 1.0, minPadding = ISF_FACTOR_MIN_PADDING)
@@ -42,7 +44,8 @@ internal fun axisRuleOf(type: SeriesType): AxisRule = when (type) {
 /** The series that are measured in the same unit, and so are drawn against one axis. */
 private val SHARED_UNITS = listOf(
     setOf(SeriesType.IOB, SeriesType.ABS_IOB, SeriesType.IOB_TH_EFFECTIVE),
-    setOf(SeriesType.BGI, SeriesType.DEVIATIONS)
+    setOf(SeriesType.BGI, SeriesType.DEVIATIONS),
+    setOf(SeriesType.PARABOLA_RAW, SeriesType.PARABOLA_SMOOTHED)
 )
 
 /**
