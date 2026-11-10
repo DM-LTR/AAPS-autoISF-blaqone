@@ -78,6 +78,9 @@ enum class StringNonKey(
     // AutoISF automation states: the current value of each state, and the allowed values per state (JSON maps)
     AutomationStateCurrent("automation_state_service", "{}"),
     AutomationStateValues("automation_state_values", "{}"),
+
+    // AutoISF fork: which AutoISF values the closed AutoISF chip on the overview shows, comma separated keys.
+    OverviewAutoIsfChipPinned("overview_autoisf_chip_pinned", "final,iobth"),
     // The tab the Statistics screen opens on: the last one used (per-device UI state, not a user-facing preference)
     StatsTab(key = "stats_tab", defaultValue = "", exportable = false),
 

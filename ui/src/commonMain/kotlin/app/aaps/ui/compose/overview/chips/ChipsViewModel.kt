@@ -4,7 +4,6 @@ import androidx.compose.runtime.Stable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.aaps.core.interfaces.InterfacesStrings
-import app.aaps.core.data.model.BS
 import app.aaps.core.interfaces.aps.APSResult
 import app.aaps.core.interfaces.aps.Loop
 import app.aaps.core.interfaces.aps.RT
@@ -17,16 +16,18 @@ import app.aaps.core.interfaces.plugin.ActivePlugin
 import app.aaps.core.interfaces.resources.TextResolver
 import app.aaps.core.interfaces.rx.bus.RxBus
 import app.aaps.core.interfaces.rx.events.EventShowDialog
-import app.aaps.core.interfaces.utils.DateUtil
 import app.aaps.core.interfaces.utils.DecimalFormatter
+import app.aaps.core.keys.BooleanNonKey
+import app.aaps.core.keys.StringNonKey
+import app.aaps.core.keys.interfaces.Preferences
 import app.aaps.core.objects.extensions.round
 import app.aaps.core.ui.CoreUiStrings
 import app.aaps.core.ui.extensions.displayText
-import app.aaps.core.ui.extensions.toStringShort
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
 import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
@@ -47,8 +48,8 @@ class ChipsViewModel(
     private val rh: TextResolver,
     private val decimalFormatter: DecimalFormatter,
     private val rxBus: RxBus,
-    private val dateUtil: DateUtil,
-    private val activePlugin: ActivePlugin
+    private val activePlugin: ActivePlugin,
+    private val preferences: Preferences
 ) : ViewModel() {
 
     @AssistedFactory
@@ -130,54 +131,24 @@ class ChipsViewModel(
         )
     }
 
-    private val secondTicker = flow {
-        while (true) {
-            emit(dateUtil.now())
-            delay(1_000L)
-        }
-    }
-
-    private val loopStatusDataTicker = flow {
+    /** Re-reads the AutoISF factors every 10 s, on top of every new IOB graph (that is after each calculation). */
+    private val autoIsfTicker = flow {
         while (true) {
             emit(Unit)
             delay(10_000L)
         }
     }
 
-    /**
-     * Last loop run, last SMB and the running temporary basal, for the status line under the BG.
-     * The database is read every 10 s and on every new IOB graph (that is after each calculation);
-     * only the clock for the "ago" texts moves every second.
-     */
-    private val loopStatusData = combine(loopStatusDataTicker, cache.iobGraphFlow) { _, _ ->
-        val now = dateUtil.now()
-        val smb = persistenceLayer.getNewestBolusOfType(BS.Type.SMB)
-        val tbr = persistenceLayer.getTemporaryBasalActiveAt(now)
-        LoopStatusUiState(
-            visible = config.APS,
-            lastRun = loop.lastRun?.lastAPSRun,
-            smbAmount = smb?.amount,
-            smbTime = smb?.timestamp,
-            tbrText = tbr?.toStringShort(rh),
-            tbrStart = tbr?.timestamp
-        )
-    }
-
-    val loopStatusUiState: StateFlow<LoopStatusUiState> = combine(loopStatusData, secondTicker) { data, now ->
-        data.copy(now = now)
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.WhileSubscribed(5000),
-        initialValue = LoopStatusUiState()
-    )
-
     private fun isAutoIsfActive() = config.APS && activePlugin.activeAPS?.algorithm == APSResult.Algorithm.AUTO_ISF
+
+    /** Moves when the user changes the AutoISF chip (open/closed, pinned values), so the chip follows at once. */
+    private val autoIsfChipChanged = MutableStateFlow(0)
 
     /**
      * AutoISF fork, display only: the AutoISF factors of the last loop run, as stored in its result
-     * (RT.autoIsf). They come out of the parabola the settings chose. Updated after each calculation.
+     * (RT.autoIsf), and how the AutoISF chip shows them. Updated after each calculation and every 10 s.
      */
-    val autoIsfFactorsUiState: StateFlow<AutoIsfFactorsUiState> = combine(loopStatusDataTicker, cache.iobGraphFlow) { _, _ ->
+    val autoIsfFactorsUiState: StateFlow<AutoIsfFactorsUiState> = combine(autoIsfTicker, cache.iobGraphFlow, autoIsfChipChanged) { _, _, _ ->
         buildAutoIsfFactorsUiState()
     }.stateIn(
         scope = viewModelScope,
@@ -188,15 +159,58 @@ class ChipsViewModel(
     private fun buildAutoIsfFactorsUiState(): AutoIsfFactorsUiState {
         if (!isAutoIsfActive()) return AutoIsfFactorsUiState()
         val factors = (loop.lastRun?.request?.rawData() as? RT)?.autoIsf ?: return AutoIsfFactorsUiState()
-        fun f(value: Double?) = value?.let { decimalFormatter.to2Decimal(it) } ?: "-"
-        return AutoIsfFactorsUiState(
-            acce = f(factors.acceIsf),
-            bg = f(factors.bgIsf),
-            pp = f(factors.ppIsf),
-            dura = f(factors.duraIsf),
-            final = f(factors.finalIsf),
-            iobTh = factors.iobThEffective?.let { rh.gs(InterfacesStrings.format_insulin_units, it) } ?: "-"
+        fun factor(key: String, value: Double?) = AutoIsfValue(
+            key = key,
+            value = value?.let { decimalFormatter.to2Decimal(it) } ?: "-",
+            tone = AutoIsfTone.of(value)
         )
+        val values = listOf(
+            factor(AutoIsfValue.ACCE, factors.acceIsf),
+            factor(AutoIsfValue.BG, factors.bgIsf),
+            factor(AutoIsfValue.PP, factors.ppIsf),
+            factor(AutoIsfValue.DURA, factors.duraIsf),
+            factor(AutoIsfValue.FINAL, factors.finalIsf),
+            AutoIsfValue(
+                key = AutoIsfValue.IOBTH,
+                label = "iobTH",
+                value = factors.iobThEffective?.let { rh.gs(InterfacesStrings.format_insulin_units, it) } ?: "-",
+                tone = AutoIsfTone.NEUTRAL
+            )
+        )
+        return AutoIsfFactorsUiState(
+            visible = true,
+            values = values,
+            pinned = pinnedAutoIsfValues(values.map { it.key }),
+            expanded = preferences.get(BooleanNonKey.OverviewAutoIsfChipExpanded),
+            apsPluginClassName = activePlugin.activeAPS?.let { it::class.simpleName }
+        )
+    }
+
+    /** The pinned keys in their saved order, only those that exist, at most [AUTOISF_MAX_PINNED]. */
+    private fun pinnedAutoIsfValues(known: List<String>): List<String> =
+        preferences.get(StringNonKey.OverviewAutoIsfChipPinned)
+            .split(',')
+            .map { it.trim() }
+            .filter { it in known }
+            .distinct()
+            .take(AUTOISF_MAX_PINNED)
+
+    /** Opens or closes the AutoISF chip. The state is kept over an app restart. */
+    fun setAutoIsfChipExpanded(expanded: Boolean) {
+        preferences.put(BooleanNonKey.OverviewAutoIsfChipExpanded, expanded)
+        autoIsfChipChanged.value++
+    }
+
+    /** Pins [key] to the closed AutoISF chip or removes it. Nothing happens when [AUTOISF_MAX_PINNED] are pinned already. */
+    fun toggleAutoIsfPin(key: String) {
+        val pinned = autoIsfFactorsUiState.value.pinned
+        val newPinned = when {
+            key in pinned                    -> pinned - key
+            pinned.size < AUTOISF_MAX_PINNED -> pinned + key
+            else                             -> return
+        }
+        preferences.put(StringNonKey.OverviewAutoIsfChipPinned, newPinned.joinToString(","))
+        autoIsfChipChanged.value++
     }
 
     fun showIobInfo() {

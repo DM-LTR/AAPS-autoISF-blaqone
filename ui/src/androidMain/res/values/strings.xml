@@ -381,11 +381,14 @@
     <string name="cal_precheck_delta_too_high">Glucose is changing too fast (Δ %1$s %3$s per 5 min, limit %2$s). Wait for stability.</string>
     <string name="cal_precheck_mark_sensor_change">Mark sensor change</string>
     <string name="graph_therapy_event_bg_with_note" comment="Shown when the user taps a BG check in the overview graph. %1$s = glucose with its unit, %2$s = the note the user wrote. Example: 6.1 mmol/L, before lunch">%1$s, %2$s</string>
-    <string name="overview_status_loop" comment="Overview status line. %1$s = how long ago the loop ran, already with ago. Example: Loop 47s ago">Loop %1$s</string>
-    <string name="overview_status_smb" comment="Overview status line. %1$s = insulin with unit, %2$s = how long ago, already with ago. Example: SMB 0.30 U 4m ago">SMB %1$s %2$s</string>
-    <string name="overview_status_tbr" comment="Overview status line. %1$s = temporary basal rate with unit or percent, %2$s = how long ago it started, already with ago. Example: TBR 1.20 U/h 3m ago">TBR %1$s %2$s</string>
-    <string name="overview_status_no_tbr" comment="Overview status line when no temporary basal rate is running">No TBR</string>
-    <string name="overview_autoisf_factors" comment="AutoISF factors of the last loop run, all numbers like 1.04. %1$s = acce_ISF, %2$s = bg_ISF, %3$s = pp_ISF, %4$s = dura_ISF, %5$s = final ISF factor. Example: AutoISF acce 1.20, bg 1.04, pp 1.00, dura 1.00, final 1.04">AutoISF acce %1$s, bg %2$s, pp %3$s, dura %4$s, final %5$s</string>
-    <string name="overview_autoisf_iobth" comment="Effective IOB threshold of AutoISF. %1$s = insulin with unit. Example: iobTH 3.50 U">iobTH %1$s</string>
+    <string name="overview_autoisf_open">Open AutoISF calculation</string>
+    <string name="overview_autoisf_title">AutoISF</string>
+    <string name="overview_autoisf_value" comment="One AutoISF value in the overview chip. %1$s = short name like final or iobTH, %2$s = value, maybe with unit. Example: final 1.34">%1$s %2$s</string>
+    <string name="overview_autoisf_pinned" comment="In the open AutoISF chip. %1$d = how many values are pinned, %2$d = how many can be pinned. Example: Pinned 2 of 4">Pinned %1$d of %2$d</string>
+    <string name="overview_autoisf_expand">Show all AutoISF values</string>
+    <string name="overview_autoisf_collapse">Hide AutoISF values</string>
+    <string name="overview_autoisf_pin">Show this value when the chip is closed</string>
+    <string name="overview_autoisf_unpin">Do not show this value when the chip is closed</string>
 
+    <string name="graph_inspect_raw_value" comment="In the box shown when holding a point of the BG graph, after the smoothed glucose value. %1$s = the measured raw value, without unit. Example: (raw 151)">(raw %1$s)</string>
 </resources>

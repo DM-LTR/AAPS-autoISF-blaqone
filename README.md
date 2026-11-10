@@ -97,8 +97,11 @@ gets features that were tested.
 
 ### Display
 - BG age in seconds
-- status line: last loop run, last SMB, running temporary basal
-- AutoISF values of the last loop run on the main screen
+- AutoISF chip on the main screen, under the BG: closed one line with the values you pinned, a tap
+  opens all values (pin up to 4), a long press opens the AutoISF screen with the calculation
+- pink BG parabola on the BG graph, as in AutoISF 3.2.1: solid over the fitted minutes, dashed
+  20 minutes ahead
+- holding a point of the BG graph shows the smoothed value and the raw value in brackets
 - graphs for the AutoISF factors and iobTH (also in the IOB graph)
 
 Everything that only concerns AutoISF (graph lines, scene section, automations, main screen
@@ -137,61 +140,55 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
-### 2026-11-10 (15) – README zeigt die neuesten Änderungen
+### 2026-11-10 (22) – Normale Version: AutoISF-Chip, pinke Parabel, langes Drücken
 
-- Unten in der README stehen jetzt die 5 neuesten Changelog-Einträge, darunter der Link auf den
-  ganzen Changelog.
-- Keine Änderung am Code.
+In der Testversion geprüft und jetzt in der normalen Version (und in sport):
 
-### 2026-11-10 (14) – README: Übersicht der Zweige
+- **AutoISF-Chip** auf der Hauptseite, zum Aufklappen, mit anheftbaren Werten (siehe 16–18).
+- **Pinke BG-Parabel** im BZ-Graph wie in AutoISF 3.2.1 (siehe 19).
+- **Langes Drücken im BZ-Graph** zeigt den farbigen, geglätteten Wert in seiner Farbe und dahinter
+  grau in Klammern den Rohwert, z. B. `147 (raw 151)`. In der normalen Version gibt es die farbigen
+  Punkte nur alle 5 Minuten; zwischen ihnen zeigt das lange Drücken den Rohwert allein.
+- Die farbigen BZ-Punkte jede Minute bleiben vorerst in der Testversion.
+- Reine Anzeige, keine Änderung an der Dosierung.
 
-- Die README erklärt jetzt die drei Zweige (normal, dev, sport) mit Links und wie neue Features
-  hineinkommen.
-- Der Parabel-Vergleich roh/geglättet ist in der README als „nur dev“ markiert.
-- Keine Änderung am Code.
+### 2026-11-10 (19) – Pinke BG-Parabel im BZ-Graph
 
-### 2026-11-10 (13) – Automation-States nach dem Import
+- Wie in AutoISF 3.2.1: Die Parabel, die AutoISF für acce_ISF an die BZ-Werte legt, wird als
+  **pinke Linie** im BZ-Graph gezeichnet. **Durchgezogen** über die Minuten, auf die sie gelegt wurde,
+  **gestrichelt** 20 Minuten in die Zukunft (nur wenn die Vorhersagen eingeschaltet sind).
+- **Glatt:** ein Punkt pro Minute, bei 1-Minuten-CGM also an jedem Wert. Die Linie wird **bei jedem
+  neuen Wert** neu berechnet, unabhängig vom Loop-Intervall. Sie zeigt die Parabel, die AutoISF
+  wirklich benutzt (roh oder geglättet, je nach Schalter).
+- Ein-/ausschaltbar mit dem Stift am BZ-Graph („BG parabola (AutoISF)“), nur mit AutoISF. Bei neuer
+  Einstellung ist sie an; wer seine Graph-Einstellung schon gespeichert hat, schaltet sie dort ein.
+- Reine Anzeige, keine Änderung an der Dosierung.
 
-- **States werden jetzt immer frisch gelesen.** Nach einem Einstellungs-Import gelten die importierten
-  States sofort, ohne App-Neustart. Vorher konnte die nächste Änderung die alten States wieder über
-  den Import schreiben.
-- Der **States-Bildschirm aktualisiert sich live**, wenn sich ein State ändert (auch durch eine
-  Automation oder einen Import).
-- Bewusst **kein Import-Filter**: Ein Import stellt den Stand genau so wieder her, wie er exportiert
-  wurde.
-- In allen drei Zweigen (normal, dev, sport).
+### 2026-11-10 (18) – AutoISF-Chip: Abstände
 
-### 2026-11-10 (12) – Zweige: normal, dev, sport
+- Über und unter dem AutoISF-Chip ist jetzt derselbe kleine Abstand (2 dp) wie zwischen IOB/COB
+  und Sensitivity. Ohne AutoISF bleibt die Hauptseite wie vorher.
+- Reine Anzeige.
 
-- **`aaps4-autoisf` (normal):** ohne den Parabel-Vergleich (Anzeige roh/geglättet auf der Hauptseite,
-  im APS-Tab und das Diagramm „acc raw / acc smooth“). Schalter und Regler für die Parabel bleiben;
-  ist der Schalter an, steht im APS-Tab, welche Werte die Parabel benutzt.
-- **`aaps4-autoisf-dev` (Testversion):** normal plus Test-Features, zur Zeit der Parabel-Vergleich.
-- **`aaps4-autoisf-sport`:** Grundlage für eine spätere Sport-Version.
-- Neue Features entstehen auf eigenen Feature-Zweigen vom normalen Zweig, werden in dev getestet und
-  erst danach in den normalen Zweig übernommen.
+### 2026-11-10 (17) – AutoISF-Chip zum Aufklappen
 
-### 2026-11-10 (11) – AutoISF in Szenen und Automationen, CGM-Korrektur
+- Der AutoISF-Chip ist jetzt **zugeklappt einzeilig**: AutoISF-Symbol und die angehefteten Werte,
+  rechtsbündig. **Tippen** klappt ihn auf und zu, **lang drücken** öffnet den AutoISF-Bildschirm.
+- **Aufgeklappt** stehen alle Werte (acce, bg, pp, dura, final, iobTH) in einem Raster.
+  **Antippen** eines Wertes heftet ihn an die zugeklappte Zeile an oder löst ihn (höchstens 4,
+  Standard: final und iobTH). Auswahl und auf/zu werden gespeichert und kommen mit dem Export mit.
+- Farben: Faktor über 1 (stärker, mehr Insulin) orange/gelb, unter 1 (schwächer) grün.
+- Nur sichtbar, wenn AutoISF das aktive APS ist. Reine Anzeige, keine Änderung an der Dosierung.
 
-- ⚠ **Szenen:** Im Szenen-Assistenten (Seite „SMB“) gibt es den Bereich **„AutoISF“**. Eine Szene kann
-  für ihre Dauer AutoISF an/aus schalten, das acce-Gewicht (0–1) und iobTH (10–100 %) setzen.
-  Am Ende der Szene (von Hand oder nach Ablauf) kommen die vorherigen Werte automatisch zurück,
-  auch nach einem App-Neustart.
-- ⚠ **Automationen** wie in AutoISF 3.2.1: Aktionen „AutoISF aktivieren/deaktivieren“,
-  „acce-Gewicht setzen“, „iobTH setzen“, Auslöser „acce-Gewicht“ und „iobTH“. Regeln aus
-  AAPS 3.4.2.6 + AutoISF lassen sich lesen.
-- ⚠ **CGM-Korrektur: nur Slope und Offset – keine Kalibrierung, keine zusätzliche Glättung.**
-  Jeder Wert, der über xDrip (auch Juggluco) ankommt, wird als `Wert × Slope + Offset` gespeichert
-  (Slope 0,5–1,5, Offset −50 bis +50 mg/dl, nie unter 40 mg/dl). Standard 1,00 / 0 = keine
-  Änderung. Einstellbar in den xDrip-Einstellungen und im AutoISF-Bildschirm. Wirkt immer, egal
-  welches APS-Plugin aktiv ist, und wird so auch an Nightscout geschickt. Die Glättung macht weiter
-  der UKF.
-- **Ohne AutoISF ausgeblendet:** AutoISF-Diagrammlinien (Faktoren, iobTH, Parabel), der
-  AutoISF-Bereich im Szenen-Assistenten, die AutoISF-Automationen und die AutoISF-Zeilen auf der
-  Hauptseite, solange AutoISF nicht das aktive APS-Plugin ist. Gespeicherte Einstellungen bleiben
-  erhalten.
-- **Korrektur:** iobTH lässt sich jetzt wirklich im IOB-Diagramm einschalten (Stift-Symbol am
-  IOB-Diagramm → IOBth). Vorher wurde es dort nicht angeboten.
+### 2026-11-10 (16) – AutoISF-Chip auf der Hauptseite
+
+- Die AutoISF-Werte des letzten Loop-Laufs (acce, bg, pp, dura, final, iobTH) stehen jetzt in einem
+  **eigenen Chip** über die ganze Breite, direkt unter BZ-Wert und Sensitivity-Chip. Gleiche Farbe
+  und Höhe wie der Sensitivity-Chip, Text rechtsbündig.
+- **Klick oder langer Klick** auf den Chip öffnet den AutoISF-Bildschirm (APS-Tab) mit der Berechnung.
+- Nur sichtbar, wenn AutoISF das aktive APS ist.
+- Die **graue Statuszeile** (letzter Loop, letzter SMB, TBR) ist wieder entfernt.
+- Reine Anzeige, keine Änderung an der Dosierung.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->

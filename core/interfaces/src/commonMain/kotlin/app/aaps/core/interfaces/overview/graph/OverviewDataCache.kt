@@ -124,6 +124,10 @@ interface OverviewDataCache {
     val iobThEffectiveGraphFlow: StateFlow<IobThEffectiveGraphData>
     fun updateIobThEffectiveGraph(data: IobThEffectiveGraphData)
 
+    // AutoISF fork: the BG parabola on the BG graph
+    val bgParabolaGraphFlow: StateFlow<BgParabolaGraphData>
+    fun updateBgParabolaGraph(data: BgParabolaGraphData)
+
     // =========================================================================
     // Treatment graph flows (main graph overlays)
     // Populated reactively by observing database changes — no worker needed.
