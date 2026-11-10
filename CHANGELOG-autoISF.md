@@ -5,6 +5,13 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-10 (14) – README: Übersicht der Zweige
+
+- Die README erklärt jetzt die drei Zweige (normal, dev, sport) mit Links und wie neue Features
+  hineinkommen.
+- Der Parabel-Vergleich roh/geglättet ist in der README als „nur dev“ markiert.
+- Keine Änderung am Code.
+
 ## 2026-11-10 (13) – Automation-States nach dem Import
 
 - **States werden jetzt immer frisch gelesen.** Nach einem Einstellungs-Import gelten die importierten
