@@ -5,6 +5,14 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-10 (21) – Langes Drücken im BZ-Graph zeigt den geglätteten Wert (nur dev, im Test)
+
+- Langes Drücken auf einen Wert im BZ-Graph zeigte bisher den **Rohwert** (grauer Ring), auch wenn
+  dort ein farbiger Punkt lag. Jetzt sitzt der Punkt auf dem **farbigen (geglätteten) Wert**, die
+  Zahl steht in seiner Bereichsfarbe, und der **Rohwert folgt grau in Klammern**, z. B. `147 (raw 151)`.
+  Sind beide gleich, steht nur ein Wert da. Ohne farbigen Punkt an der Stelle: Rohwert wie bisher.
+- Reine Anzeige.
+
 ## 2026-11-10 (20) – Farbige BZ-Punkte jede Minute (nur dev, im Test)
 
 - Mit einem 1-Minuten-CGM und UKF-Glättung zeigt der BZ-Graph jetzt **jede Minute einen farbigen

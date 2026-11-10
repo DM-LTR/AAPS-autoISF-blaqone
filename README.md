@@ -137,6 +137,14 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
+### 2026-11-10 (21) – Langes Drücken im BZ-Graph zeigt den geglätteten Wert (nur dev, im Test)
+
+- Langes Drücken auf einen Wert im BZ-Graph zeigte bisher den **Rohwert** (grauer Ring), auch wenn
+  dort ein farbiger Punkt lag. Jetzt sitzt der Punkt auf dem **farbigen (geglätteten) Wert**, die
+  Zahl steht in seiner Bereichsfarbe, und der **Rohwert folgt grau in Klammern**, z. B. `147 (raw 151)`.
+  Sind beide gleich, steht nur ein Wert da. Ohne farbigen Punkt an der Stelle: Rohwert wie bisher.
+- Reine Anzeige.
+
 ### 2026-11-10 (20) – Farbige BZ-Punkte jede Minute (nur dev, im Test)
 
 - Mit einem 1-Minuten-CGM und UKF-Glättung zeigt der BZ-Graph jetzt **jede Minute einen farbigen
@@ -173,16 +181,6 @@ The newest changes. ⚠ = this change can affect insulin dosing.
   Standard: final und iobTH). Auswahl und auf/zu werden gespeichert und kommen mit dem Export mit.
 - Farben: Faktor über 1 (stärker, mehr Insulin) orange/gelb, unter 1 (schwächer) grün.
 - Nur sichtbar, wenn AutoISF das aktive APS ist. Reine Anzeige, keine Änderung an der Dosierung.
-
-### 2026-11-10 (16) – AutoISF-Chip auf der Hauptseite (nur dev, im Test)
-
-- Die AutoISF-Werte des letzten Loop-Laufs (acce, bg, pp, dura, final, iobTH) stehen jetzt in einem
-  **eigenen Chip** über die ganze Breite, direkt unter BZ-Wert und Sensitivity-Chip. Gleiche Farbe
-  und Höhe wie der Sensitivity-Chip, Text rechtsbündig.
-- **Klick oder langer Klick** auf den Chip öffnet den AutoISF-Bildschirm (APS-Tab) mit der Berechnung.
-- Nur sichtbar, wenn AutoISF das aktive APS ist.
-- Die **graue Statuszeile** (letzter Loop, letzter SMB, TBR) ist wieder entfernt.
-- Reine Anzeige, keine Änderung an der Dosierung.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->
