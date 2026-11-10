@@ -137,7 +137,19 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
-### 2026-11-10 (19) – Pinke BG-Parabel im BZ-Graph (nur dev, im Test)
+### 2026-11-10 (22) – Normale Version: AutoISF-Chip, pinke Parabel, langes Drücken
+
+In der Testversion geprüft und jetzt in der normalen Version (und in sport):
+
+- **AutoISF-Chip** auf der Hauptseite, zum Aufklappen, mit anheftbaren Werten (siehe 16–18).
+- **Pinke BG-Parabel** im BZ-Graph wie in AutoISF 3.2.1 (siehe 19).
+- **Langes Drücken im BZ-Graph** zeigt den farbigen, geglätteten Wert in seiner Farbe und dahinter
+  grau in Klammern den Rohwert, z. B. `147 (raw 151)`. In der normalen Version gibt es die farbigen
+  Punkte nur alle 5 Minuten; zwischen ihnen zeigt das lange Drücken den Rohwert allein.
+- Die farbigen BZ-Punkte jede Minute bleiben vorerst in der Testversion.
+- Reine Anzeige, keine Änderung an der Dosierung.
+
+### 2026-11-10 (19) – Pinke BG-Parabel im BZ-Graph
 
 - Wie in AutoISF 3.2.1: Die Parabel, die AutoISF für acce_ISF an die BZ-Werte legt, wird als
   **pinke Linie** im BZ-Graph gezeichnet. **Durchgezogen** über die Minuten, auf die sie gelegt wurde,
@@ -149,13 +161,13 @@ The newest changes. ⚠ = this change can affect insulin dosing.
   Einstellung ist sie an; wer seine Graph-Einstellung schon gespeichert hat, schaltet sie dort ein.
 - Reine Anzeige, keine Änderung an der Dosierung.
 
-### 2026-11-10 (18) – AutoISF-Chip: Abstände (nur dev, im Test)
+### 2026-11-10 (18) – AutoISF-Chip: Abstände
 
 - Über und unter dem AutoISF-Chip ist jetzt derselbe kleine Abstand (2 dp) wie zwischen IOB/COB
   und Sensitivity. Ohne AutoISF bleibt die Hauptseite wie vorher.
 - Reine Anzeige.
 
-### 2026-11-10 (17) – AutoISF-Chip zum Aufklappen (nur dev, im Test)
+### 2026-11-10 (17) – AutoISF-Chip zum Aufklappen
 
 - Der AutoISF-Chip ist jetzt **zugeklappt einzeilig**: AutoISF-Symbol und die angehefteten Werte,
   rechtsbündig. **Tippen** klappt ihn auf und zu, **lang drücken** öffnet den AutoISF-Bildschirm.
@@ -165,7 +177,7 @@ The newest changes. ⚠ = this change can affect insulin dosing.
 - Farben: Faktor über 1 (stärker, mehr Insulin) orange/gelb, unter 1 (schwächer) grün.
 - Nur sichtbar, wenn AutoISF das aktive APS ist. Reine Anzeige, keine Änderung an der Dosierung.
 
-### 2026-11-10 (16) – AutoISF-Chip auf der Hauptseite (nur dev, im Test)
+### 2026-11-10 (16) – AutoISF-Chip auf der Hauptseite
 
 - Die AutoISF-Werte des letzten Loop-Laufs (acce, bg, pp, dura, final, iobTH) stehen jetzt in einem
   **eigenen Chip** über die ganze Breite, direkt unter BZ-Wert und Sensitivity-Chip. Gleiche Farbe
@@ -174,12 +186,6 @@ The newest changes. ⚠ = this change can affect insulin dosing.
 - Nur sichtbar, wenn AutoISF das aktive APS ist.
 - Die **graue Statuszeile** (letzter Loop, letzter SMB, TBR) ist wieder entfernt.
 - Reine Anzeige, keine Änderung an der Dosierung.
-
-### 2026-11-10 (15) – README zeigt die neuesten Änderungen
-
-- Unten in der README stehen jetzt die 5 neuesten Changelog-Einträge, darunter der Link auf den
-  ganzen Changelog.
-- Keine Änderung am Code.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->
