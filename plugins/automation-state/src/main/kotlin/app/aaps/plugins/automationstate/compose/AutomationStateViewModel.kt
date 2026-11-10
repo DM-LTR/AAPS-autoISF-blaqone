@@ -1,7 +1,10 @@
 package app.aaps.plugins.automationstate.compose
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import app.aaps.core.interfaces.automation.AutomationStateInterface
+import app.aaps.core.keys.StringNonKey
+import app.aaps.core.keys.interfaces.Preferences
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
@@ -10,6 +13,9 @@ import dev.zacsweers.metrox.viewmodel.ViewModelKey
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 
 data class AutomationStateUiState(
@@ -20,14 +26,22 @@ data class AutomationStateUiState(
 @ContributesIntoMap(AppScope::class, binding = binding<ViewModel>())
 @ViewModelKey
 class AutomationStateViewModel @Inject constructor(
-    private val automationStateService: AutomationStateInterface
+    private val automationStateService: AutomationStateInterface,
+    preferences: Preferences
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AutomationStateUiState())
     val uiState: StateFlow<AutomationStateUiState> = _uiState.asStateFlow()
 
     init {
-        reload()
+        // AutoISF fork: the screen follows every change of the states at once - from an automation, a
+        // scene, a settings import or this screen - like the States tab of AutoISF 3.2.1 did.
+        combine(
+            preferences.observe(StringNonKey.AutomationStateCurrent),
+            preferences.observe(StringNonKey.AutomationStateValues)
+        ) { _, _ -> }
+            .onEach { reload() }
+            .launchIn(viewModelScope)
     }
 
     fun reload() {
