@@ -15,6 +15,10 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 - Kleine Aufräumarbeiten (doppelte Bedingungen, eine überflüssige Prüfung).
 - BZ-Anzeige, Widgets und Trendpfeil lesen nur noch die neuesten Werte statt jedes Mal die ganze
   Liste zu kopieren.
+- ⚠ **Inaktivität überstimmt keinen „empfindlicher“-Autosens mehr** (Issue #2, Option C): Liegt Autosens
+  unter 1, gilt Autosens. Sonst gilt der größere Wert von Autosens und Inaktivität, höchstens
+  autosens_max. Ist Autosens ausgeschaltet (Faktor 1,0), wirkt die Inaktivitätserkennung wie bisher.
+- Drei Tests von JetFoxy (PR #1) übernommen: AutoISF fragt Autosens nie ein zweites Mal ab.
 - **Automation-Zustände** (z. B. „Schlafen“) liegen jetzt im gemeinsamen Code und funktionieren damit
   auf allen Plattformen, nicht nur auf Android. Für Android ändert sich nichts.
 

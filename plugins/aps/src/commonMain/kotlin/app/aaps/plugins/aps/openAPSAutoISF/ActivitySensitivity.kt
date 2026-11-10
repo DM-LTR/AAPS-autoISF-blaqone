@@ -5,14 +5,19 @@ package app.aaps.plugins.aps.openAPSAutoISF
  *
  * - Activity: the smaller of the autosens ratio and the activity ratio. A ratio below 1 means less
  *   insulin, so detected movement can never give more insulin than autosens alone would.
- * - Inactivity: the activity ratio, as in AutoISF 3.2.1, but never above [autosensMax]. With the
- *   inactivity scale factor at 1.5 the step monitor gives up to 1.3, which is more than the user allows
- *   autosens to give (1.2 by default).
+ * - Inactivity (issue #2 on blaqone/AAPS-autoISF, option C): when autosens says "more sensitive" (below
+ *   1), autosens wins, so inactivity can never give more insulin than autosens then. Otherwise the larger
+ *   of the two, never above [autosensMax]. AutoISF 3.2.1 used the activity ratio alone, which could turn
+ *   autosens 0.7 into 1.2. With autosens switched off the ratio is 1.0, so inactivity works as before.
  *
  * Used by the plugin (iobTH and autoISF) and by `DetermineBasalAutoISF`, so all three agree.
  */
 internal fun activitySensitivityRatio(autosensRatio: Double, activityRatio: Double, activityDetected: Boolean, autosensMax: Double): Double =
-    if (activityDetected) minOf(autosensRatio, activityRatio) else minOf(activityRatio, autosensMax)
+    when {
+        activityDetected  -> minOf(autosensRatio, activityRatio)
+        autosensRatio < 1 -> autosensRatio
+        else              -> minOf(maxOf(autosensRatio, activityRatio), autosensMax)
+    }
 
 /**
  * What the activity monitor and the activity classifier found in one loop run. Handed directly from the
