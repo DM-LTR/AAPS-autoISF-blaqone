@@ -97,8 +97,11 @@ gets features that were tested.
 
 ### Display
 - BG age in seconds
-- AutoISF chip on the main screen: the AutoISF values of the last loop run, over the whole width
-  under the BG; a click opens the AutoISF screen with the calculation
+- AutoISF chip on the main screen, under the BG: closed one line with the values you pinned, a tap
+  opens all values (pin up to 4), a long press opens the AutoISF screen with the calculation
+- pink BG parabola on the BG graph, as in AutoISF 3.2.1: solid over the fitted minutes, dashed
+  20 minutes ahead
+- holding a point of the BG graph shows the smoothed value and the raw value in brackets
 - graphs for the AutoISF factors and iobTH (also in the IOB graph)
 
 Everything that only concerns AutoISF (graph lines, scene section, automations, main screen
@@ -137,7 +140,19 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
-### 2026-11-10 (21) – Langes Drücken im BZ-Graph zeigt den geglätteten Wert (nur dev, im Test)
+### 2026-11-10 (22) – Normale Version: AutoISF-Chip, pinke Parabel, langes Drücken
+
+In der Testversion geprüft und jetzt in der normalen Version (und in sport):
+
+- **AutoISF-Chip** auf der Hauptseite, zum Aufklappen, mit anheftbaren Werten (siehe 16–18).
+- **Pinke BG-Parabel** im BZ-Graph wie in AutoISF 3.2.1 (siehe 19).
+- **Langes Drücken im BZ-Graph** zeigt den farbigen, geglätteten Wert in seiner Farbe und dahinter
+  grau in Klammern den Rohwert, z. B. `147 (raw 151)`. In der normalen Version gibt es die farbigen
+  Punkte nur alle 5 Minuten; zwischen ihnen zeigt das lange Drücken den Rohwert allein.
+- Die farbigen BZ-Punkte jede Minute bleiben vorerst in der Testversion.
+- Reine Anzeige, keine Änderung an der Dosierung.
+
+### 2026-11-10 (21) – Langes Drücken im BZ-Graph zeigt den geglätteten Wert
 
 - Langes Drücken auf einen Wert im BZ-Graph zeigte bisher den **Rohwert** (grauer Ring), auch wenn
   dort ein farbiger Punkt lag. Jetzt sitzt der Punkt auf dem **farbigen (geglätteten) Wert**, die
@@ -154,7 +169,7 @@ The newest changes. ⚠ = this change can affect insulin dosing.
 - Auch das BZ-Punkte-Widget zeigt dann einen Punkt pro Minute.
 - Reine Anzeige: Autosens, IOB/COB und der Loop rechnen wie bisher.
 
-### 2026-11-10 (19) – Pinke BG-Parabel im BZ-Graph (nur dev, im Test)
+### 2026-11-10 (19) – Pinke BG-Parabel im BZ-Graph
 
 - Wie in AutoISF 3.2.1: Die Parabel, die AutoISF für acce_ISF an die BZ-Werte legt, wird als
   **pinke Linie** im BZ-Graph gezeichnet. **Durchgezogen** über die Minuten, auf die sie gelegt wurde,
@@ -166,21 +181,11 @@ The newest changes. ⚠ = this change can affect insulin dosing.
   Einstellung ist sie an; wer seine Graph-Einstellung schon gespeichert hat, schaltet sie dort ein.
 - Reine Anzeige, keine Änderung an der Dosierung.
 
-### 2026-11-10 (18) – AutoISF-Chip: Abstände (nur dev, im Test)
+### 2026-11-10 (18) – AutoISF-Chip: Abstände
 
 - Über und unter dem AutoISF-Chip ist jetzt derselbe kleine Abstand (2 dp) wie zwischen IOB/COB
   und Sensitivity. Ohne AutoISF bleibt die Hauptseite wie vorher.
 - Reine Anzeige.
-
-### 2026-11-10 (17) – AutoISF-Chip zum Aufklappen (nur dev, im Test)
-
-- Der AutoISF-Chip ist jetzt **zugeklappt einzeilig**: AutoISF-Symbol und die angehefteten Werte,
-  rechtsbündig. **Tippen** klappt ihn auf und zu, **lang drücken** öffnet den AutoISF-Bildschirm.
-- **Aufgeklappt** stehen alle Werte (acce, bg, pp, dura, final, iobTH) in einem Raster.
-  **Antippen** eines Wertes heftet ihn an die zugeklappte Zeile an oder löst ihn (höchstens 4,
-  Standard: final und iobTH). Auswahl und auf/zu werden gespeichert und kommen mit dem Export mit.
-- Farben: Faktor über 1 (stärker, mehr Insulin) orange/gelb, unter 1 (schwächer) grün.
-- Nur sichtbar, wenn AutoISF das aktive APS ist. Reine Anzeige, keine Änderung an der Dosierung.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->
