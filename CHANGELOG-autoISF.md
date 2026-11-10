@@ -5,6 +5,16 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-10 (16) – AutoISF-Chip auf der Hauptseite (nur dev, im Test)
+
+- Die AutoISF-Werte des letzten Loop-Laufs (acce, bg, pp, dura, final, iobTH) stehen jetzt in einem
+  **eigenen Chip** über die ganze Breite, direkt unter BZ-Wert und Sensitivity-Chip. Gleiche Farbe
+  und Höhe wie der Sensitivity-Chip, Text rechtsbündig.
+- **Klick oder langer Klick** auf den Chip öffnet den AutoISF-Bildschirm (APS-Tab) mit der Berechnung.
+- Nur sichtbar, wenn AutoISF das aktive APS ist.
+- Die **graue Statuszeile** (letzter Loop, letzter SMB, TBR) ist wieder entfernt.
+- Reine Anzeige, keine Änderung an der Dosierung.
+
 ## 2026-11-10 (15) – README zeigt die neuesten Änderungen
 
 - Unten in der README stehen jetzt die 5 neuesten Changelog-Einträge, darunter der Link auf den
