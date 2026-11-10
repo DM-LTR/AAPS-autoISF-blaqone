@@ -67,6 +67,7 @@ import app.aaps.core.ui.compose.icons.IcBgCheck
 import app.aaps.core.ui.compose.navigation.color
 import app.aaps.core.ui.compose.navigation.icon
 import app.aaps.core.ui.compose.stringResource
+import app.aaps.ui.UiStrings
 import app.aaps.ui.compose.overview.chips.toIcon
 import com.patrykandpatrick.vico.compose.cartesian.CartesianDrawingContext
 import com.patrykandpatrick.vico.compose.cartesian.axis.Axis
@@ -100,6 +101,13 @@ private const val INSPECT_MATCH_MS = 5 * 60_000L
  * the finger's own, and this window finds a treatment in a gap when it is held.
  */
 private const val INSPECT_TREATMENT_MS = 150_000L
+
+/**
+ * AutoISF fork: max distance between a reading and the coloured (smoothed) dot shown for it, in ms. With a
+ * 1 minute source smoothed reading by reading both have the same time; on the 5 minute grid only the
+ * readings next to a grid point have one.
+ */
+private const val INSPECT_SMOOTHED_MATCH_MS = 30_000L
 
 /** How long the pill stays after the finger is lifted. */
 private const val INSPECT_LINGER_MS = 2_000L
@@ -357,6 +365,7 @@ fun GraphInspectOverlay(
     val treatmentGraph by graphViewModel.treatmentGraphFlow.collectAsStateWithLifecycle()
     val runningModeGraph by graphViewModel.runningModeGraphFlow.collectAsStateWithLifecycle()
     val predictions by graphViewModel.predictionsFlow.collectAsStateWithLifecycle()
+    val smoothedReadings by graphViewModel.bucketedDataFlow.collectAsStateWithLifecycle()
     val currentBgReadings by rememberUpdatedState(bgReadings)
     val currentMinTimestamp by rememberUpdatedState(minTimestamp)
     val haptic = LocalHapticFeedback.current
@@ -380,11 +389,12 @@ fun GraphInspectOverlay(
                 carbs = treatmentGraph.carbs,
                 calibrations = treatmentGraph.calibrations,
                 therapyEvents = treatmentGraph.therapyEvents,
-                runningModes = runningModeGraph.segments
+                runningModes = runningModeGraph.segments,
+                smoothedReadings = smoothedReadings
             )
             if (fingerDown && data.timestamp != inspect.pill?.timestamp) haptic.performHapticFeedback(HapticFeedbackType.TextHandleMove)
             inspect.shownX = timestampToX(data.timestamp, min)
-            inspect.dotValue = data.bg?.value
+            inspect.dotValue = data.shownBg?.value
             inspect.pill = data
         }
     }
@@ -402,7 +412,7 @@ fun GraphInspectOverlay(
     }
 
     val data = inspect.pill
-    val dotColor = data?.bg?.range?.inspectColor() ?: Color.Unspecified
+    val dotColor = data?.shownBg?.range?.inspectColor() ?: Color.Unspecified
     SideEffect { inspect.dotColor = dotColor }
     if (data != null) GraphInspectPill(data = data, modifier = modifier)
 }
@@ -421,8 +431,14 @@ data class InspectData(
     /** The running mode at that time, or null for closed loop, which the belt does not colour either. */
     val runningMode: RM.Mode? = null,
     /** The treatment belt's events at that time: notes, exercise, announcements. */
-    val events: List<TherapyEventGraphPoint> = emptyList()
-)
+    val events: List<TherapyEventGraphPoint> = emptyList(),
+    /** AutoISF fork: the coloured (smoothed) dot at [bg], null when there is none at that time. */
+    val smoothedBg: BgDataPoint? = null
+) {
+
+    /** The value the graph shows at that time: the coloured dot, else the reading. The dot sits on it. */
+    val shownBg: BgDataPoint? get() = smoothedBg ?: bg
+}
 
 /** The nearest reading to [timestamp], with the values and treatments at its time. */
 fun inspectDataAt(
@@ -437,7 +453,9 @@ fun inspectDataAt(
     carbs: List<CarbsGraphPoint>,
     calibrations: List<CalibrationGraphPoint>,
     therapyEvents: List<TherapyEventGraphPoint>,
-    runningModes: List<RunningModeSegment> = emptyList()
+    runningModes: List<RunningModeSegment> = emptyList(),
+    /** AutoISF fork: the coloured (smoothed) dots of the BG graph */
+    smoothedReadings: List<BgDataPoint> = emptyList()
 ): InspectData {
     // The time snaps to a reading or, after the last reading, to a prediction point. So a hold on
     // any graph steps through the same times as a hold on the BG graph, in steps of a reading, not
@@ -471,6 +489,10 @@ fun inspectDataAt(
         events = therapyEvents.filter { event ->
             event.isOnBelt() &&
                 (belongsHere(event.timestamp) || event.duration > 0 && time in event.timestamp..endOf(event.timestamp, event.duration))
+        },
+        smoothedBg = bg?.let { reading ->
+            smoothedReadings.minByOrNull { abs(it.timestamp - reading.timestamp) }
+                ?.takeIf { abs(it.timestamp - reading.timestamp) <= INSPECT_SMOOTHED_MATCH_MS }
         }
     )
 }
@@ -536,9 +558,17 @@ fun GraphInspectPill(
                 modifier = Modifier.padding(vertical = AapsSpacing.small)
             ) {
                 PillText(dateUtil.timeString(data.timestamp), MaterialTheme.colorScheme.onSurfaceVariant)
-                data.bg?.let { bg ->
-                    val text = if (profileUtil.units == GlucoseUnit.MGDL) decimalFormatter.to0Decimal(bg.value) else decimalFormatter.to1Decimal(bg.value)
-                    PillText(text, bg.range.inspectColor())
+                // AutoISF fork: the coloured (smoothed) value in its range colour, the reading behind it in
+                // grey brackets when it differs. Without a coloured dot at that time the reading alone.
+                data.shownBg?.let { shown ->
+                    fun glucose(value: Double) =
+                        if (profileUtil.units == GlucoseUnit.MGDL) decimalFormatter.to0Decimal(value) else decimalFormatter.to1Decimal(value)
+                    val shownText = glucose(shown.value)
+                    val rawText = data.bg?.takeIf { data.smoothedBg != null }?.let { glucose(it.value) }?.takeIf { it != shownText }
+                    Row(horizontalArrangement = Arrangement.spacedBy(AapsSpacing.extraSmall), verticalAlignment = Alignment.CenterVertically) {
+                        PillText(shownText, shown.range.inspectColor())
+                        rawText?.let { PillText(stringResource(UiStrings.graph_inspect_raw_value, it), MaterialTheme.colorScheme.onSurfaceVariant) }
+                    }
                 }
                 data.iob?.let {
                     PillItem(ElementType.INSULIN.icon(), stringResource(InterfacesStrings.format_insulin_units, it), ElementType.INSULIN.color())
