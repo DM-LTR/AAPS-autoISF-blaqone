@@ -5,6 +5,15 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-10 (20) – Farbige BZ-Punkte jede Minute (nur dev, im Test)
+
+- Mit einem 1-Minuten-CGM und UKF-Glättung zeigt der BZ-Graph jetzt **jede Minute einen farbigen
+  Punkt** (geglätteter Wert, nach Bereich gefärbt). Vorher gab es ihn nur alle 5 Minuten. Die grauen
+  Ringe (Rohwerte) bleiben.
+- Gilt mit jedem APS, nicht nur mit AutoISF. Mit 5-Minuten-CGM oder ohne UKF bleibt alles wie vorher.
+- Auch das BZ-Punkte-Widget zeigt dann einen Punkt pro Minute.
+- Reine Anzeige: Autosens, IOB/COB und der Loop rechnen wie bisher.
+
 ## 2026-11-10 (19) – Pinke BG-Parabel im BZ-Graph (nur dev, im Test)
 
 - Wie in AutoISF 3.2.1: Die Parabel, die AutoISF für acce_ISF an die BZ-Werte legt, wird als

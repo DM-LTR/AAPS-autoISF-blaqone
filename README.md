@@ -137,6 +137,15 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
+### 2026-11-10 (20) – Farbige BZ-Punkte jede Minute (nur dev, im Test)
+
+- Mit einem 1-Minuten-CGM und UKF-Glättung zeigt der BZ-Graph jetzt **jede Minute einen farbigen
+  Punkt** (geglätteter Wert, nach Bereich gefärbt). Vorher gab es ihn nur alle 5 Minuten. Die grauen
+  Ringe (Rohwerte) bleiben.
+- Gilt mit jedem APS, nicht nur mit AutoISF. Mit 5-Minuten-CGM oder ohne UKF bleibt alles wie vorher.
+- Auch das BZ-Punkte-Widget zeigt dann einen Punkt pro Minute.
+- Reine Anzeige: Autosens, IOB/COB und der Loop rechnen wie bisher.
+
 ### 2026-11-10 (19) – Pinke BG-Parabel im BZ-Graph (nur dev, im Test)
 
 - Wie in AutoISF 3.2.1: Die Parabel, die AutoISF für acce_ISF an die BZ-Werte legt, wird als
@@ -174,12 +183,6 @@ The newest changes. ⚠ = this change can affect insulin dosing.
 - Nur sichtbar, wenn AutoISF das aktive APS ist.
 - Die **graue Statuszeile** (letzter Loop, letzter SMB, TBR) ist wieder entfernt.
 - Reine Anzeige, keine Änderung an der Dosierung.
-
-### 2026-11-10 (15) – README zeigt die neuesten Änderungen
-
-- Unten in der README stehen jetzt die 5 neuesten Changelog-Einträge, darunter der Link auf den
-  ganzen Changelog.
-- Keine Änderung am Code.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->
