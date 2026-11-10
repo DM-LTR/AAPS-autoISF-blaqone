@@ -31,7 +31,10 @@ enum class SeriesType {
     PP_ISF,
     DURA_ISF,
     FINAL_ISF,
-    IOB_TH_EFFECTIVE
+    IOB_TH_EFFECTIVE,
+
+    /** AutoISF fork: the BG parabola, an overlay of the BG graph only */
+    BG_PARABOLA
 }
 
 /**
@@ -60,7 +63,7 @@ data class SecondaryGraph(
  *   Max 2 series per graph. FIFO: adding a 3rd deselects the oldest.
  */
 data class GraphConfig(
-    val bgOverlays: List<SeriesType> = listOf(SeriesType.ACTIVITY, SeriesType.PREDICTIONS),
+    val bgOverlays: List<SeriesType> = listOf(SeriesType.ACTIVITY, SeriesType.PREDICTIONS, SeriesType.BG_PARABOLA),
     val iobOverlays: List<SeriesType> = listOf(SeriesType.ACTIVITY),
     val bgHeight: Int = DEFAULT_GRAPH_HEIGHT_DP,
     val iobHeight: Int = DEFAULT_GRAPH_HEIGHT_DP,
@@ -101,7 +104,7 @@ data class GraphConfig(
          * AutoISF fork: series that only AutoISF fills. They are not drawn and not offered while AutoISF is
          * not the active APS algorithm; the saved graph settings keep them for when it is active again.
          */
-        val AUTOISF_ONLY_TYPES = ISF_COMPANION_TYPES
+        val AUTOISF_ONLY_TYPES = ISF_COMPANION_TYPES + SeriesType.BG_PARABOLA
     }
 }
 

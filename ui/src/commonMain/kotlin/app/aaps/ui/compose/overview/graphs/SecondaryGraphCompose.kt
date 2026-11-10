@@ -933,6 +933,7 @@ data class SeriesColors(
         SeriesType.DURA_ISF -> duraIsf
         SeriesType.FINAL_ISF -> finalIsf
         SeriesType.IOB_TH_EFFECTIVE -> iobThEffective
+        SeriesType.BG_PARABOLA      -> activity // unused - BG_PARABOLA is a BG overlay, not a secondary series
     }
 }
 

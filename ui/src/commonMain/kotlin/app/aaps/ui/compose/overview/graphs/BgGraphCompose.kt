@@ -28,6 +28,8 @@ import app.aaps.core.graph.vico.Square
 import app.aaps.core.interfaces.overview.graph.ActivityGraphData
 import app.aaps.core.interfaces.overview.graph.BasalGraphData
 import app.aaps.core.interfaces.overview.graph.BgDataPoint
+import app.aaps.core.interfaces.overview.graph.BgParabolaGraphData
+import app.aaps.core.interfaces.overview.graph.GraphDataPoint
 import app.aaps.core.interfaces.overview.graph.BgType
 import app.aaps.core.interfaces.overview.graph.EpsGraphPoint
 import app.aaps.core.interfaces.overview.graph.SeriesType
@@ -73,6 +75,10 @@ private const val SERIES_PRED_COB = "pred_cob"
 private const val SERIES_PRED_ACOB = "pred_acob"
 private const val SERIES_PRED_UAM = "pred_uam"
 private const val SERIES_PRED_ZT = "pred_zt"
+
+/** AutoISF fork: the BG parabola, the fitted part and its extrapolation */
+private const val SERIES_PARABOLA_FIT = "parabola_fit"
+private const val SERIES_PARABOLA_EXTRAPOLATION = "parabola_extrapolation"
 
 /** All prediction series identifiers, each with the type of prediction it draws */
 private val PREDICTION_SERIES = listOf(
@@ -186,6 +192,13 @@ fun BgGraphCompose(
     val showActivity = SeriesType.ACTIVITY in bgOverlays
     val activityData by viewModel.activityGraphFlow.collectAsStateWithLifecycle()
     val chartConfig by viewModel.chartConfigFlow.collectAsStateWithLifecycle()
+    // AutoISF fork: the BG parabola. Only its extrapolation counts as a prediction, as in AutoISF 3.2.1.
+    val rawBgParabola by viewModel.bgParabolaGraphFlow.collectAsStateWithLifecycle()
+    val bgParabola = when {
+        SeriesType.BG_PARABOLA !in bgOverlays -> BgParabolaGraphData(emptyList(), emptyList())
+        showPredictions                       -> rawBgParabola
+        else                                  -> rawBgParabola.copy(extrapolation = emptyList())
+    }
 
     // Use derived time range or fall back to default (last GRAPH_TIME_RANGE_HOURS hours)
     val (minTimestamp, maxTimestamp) = derivedTimeRange ?: run {
@@ -215,6 +228,7 @@ fun BgGraphCompose(
     val aCobPredColor = AapsTheme.generalColors.aCobPrediction
     val uamPredColor = AapsTheme.generalColors.uamPrediction
     val ztPredColor = AapsTheme.generalColors.ztPrediction
+    val bgParabolaColor = AapsTheme.generalColors.bgParabola
 
     // Calculate x-axis range (must match COB graph for alignment)
     val maxX = remember(minTimestamp, maxTimestamp) {
@@ -240,7 +254,7 @@ fun BgGraphCompose(
     // it as a repeat, and the lines stayed like that. Same as in SecondaryGraphCompose.
     val modelInput = BgModelInput(
         bgReadings, bucketedData, predictions, basalData, targetData, epsPoints, activityData, showActivity, chartConfig,
-        minTimestamp, maxX, visibleTimeRange, treatmentData, predictionHeadroom
+        minTimestamp, maxX, visibleTimeRange, treatmentData, predictionHeadroom, bgParabola
     )
     val latestModelInput by rememberUpdatedState(modelInput)
     LaunchedEffect(modelProducer) {
@@ -301,8 +315,32 @@ fun BgGraphCompose(
     val uamPredLine = remember(uamPredColor) { createPredictionLine(uamPredColor) }
     val ztPredLine = remember(ztPredColor) { createPredictionLine(ztPredColor) }
 
+    // AutoISF fork: BG parabola - the fitted part solid, the extrapolation dashed, as in AutoISF 3.2.1
+    val parabolaFitLine = remember(bgParabolaColor) {
+        LineCartesianLayer.Line(
+            fill = LineCartesianLayer.LineFill.single(Fill(bgParabolaColor)),
+            stroke = LineCartesianLayer.LineStroke.Continuous(thickness = 2.5.dp),
+            areaFill = null
+        )
+    }
+    val parabolaExtrapolationLine = remember(bgParabolaColor) {
+        LineCartesianLayer.Line(
+            fill = LineCartesianLayer.LineFill.single(Fill(bgParabolaColor)),
+            stroke = LineCartesianLayer.LineStroke.Dashed(
+                thickness = 2.5.dp,
+                cap = StrokeCap.Round,
+                dashLength = 4.dp,
+                gapLength = 4.dp
+            ),
+            areaFill = null
+        )
+    }
+
     val activeSeries by activeSeriesState
-    val bgLines = remember(activeSeries, regularLine, bucketedLine, iobPredLine, cobPredLine, aCobPredLine, uamPredLine, ztPredLine, normalizerLine) {
+    val bgLines = remember(
+        activeSeries, regularLine, bucketedLine, iobPredLine, cobPredLine, aCobPredLine, uamPredLine, ztPredLine, normalizerLine,
+        parabolaFitLine, parabolaExtrapolationLine
+    ) {
         buildList {
             if (SERIES_REGULAR in activeSeries) add(regularLine)
             if (SERIES_BUCKETED in activeSeries) add(bucketedLine)
@@ -311,6 +349,8 @@ fun BgGraphCompose(
             if (SERIES_PRED_ACOB in activeSeries) add(aCobPredLine)
             if (SERIES_PRED_UAM in activeSeries) add(uamPredLine)
             if (SERIES_PRED_ZT in activeSeries) add(ztPredLine)
+            if (SERIES_PARABOLA_FIT in activeSeries) add(parabolaFitLine)
+            if (SERIES_PARABOLA_EXTRAPOLATION in activeSeries) add(parabolaExtrapolationLine)
             add(normalizerLine)
         }
     }
@@ -570,7 +610,9 @@ private data class BgModelInput(
     val visibleTimeRange: Pair<Long, Long>?,
     val treatmentData: TreatmentGraphData,
     /** How far a prediction may widen the top of the axis above the real data, in the units of the graph */
-    val predictionHeadroom: Double
+    val predictionHeadroom: Double,
+    /** AutoISF fork: the BG parabola, empty when it is not shown. It does not change the axis. */
+    val bgParabola: BgParabolaGraphData
 )
 
 /**
@@ -704,6 +746,16 @@ private suspend fun submitBgModel(
                     withData.add(predSeries)
                 }
             }
+
+            // AutoISF fork: BG parabola, one point per minute
+            fun parabolaSeries(points: List<GraphDataPoint>, name: String) {
+                if (points.size < 2) return
+                val dataPoints = points.map { timestampToX(it.timestamp, minTimestamp) to it.value }.sortedBy { it.first }
+                series(x = dataPoints.map { it.first }, y = dataPoints.map { it.second })
+                withData.add(name)
+            }
+            parabolaSeries(input.bgParabola.fit, SERIES_PARABOLA_FIT)
+            parabolaSeries(input.bgParabola.extrapolation, SERIES_PARABOLA_EXTRAPOLATION)
 
             // Normalizer series
             series(x = normalizerX(input.maxX), y = NORMALIZER_Y)
