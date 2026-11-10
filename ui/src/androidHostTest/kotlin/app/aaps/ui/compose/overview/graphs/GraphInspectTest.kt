@@ -403,4 +403,40 @@ class GraphInspectTest {
         assertThat(tbrState(basal = 0.0, profileBasal = 0.8)).isEqualTo(TbrState.LOW)
         assertThat(tbrState(basal = 0.8, profileBasal = null)).isEqualTo(TbrState.NONE)
     }
+
+    @Test
+    fun `the coloured smoothed dot is shown at a reading, the reading itself without one`() {
+        fun dataAt(minutes: Int, smoothed: List<BgDataPoint>) = inspectDataAt(
+            timestamp = t0 + minutes * minute,
+            bgReadings = readings,
+            predictions = emptyList(),
+            iob = emptyList(),
+            cob = emptyList(),
+            actualBasal = emptyList(),
+            profileBasal = emptyList(),
+            boluses = emptyList(),
+            carbs = emptyList(),
+            calibrations = emptyList(),
+            therapyEvents = emptyList(),
+            smoothedReadings = smoothed
+        )
+        val smoothed = listOf(
+            BgDataPoint(t0 + 5 * minute, 5.3, BgRange.IN_RANGE, BgType.BUCKETED),
+            BgDataPoint(t0 + 8 * minute, 5.9, BgRange.IN_RANGE, BgType.BUCKETED)
+        )
+
+        // At the reading of minute 5 there is a coloured dot: it is shown, the reading stays for the brackets
+        val atFive = dataAt(5, smoothed)
+        assertThat(atFive.bg?.value).isEqualTo(5.5)
+        assertThat(atFive.smoothedBg?.value).isEqualTo(5.3)
+        assertThat(atFive.shownBg?.value).isEqualTo(5.3)
+
+        // The dot of minute 8 is too far from the reading of minute 10: the reading is shown alone
+        val atTen = dataAt(10, smoothed)
+        assertThat(atTen.smoothedBg).isNull()
+        assertThat(atTen.shownBg?.value).isEqualTo(6.0)
+
+        // Without coloured dots nothing changes
+        assertThat(dataAt(5, emptyList()).shownBg?.value).isEqualTo(5.5)
+    }
 }

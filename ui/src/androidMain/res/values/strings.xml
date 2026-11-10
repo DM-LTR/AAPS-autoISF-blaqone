@@ -395,4 +395,5 @@
     <string name="overview_autoisf_parabola_smoothed" comment="Short name in the AutoISF chip: the parabola on smoothed CGM values is used">parabola smoothed</string>
     <string name="overview_autoisf_unpin">Do not show this value when the chip is closed</string>
 
+    <string name="graph_inspect_raw_value" comment="In the box shown when holding a point of the BG graph, after the smoothed glucose value. %1$s = the measured raw value, without unit. Example: (raw 151)">(raw %1$s)</string>
 </resources>
