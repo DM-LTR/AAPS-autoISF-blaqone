@@ -388,4 +388,5 @@
     <string name="overview_autoisf_factors" comment="AutoISF factors of the last loop run, all numbers like 1.04. %1$s = acce_ISF, %2$s = bg_ISF, %3$s = pp_ISF, %4$s = dura_ISF, %5$s = final ISF factor. Example: AutoISF acce 1.20, bg 1.04, pp 1.00, dura 1.00, final 1.04">AutoISF acce %1$s, bg %2$s, pp %3$s, dura %4$s, final %5$s</string>
     <string name="overview_autoisf_iobth" comment="Effective IOB threshold of AutoISF. %1$s = insulin with unit. Example: iobTH 3.50 U">iobTH %1$s</string>
 
+    <string name="graph_inspect_raw_value" comment="In the box shown when holding a point of the BG graph, after the smoothed glucose value. %1$s = the measured raw value, without unit. Example: (raw 151)">(raw %1$s)</string>
 </resources>
