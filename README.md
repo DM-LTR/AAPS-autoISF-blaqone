@@ -97,8 +97,11 @@ gets features that were tested.
 
 ### Display
 - BG age in seconds
-- AutoISF chip on the main screen: the AutoISF values of the last loop run, over the whole width
-  under the BG; a click opens the AutoISF screen with the calculation
+- AutoISF chip on the main screen, under the BG: closed one line with the values you pinned, a tap
+  opens all values (pin up to 4), a long press opens the AutoISF screen with the calculation
+- pink BG parabola on the BG graph, as in AutoISF 3.2.1: solid over the fitted minutes, dashed
+  20 minutes ahead
+- holding a point of the BG graph shows the smoothed value and the raw value in brackets
 - graphs for the AutoISF factors and iobTH (also in the IOB graph)
 
 Everything that only concerns AutoISF (graph lines, scene section, automations, main screen
