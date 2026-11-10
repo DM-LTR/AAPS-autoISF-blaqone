@@ -71,7 +71,7 @@ class ActionFactory(
         actionNotification(), actionProfileSwitch(), actionProfileSwitchPercent(), actionRunAutotune(),
         actionRunScene(), actionSendSMS(), actionSettingsExport(), actionSMBChange(), actionSmoothingChange(),
         actionStartTempTarget(), actionStopProcessing(), actionStopTempTarget(),
-        actionSetAutomationState()
+        actionSetAutomationState(), actionAutoisfEnable(), actionAutoisfDisable(), actionSetAcceWeight(), actionSetIobTH()
     )
 
     fun actionAlarm() = ActionAlarm(aapsLogger, rh, pumpEnactResultProvider, rxBus, dateUtil, reminderScheduler, config)
@@ -98,6 +98,10 @@ class ActionFactory(
     fun actionStopProcessing() = ActionStopProcessing(aapsLogger, rh, pumpEnactResultProvider)
     fun actionStopTempTarget() = ActionStopTempTarget(aapsLogger, rh, pumpEnactResultProvider, persistenceLayer, dateUtil)
     fun actionSetAutomationState() = ActionSetAutomationState(aapsLogger, rh, pumpEnactResultProvider, automationStateInterface)
+    fun actionAutoisfEnable() = ActionAutoisfEnable(aapsLogger, rh, pumpEnactResultProvider, preferences)
+    fun actionAutoisfDisable() = ActionAutoisfDisable(aapsLogger, rh, pumpEnactResultProvider, preferences)
+    fun actionSetAcceWeight() = ActionSetAcceWeight(aapsLogger, rh, pumpEnactResultProvider, preferences)
+    fun actionSetIobTH() = ActionSetIobTH(aapsLogger, rh, pumpEnactResultProvider, preferences)
 
     /**
      * A new, empty action of the given type. The name may be plain or fully qualified, because that is
@@ -123,6 +127,10 @@ class ActionFactory(
             ActionStopProcessing::class.simpleName       -> actionStopProcessing()
             ActionStopTempTarget::class.simpleName       -> actionStopTempTarget()
             ActionSetAutomationState::class.simpleName   -> actionSetAutomationState()
+            ActionAutoisfEnable::class.simpleName        -> actionAutoisfEnable()
+            ActionAutoisfDisable::class.simpleName       -> actionAutoisfDisable()
+            ActionSetAcceWeight::class.simpleName        -> actionSetAcceWeight()
+            ActionSetIobTH::class.simpleName             -> actionSetIobTH()
             else                                             -> null
         }
 
