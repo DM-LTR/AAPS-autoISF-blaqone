@@ -5,6 +5,12 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-10 (15) – README zeigt die neuesten Änderungen
+
+- Unten in der README stehen jetzt die 5 neuesten Changelog-Einträge, darunter der Link auf den
+  ganzen Changelog.
+- Keine Änderung am Code.
+
 ## 2026-11-10 (14) – README: Übersicht der Zweige
 
 - Die README erklärt jetzt die drei Zweige (normal, dev, sport) mit Links und wie neue Features
