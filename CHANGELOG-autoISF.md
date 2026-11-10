@@ -5,6 +5,32 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-10 (18) – AutoISF-Chip: Abstände (nur dev, im Test)
+
+- Über und unter dem AutoISF-Chip ist jetzt derselbe kleine Abstand (2 dp) wie zwischen IOB/COB
+  und Sensitivity. Ohne AutoISF bleibt die Hauptseite wie vorher.
+- Reine Anzeige.
+
+## 2026-11-10 (17) – AutoISF-Chip zum Aufklappen (nur dev, im Test)
+
+- Der AutoISF-Chip ist jetzt **zugeklappt einzeilig**: AutoISF-Symbol und die angehefteten Werte,
+  rechtsbündig. **Tippen** klappt ihn auf und zu, **lang drücken** öffnet den AutoISF-Bildschirm.
+- **Aufgeklappt** stehen alle Werte (acce, bg, pp, dura, final, iobTH) in einem Raster.
+  **Antippen** eines Wertes heftet ihn an die zugeklappte Zeile an oder löst ihn (höchstens 4,
+  Standard: final und iobTH). Auswahl und auf/zu werden gespeichert und kommen mit dem Export mit.
+- Farben: Faktor über 1 (stärker, mehr Insulin) orange/gelb, unter 1 (schwächer) grün.
+- Nur sichtbar, wenn AutoISF das aktive APS ist. Reine Anzeige, keine Änderung an der Dosierung.
+
+## 2026-11-10 (16) – AutoISF-Chip auf der Hauptseite (nur dev, im Test)
+
+- Die AutoISF-Werte des letzten Loop-Laufs (acce, bg, pp, dura, final, iobTH) stehen jetzt in einem
+  **eigenen Chip** über die ganze Breite, direkt unter BZ-Wert und Sensitivity-Chip. Gleiche Farbe
+  und Höhe wie der Sensitivity-Chip, Text rechtsbündig.
+- **Klick oder langer Klick** auf den Chip öffnet den AutoISF-Bildschirm (APS-Tab) mit der Berechnung.
+- Nur sichtbar, wenn AutoISF das aktive APS ist.
+- Die **graue Statuszeile** (letzter Loop, letzter SMB, TBR) ist wieder entfernt.
+- Reine Anzeige, keine Änderung an der Dosierung.
+
 ## 2026-11-10 (15) – README zeigt die neuesten Änderungen
 
 - Unten in der README stehen jetzt die 5 neuesten Changelog-Einträge, darunter der Link auf den

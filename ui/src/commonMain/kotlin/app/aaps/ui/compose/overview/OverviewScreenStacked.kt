@@ -30,8 +30,7 @@ import app.aaps.ui.compose.main.TempTargetChipState
 import app.aaps.ui.compose.manageSheet.ManageViewModel
 import app.aaps.ui.compose.overview.aapsClient.AapsClientStatusCard
 import app.aaps.ui.compose.overview.chips.ChipsViewModel
-import app.aaps.ui.compose.overview.chips.AutoIsfFactorsLine
-import app.aaps.ui.compose.overview.chips.LoopStatusLine
+import app.aaps.ui.compose.overview.chips.AutoIsfChip
 import app.aaps.ui.compose.overview.graphs.GraphViewModel
 import app.aaps.ui.compose.overview.graphs.GraphsSection
 import app.aaps.ui.compose.overview.statusLights.StatusViewModel
@@ -84,7 +83,6 @@ fun OverviewScreenStacked(
     val sensitivityUiState by chipsViewModel.sensitivityUiState.collectAsStateWithLifecycle()
     val iobUiState by chipsViewModel.iobUiState.collectAsStateWithLifecycle()
     val cobUiState by chipsViewModel.cobUiState.collectAsStateWithLifecycle()
-    val loopStatusUiState by chipsViewModel.loopStatusUiState.collectAsStateWithLifecycle()
     val autoIsfFactorsUiState by chipsViewModel.autoIsfFactorsUiState.collectAsStateWithLifecycle()
     val statusState by statusViewModel.uiState.collectAsStateWithLifecycle()
 
@@ -109,7 +107,8 @@ fun OverviewScreenStacked(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp, vertical = 8.dp),
+                // With the AutoISF chip below, the chip brings its own small gap, as between the chips.
+                .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = if (autoIsfFactorsUiState.visible) 0.dp else 8.dp),
             verticalAlignment = Alignment.Bottom
         ) {
             Column(
@@ -151,8 +150,12 @@ fun OverviewScreenStacked(
             )
         }
 
-        LoopStatusLine(state = loopStatusUiState)
-        AutoIsfFactorsLine(state = autoIsfFactorsUiState)
+        AutoIsfChip(
+            state = autoIsfFactorsUiState,
+            onNavigate = onNavigate,
+            onExpandedChange = chipsViewModel::setAutoIsfChipExpanded,
+            onTogglePin = chipsViewModel::toggleAutoIsfPin
+        )
 
         OverviewStatusSection(
             sensorStatus = statusState.sensorStatus,
