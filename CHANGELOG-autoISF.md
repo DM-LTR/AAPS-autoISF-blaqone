@@ -5,6 +5,12 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-10 (18) – AutoISF-Chip: Abstände (nur dev, im Test)
+
+- Über und unter dem AutoISF-Chip ist jetzt derselbe kleine Abstand (2 dp) wie zwischen IOB/COB
+  und Sensitivity. Ohne AutoISF bleibt die Hauptseite wie vorher.
+- Reine Anzeige.
+
 ## 2026-11-10 (17) – AutoISF-Chip zum Aufklappen (nur dev, im Test)
 
 - Der AutoISF-Chip ist jetzt **zugeklappt einzeilig**: AutoISF-Symbol und die angehefteten Werte,
