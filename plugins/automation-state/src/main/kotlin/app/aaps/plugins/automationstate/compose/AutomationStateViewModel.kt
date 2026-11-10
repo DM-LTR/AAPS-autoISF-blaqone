@@ -1,7 +1,7 @@
 package app.aaps.plugins.automationstate.compose
 
 import androidx.lifecycle.ViewModel
-import app.aaps.plugins.automationstate.services.AutomationStateService
+import app.aaps.core.interfaces.automation.AutomationStateInterface
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
@@ -20,7 +20,7 @@ data class AutomationStateUiState(
 @ContributesIntoMap(AppScope::class, binding = binding<ViewModel>())
 @ViewModelKey
 class AutomationStateViewModel @Inject constructor(
-    private val automationStateService: AutomationStateService
+    private val automationStateService: AutomationStateInterface
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AutomationStateUiState())

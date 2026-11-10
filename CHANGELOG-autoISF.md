@@ -5,6 +5,19 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-10 (10) – Aufräumen nach Code-Review (noch nicht gebaut/getestet)
+
+- ⚠ **AutoISF holt Autosens nur einmal pro Lauf.** Ein doppelter, toter Abfrage-Block wurde entfernt.
+  Er konnte im Sonderfall „keine Autosens-Daten“ den reinen Profil-ISF zurückgeben, ohne
+  Aktivitäts- und Temp-Target-Anpassung.
+- ⚠ **Aktivitätswerte werden direkt weitergegeben** statt über die Einstellungen. So kann nie ein
+  Wert aus einem früheren Lauf benutzt werden. Das Ergebnis bleibt gleich.
+- Kleine Aufräumarbeiten (doppelte Bedingungen, eine überflüssige Prüfung).
+- BZ-Anzeige, Widgets und Trendpfeil lesen nur noch die neuesten Werte statt jedes Mal die ganze
+  Liste zu kopieren.
+- **Automation-Zustände** (z. B. „Schlafen“) liegen jetzt im gemeinsamen Code und funktionieren damit
+  auf allen Plattformen, nicht nur auf Android. Für Android ändert sich nichts.
+
 ## 2026-11-10 (9) – Parabel: Schalter und Regler, AutoISF-Wertezeile
 
 - ⚠ **Schalter „Parabola on smoothed values“** (AutoISF-Einstellungen, Standard **aus** = Original):
