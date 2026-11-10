@@ -13,8 +13,6 @@ import app.aaps.core.interfaces.aps.Predictions
 import app.aaps.core.interfaces.aps.RT
 import app.aaps.core.interfaces.aps.SmbIntervalGate
 import app.aaps.core.interfaces.profile.ProfileUtil
-import app.aaps.core.keys.BooleanKey
-import app.aaps.core.keys.DoubleKey
 import app.aaps.core.keys.interfaces.Preferences
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.Inject
@@ -214,7 +212,8 @@ class DetermineBasalAutoISF(
     fun determine_basal(
         glucose_status: GlucoseStatus, currenttemp: CurrentTemp, iob_data_array: Array<IobTotal>, profile: OapsProfileAutoIsf, autosens_data: AutosensResult, meal_data: MealData,
         microBolusAllowed: Boolean, currentTime: Long, flatBGsDetected: Boolean, autoIsfMode: Boolean, loop_wanted_smb: String, profile_percentage: Int, smb_ratio: Double,
-        smb_max_range_extension: Double, iob_threshold_percent: Int, activity_consoleLog: String, auto_isf_consoleError: MutableList<String>, auto_isf_consoleLog: MutableList<String>
+        smb_max_range_extension: Double, iob_threshold_percent: Int, activity_consoleLog: String, auto_isf_consoleError: MutableList<String>, auto_isf_consoleLog: MutableList<String>,
+        activity: ActivityState = ActivityState()
     ): RT {
         consoleError = mutableListOf()
         consoleError.add(activity_consoleLog)
@@ -282,9 +281,10 @@ class DetermineBasalAutoISF(
         var min_bg = profile.min_bg
         var max_bg = profile.max_bg
 
-        val activityRatio = preferences.get(DoubleKey.ActivityMonitorRatio)
-        val stepActivityDetected = preferences.get(BooleanKey.ActivityMonitorStepsActive)
-        val stepInactivityDetected = preferences.get(BooleanKey.ActivityMonitorStepsInactive)
+        // Activity result of this run, handed over by the plugin (not read back from the preferences)
+        val activityRatio = activity.ratio
+        val stepActivityDetected = activity.activityDetected
+        val stepInactivityDetected = activity.inactivityDetected
         var sensitivityRatio = 1.0
         val high_temptarget_raises_sensitivity = profile.exercise_mode || profile.high_temptarget_raises_sensitivity
         val normalTarget = Constants.NORMAL_TARGET_MGDL // evaluate high/low temptarget against normal target, not scheduled target (which might change)

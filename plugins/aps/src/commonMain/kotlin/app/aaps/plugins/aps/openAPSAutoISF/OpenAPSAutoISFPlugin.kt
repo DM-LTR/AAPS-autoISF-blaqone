@@ -285,7 +285,7 @@ open class OpenAPSAutoISFPlugin(
             )
             aapsLogger.debug(LTag.APS, "ActivityClass: $activityClass steps15m=$recentSteps15Minutes hr=$avgHrForActivity")
 
-            if (useActivityTargetOffset && activityClass.targetBgOffsetMgdl > 0.0 && !isTempTarget) {
+            if (useActivityTargetOffset && activityClass.targetBgOffsetMgdl > 0.0) {
                 targetBg = (targetBg + activityClass.targetBgOffsetMgdl).coerceAtMost(180.0)
                 minBg = (minBg + activityClass.targetBgOffsetMgdl).coerceAtMost(180.0)
                 maxBg = (maxBg + activityClass.targetBgOffsetMgdl).coerceAtMost(180.0)
@@ -306,10 +306,12 @@ open class OpenAPSAutoISFPlugin(
             stepInactivityDetected = activityRatio > 1
             smbCapFactor = 1.0
         }
+        // Kept in the preferences only as the last known state; the calculation gets it directly below
         preferences.put(BooleanKey.ActivityMonitorStepsActive, stepActivityDetected)
         preferences.put(BooleanKey.ActivityMonitorStepsInactive, stepInactivityDetected)
+        val activity = ActivityState(ratio = activityRatio, activityDetected = stepActivityDetected, inactivityDetected = stepInactivityDetected)
         if (autoIsfMode) {
-            variableSensitivity = autoISF(profile, autosensResult.ratio)
+            variableSensitivity = autoISF(profile, autosensResult.ratio, activity)
         }
 
         val oapsProfile = OapsProfileAutoIsf(
@@ -461,7 +463,8 @@ open class OpenAPSAutoISFPlugin(
             iob_threshold_percent = iobThresholdPercent,
             activity_consoleLog = activityLog,
             auto_isf_consoleError = consoleError,
-            auto_isf_consoleLog = consoleLog
+            auto_isf_consoleLog = consoleLog,
+            activity = activity
         ).also {
             it.autoIsf = autoIsfFactors.finiteOnly()
             val determineBasalResult = apsResultProvider().with(it)
@@ -667,7 +670,7 @@ open class OpenAPSAutoISFPlugin(
      * @param autosensRatio the autosens ratio of this loop run, so the whole run uses one value. Null reads the
      * last autosens result (for callers outside a run, like tests).
      */
-    suspend fun autoISF(profile: Profile, autosensRatio: Double? = null): Double {
+    suspend fun autoISF(profile: Profile, autosensRatio: Double? = null, activity: ActivityState = ActivityState()): Double {
         val autosensRatioOfRun = autosensRatio ?: lastAutosensRatio()
         val sens = profile.getProfileIsfMgdl()
         val glucose_status = glucoseStatusCalculatorAutoIsf.getGlucoseStatusData(allowOldData = false)
@@ -679,9 +682,10 @@ open class OpenAPSAutoISFPlugin(
             isTempTarget = true
             target_bg = hardLimits.verifyHardLimits(tempTarget.target(), CoreUiStrings.temp_target_value, HardLimits.LIMIT_TEMP_TARGET_BG)
         }
-        val activityRatio = preferences.get(DoubleKey.ActivityMonitorRatio)
-        val stepActivityDetected = preferences.get(BooleanKey.ActivityMonitorStepsActive)
-        val stepInactivityDetected = preferences.get(BooleanKey.ActivityMonitorStepsInactive)
+        // Activity result of this run, handed over by invoke() (not read back from the preferences)
+        val activityRatio = activity.ratio
+        val stepActivityDetected = activity.activityDetected
+        val stepInactivityDetected = activity.inactivityDetected
         var sensitivityRatio = 1.0
         val exerciseModeActive = high_temptarget_raises_sensitivity && isTempTarget && Constants.isAboveNormalTarget(target_bg)
         val resistanceModeActive = preferences.get(BooleanKey.ApsAutoIsfLowTtLowersSens) && isTempTarget && Constants.isBelowNormalTarget(target_bg)
@@ -702,28 +706,17 @@ open class OpenAPSAutoISFPlugin(
         } else {
             sensitivityRatio = autosensRatioOfRun
         }
-        var skipWeights = false
+        // One return for both cases; it also tells the compiler that glucose_status is not null below.
+        // (A second autosens lookup used to follow here. Its result was never used, and when it found no
+        // data it returned the plain profile ISF, without the activity / temp target ratio and unrounded.
+        // The run already has its autosens ratio, see autosensRatioOfRun.)
         if (!usingDynamicIsf() || !autoIsfWeights || glucose_status == null) {
             consoleError.add("autoISF weights disabled in Preferences")
-            skipWeights = true
-        }
-        if (skipWeights) {
             consoleError.add("----------------------------------")
             consoleError.add("end AutoISF")
             consoleError.add("----------------------------------")
             return round(sens / sensitivityRatio, 1)
         }
-        if (glucose_status == null) return round(sens / sensitivityRatio, 1)
-        val autosensResult = AutosensResult()
-
-        if (constraintsChecker.isAutosensModeEnabled().value()) {
-            val autosensData = iobCobCalculator.getLastAutosensDataWithWaitForCalculationFinish("OpenAPSAutoISFPlugin")
-            if (autosensData == null) {
-                rxBus.send(EventResetOpenAPSGui(rh.gs(ApsStrings.openaps_no_as_data)))
-                return sens
-            }
-            autosensData.autosensResult
-        } else autosensResult.sensResult = "autosens disabled"
 
         val dura05: Double = glucose_status.duraISFminutes
         val avg05: Double = glucose_status.duraISFaverage
