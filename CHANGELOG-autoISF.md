@@ -5,7 +5,7 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
-## 2026-11-10 (10) – Aufräumen nach Code-Review (noch nicht gebaut/getestet)
+## 2026-11-10 (10) – Aufräumen nach Code-Review, Inaktivität (Issue #2)
 
 - ⚠ **AutoISF holt Autosens nur einmal pro Lauf.** Ein doppelter, toter Abfrage-Block wurde entfernt.
   Er konnte im Sonderfall „keine Autosens-Daten“ den reinen Profil-ISF zurückgeben, ohne
