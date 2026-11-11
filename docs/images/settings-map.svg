@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 400" width="820" height="400" font-family="Segoe UI, Roboto, Arial, sans-serif">
+  <title>Where the AutoISF settings are in AAPS 4</title>
+  <rect x="0" y="0" width="820" height="400" rx="16" fill="#ffffff"/>
+  <text x="410" y="34" text-anchor="middle" font-size="20" font-weight="600" fill="#1f2328">Where to find what in AAPS 4</text>
+
+  <g font-size="14">
+    <rect x="24" y="56" width="250" height="150" rx="12" fill="#e1f5ee" stroke="#0f6e56" stroke-width="2"/>
+    <text x="40" y="82" font-weight="600" fill="#085041">Config builder → APS</text>
+    <text x="40" y="106" fill="#04342c">Choose "AutoISF" as APS.</text>
+    <text x="40" y="128" fill="#04342c">Everything AutoISF-only</text>
+    <text x="40" y="148" fill="#04342c">(chip, graphs, scene section,</text>
+    <text x="40" y="168" fill="#04342c">automations) appears only then.</text>
+
+    <rect x="290" y="56" width="250" height="150" rx="12" fill="#eeedfe" stroke="#534ab7" stroke-width="2"/>
+    <text x="306" y="82" font-weight="600" fill="#3c3489">AutoISF settings</text>
+    <text x="306" y="106" fill="#26215c">ISF weights, parabola switch,</text>
+    <text x="306" y="128" fill="#26215c">shortest parabola, SMB settings,</text>
+    <text x="306" y="148" fill="#26215c">iobTH, activity monitor,</text>
+    <text x="306" y="168" fill="#26215c">CGM correction (slope/offset).</text>
+
+    <rect x="556" y="56" width="240" height="150" rx="12" fill="#faeeda" stroke="#854f0b" stroke-width="2"/>
+    <text x="572" y="82" font-weight="600" fill="#633806">Loop interval</text>
+    <text x="572" y="106" fill="#412402">In the APS settings (AutoISF</text>
+    <text x="572" y="128" fill="#412402">or SMB): 1-10 min,</text>
+    <text x="572" y="148" fill="#412402">1 = every new value.</text>
+    <text x="572" y="168" fill="#412402">SMB interval stays separate.</text>
+
+    <rect x="24" y="222" width="250" height="150" rx="12" fill="#e6f1fb" stroke="#185fa5" stroke-width="2"/>
+    <text x="40" y="248" font-weight="600" fill="#0c447c">xDrip source settings</text>
+    <text x="40" y="272" fill="#042c53">CGM correction:</text>
+    <text x="40" y="294" fill="#042c53">value x slope + offset.</text>
+    <text x="40" y="314" fill="#042c53">No calibration, no extra</text>
+    <text x="40" y="334" fill="#042c53">smoothing.</text>
+
+    <rect x="290" y="222" width="250" height="150" rx="12" fill="#fbeaf0" stroke="#993556" stroke-width="2"/>
+    <text x="306" y="248" font-weight="600" fill="#72243e">Scenes and automations</text>
+    <text x="306" y="272" fill="#4b1528">Scene wizard, page "SMB":</text>
+    <text x="306" y="294" fill="#4b1528">AutoISF on/off, acce weight,</text>
+    <text x="306" y="314" fill="#4b1528">iobTH. Automations: enable /</text>
+    <text x="306" y="334" fill="#4b1528">disable AutoISF, set values.</text>
+
+    <rect x="556" y="222" width="240" height="150" rx="12" fill="#f1efe8" stroke="#5f5e5a" stroke-width="2"/>
+    <text x="572" y="248" font-weight="600" fill="#444441">Main screen graphs</text>
+    <text x="572" y="272" fill="#2c2c2a">Pencil on a graph:</text>
+    <text x="572" y="294" fill="#2c2c2a">"BG parabola (AutoISF)",</text>
+    <text x="572" y="314" fill="#2c2c2a">AutoISF factors, iobTH</text>
+    <text x="572" y="334" fill="#2c2c2a">(also in the IOB graph).</text>
+  </g>
+</svg>

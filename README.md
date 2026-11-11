@@ -38,15 +38,20 @@ that send a value every minute (for example Libre 3 through Juggluco).
 
 - Based on AndroidAPS 4.0.0 and JetFoxy's branch `autoisf-3.2.1` – many thanks to JetFoxy!
 - Goal: AutoISF stays **as close to the original as possible**.
+- No version expiry: this is not an official AAPS version, so the official version check is off.
+  It would otherwise set max IOB to 0 some time after a new official release.
+- The version name shows the branch: `4.0.0-aisf3.2.1` (normal), `…-dev`, `…-sport`.
 - All changes in detail: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md) (German)
 
 ## Branches – which one is for me?
 
+![Which version is for me](docs/images/branches.svg)
+
 | Branch | What it is | For whom |
 |---|---|---|
-| [`aaps4-autoisf`](https://github.com/blaqone/AAPS-autoISF/tree/aaps4-autoisf) | **Normal version.** AutoISF 3.2.1 as close to the original as possible. | Start here. |
-| [`aaps4-autoisf-dev`](https://github.com/blaqone/AAPS-autoISF/tree/aaps4-autoisf-dev) | **Test version.** The normal version plus features that are still being tested (at the moment: the parabola comparison raw / smoothed). | Only for testers, may change at any time. |
-| [`aaps4-autoisf-sport`](https://github.com/blaqone/AAPS-autoISF/tree/aaps4-autoisf-sport) | **Sport version** (planned). Today the same as the normal version. Later: exercise mode in scenes and automations. | Not ready yet. |
+| ⭐ [`aaps4-autoisf`](https://github.com/blaqone/AAPS-autoISF/tree/aaps4-autoisf) | **Normal version – recommended.** AutoISF 3.2.1 on AAPS 4, as close to the original as possible. Only features that were tested. | **Everyone who wants to use AutoISF. Start here.** |
+| [`aaps4-autoisf-dev`](https://github.com/blaqone/AAPS-autoISF/tree/aaps4-autoisf-dev) | **Test version.** The normal version plus features that are still being tested. Changes often. | Only for testers. |
+| [`aaps4-autoisf-sport`](https://github.com/blaqone/AAPS-autoISF/tree/aaps4-autoisf-sport) | **Sport version – my personal mode.** The normal version plus my changes for sport: steps from a Garmin watch for the activity monitor, SMB threshold, ketoacidosis protection. More will follow. | Mainly for me. Use it only if you know what these changes do. |
 
 How new things get in:
 
@@ -55,8 +60,21 @@ How new things get in:
 2. It is tested in `aaps4-autoisf-dev`.
 3. Only when it works well, it goes into `aaps4-autoisf` (and `aaps4-autoisf-sport`).
 
+Changes for sport are made only in `aaps4-autoisf-sport`. They do not go into the normal or the dev version.
+
 The dev version is never merged into the normal version as a whole, so the normal version only
 gets features that were tested.
+
+## Guide
+
+**New to AutoISF on AAPS 4?** Read the guide: [docs/AutoISF-v4-Guide.md](docs/AutoISF-v4-Guide.md) –
+what is different from AutoISF on AAPS 3.x, where the settings are and how to use the new parts.
+
+For AutoISF itself see the original documents: the AutoISF Quick Guide and BerNie's guide for Full Closed
+Loop in [ga-zelle/autoISF](https://github.com/ga-zelle/autoISF), and the official AutoISF branch
+[T-o-b-i-a-s/AndroidAPS 3.4.2.6+aisf3.2.1](https://github.com/T-o-b-i-a-s/AndroidAPS/tree/3.4.2.6+aisf3.2.1).
+
+![Main screen](docs/images/main-screen.svg)
 
 ## Features
 
@@ -102,6 +120,7 @@ gets features that were tested.
 - pink BG parabola on the BG graph, as in AutoISF 3.2.1: solid over the fitted minutes, dashed
   20 minutes ahead
 - holding a point of the BG graph shows the smoothed value and the raw value in brackets
+- coloured BG dots every minute with a 1 minute CGM and UKF smoothing (display only)
 - graphs for the AutoISF factors and iobTH (also in the IOB graph)
 
 Everything that only concerns AutoISF (graph lines, scene section, automations, main screen
@@ -109,8 +128,9 @@ lines) is hidden when AutoISF is not the active APS plugin.
 
 ## Building
 
-1. Install Android Studio, clone this repository, check out the branch you want
-   (normally `aaps4-autoisf`, see [Branches](#branches--which-one-is-for-me))
+1. Install Android Studio, clone this repository, check out the branch you want –
+   **normally `aaps4-autoisf`**
+   (see [Branches](#branches--which-one-is-for-me))
 2. Build `fullDebug` (for testing) or a signed `fullRelease` with your own keystore
 3. Copy the APK to the phone and install it
 
@@ -139,6 +159,15 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 ## Changelog (German)
 
 The newest changes. ⚠ = this change can affect insulin dosing.
+
+### 2026-11-11 (23) – Farbige BZ-Punkte jede Minute, Versionsprüfung aus
+
+- **Farbige BZ-Punkte jede Minute** (in dev getestet): Mit 1-Minuten-CGM und UKF-Glättung zeigt der
+  BZ-Graph jede Minute einen farbigen Punkt (geglätteter Wert), nicht nur alle 5 Minuten. Gilt mit jedem
+  APS. Reine Anzeige, die Berechnung bleibt auf dem 5-Minuten-Raster.
+- **Versionsprüfung aus:** Diese Version ist keine offizielle AAPS-Version. Die Prüfung hätte sie mit den
+  offiziellen Versionen verglichen und einige Zeit nach einer neuen offiziellen Version Max IOB auf 0
+  gesetzt („Anwendung abgelaufen“) – das hätte den geschlossenen Loop beendet.
 
 ### 2026-11-10 (22) – Normale Version: AutoISF-Chip, pinke Parabel, langes Drücken
 
@@ -179,16 +208,6 @@ In der Testversion geprüft und jetzt in der normalen Version (und in sport):
   Standard: final und iobTH). Auswahl und auf/zu werden gespeichert und kommen mit dem Export mit.
 - Farben: Faktor über 1 (stärker, mehr Insulin) orange/gelb, unter 1 (schwächer) grün.
 - Nur sichtbar, wenn AutoISF das aktive APS ist. Reine Anzeige, keine Änderung an der Dosierung.
-
-### 2026-11-10 (16) – AutoISF-Chip auf der Hauptseite
-
-- Die AutoISF-Werte des letzten Loop-Laufs (acce, bg, pp, dura, final, iobTH) stehen jetzt in einem
-  **eigenen Chip** über die ganze Breite, direkt unter BZ-Wert und Sensitivity-Chip. Gleiche Farbe
-  und Höhe wie der Sensitivity-Chip, Text rechtsbündig.
-- **Klick oder langer Klick** auf den Chip öffnet den AutoISF-Bildschirm (APS-Tab) mit der Berechnung.
-- Nur sichtbar, wenn AutoISF das aktive APS ist.
-- Die **graue Statuszeile** (letzter Loop, letzter SMB, TBR) ist wieder entfernt.
-- Reine Anzeige, keine Änderung an der Dosierung.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->

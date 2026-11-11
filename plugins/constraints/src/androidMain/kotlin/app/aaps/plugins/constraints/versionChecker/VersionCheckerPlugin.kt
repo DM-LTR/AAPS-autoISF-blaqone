@@ -48,7 +48,7 @@ class VersionCheckerPlugin(
 ), PluginConstraints {
 
     /**
-     * Sport fork: the version check is off. This build is not an official AAPS version, so the check would
+     * AutoISF fork: the version check is off. This build is not an official AAPS version, so the check would
      * compare it with the official releases and, some time after a new one, set max IOB to 0 ("application
      * expired"), which ends closed looping. The rest of the class is unchanged on purpose, so merges from the
      * normal branch stay simple.

@@ -1,5 +1,6 @@
 package app.aaps.workflow
 
+import app.aaps.core.data.iob.InMemoryGlucoseValue
 import app.aaps.core.data.model.CA
 import app.aaps.core.data.model.GV
 import app.aaps.core.data.time.T
@@ -220,5 +221,15 @@ class PrepareGraphDataRunnerTest : TestBaseWithProfile() {
         assertThat(readings.lastValue.single().utcOffset).isEqualTo(gv.utcOffset)
         // Terminal-only progress not emitted when emitFinalProgress = false
         verify(signals, never()).emitProgress(eq(ProgressData.DRAW_FINAL), any())
+    }
+
+    @Test
+    fun `the coloured dots use the smoothed minute values when there are any, else the 5 minute grid`() {
+        val grid = listOf(InMemoryGlucoseValue(timestamp = 300_000L, value = 100.0))
+        val minutes = (0..4).map { InMemoryGlucoseValue(timestamp = 60_000L * it, value = 100.0 + it, smoothed = 99.0 + it) }
+
+        assertThat(runner().graphGlucoseValues(grid, minutes)).isEqualTo(minutes)
+        assertThat(runner().graphGlucoseValues(grid, null)).isEqualTo(grid)
+        assertThat(runner().graphGlucoseValues(grid, emptyList())).isEqualTo(grid)
     }
 }
