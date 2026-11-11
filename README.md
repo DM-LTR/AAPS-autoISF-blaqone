@@ -45,11 +45,13 @@ that send a value every minute (for example Libre 3 through Juggluco).
 
 ## Branches – which one is for me?
 
+![Which version is for me](docs/images/branches.svg)
+
 | Branch | What it is | For whom |
 |---|---|---|
-| [`aaps4-autoisf`](https://github.com/blaqone/AAPS-autoISF/tree/aaps4-autoisf) | **Normal version.** AutoISF 3.2.1 as close to the original as possible. | Start here. |
-| [`aaps4-autoisf-dev`](https://github.com/blaqone/AAPS-autoISF/tree/aaps4-autoisf-dev) | **Test version.** The normal version plus features that are still being tested (at the moment: the parabola comparison raw / smoothed). | Only for testers, may change at any time. |
-| [`aaps4-autoisf-sport`](https://github.com/blaqone/AAPS-autoISF/tree/aaps4-autoisf-sport) | **Sport version.** The normal version plus changes for sport: steps from a Garmin watch for the activity monitor, SMB threshold, ketoacidosis protection. More will follow. | For sport users. New, test it carefully. |
+| ⭐ [`aaps4-autoisf`](https://github.com/blaqone/AAPS-autoISF/tree/aaps4-autoisf) | **Normal version – recommended.** AutoISF 3.2.1 on AAPS 4, as close to the original as possible. Only features that were tested. | **Everyone who wants to use AutoISF. Start here.** |
+| [`aaps4-autoisf-dev`](https://github.com/blaqone/AAPS-autoISF/tree/aaps4-autoisf-dev) | **Test version.** The normal version plus features that are still being tested. Changes often. | Only for testers. |
+| [`aaps4-autoisf-sport`](https://github.com/blaqone/AAPS-autoISF/tree/aaps4-autoisf-sport) | **Sport version – my personal mode.** The normal version plus my changes for sport: steps from a Garmin watch for the activity monitor, SMB threshold, ketoacidosis protection. More will follow. | Mainly for me. Use it only if you know what these changes do. |
 
 How new things get in:
 
@@ -62,6 +64,17 @@ Changes for sport are made only in `aaps4-autoisf-sport`. They do not go into th
 
 The dev version is never merged into the normal version as a whole, so the normal version only
 gets features that were tested.
+
+## Guide
+
+**New to AutoISF on AAPS 4?** Read the guide: [docs/AutoISF-v4-Guide.md](docs/AutoISF-v4-Guide.md) –
+what is different from AutoISF on AAPS 3.x, where the settings are and how to use the new parts.
+
+For AutoISF itself see the original documents: the AutoISF Quick Guide and BerNie's guide for Full Closed
+Loop in [ga-zelle/autoISF](https://github.com/ga-zelle/autoISF), and the official AutoISF branch
+[T-o-b-i-a-s/AndroidAPS 3.4.2.6+aisf3.2.1](https://github.com/T-o-b-i-a-s/AndroidAPS/tree/3.4.2.6+aisf3.2.1).
+
+![Main screen](docs/images/main-screen.svg)
 
 ## Features
 
@@ -115,8 +128,9 @@ lines) is hidden when AutoISF is not the active APS plugin.
 
 ## Building
 
-1. Install Android Studio, clone this repository, check out the branch you want
-   (normally `aaps4-autoisf`, see [Branches](#branches--which-one-is-for-me))
+1. Install Android Studio, clone this repository, check out the branch you want –
+   **normally `aaps4-autoisf`**
+   (see [Branches](#branches--which-one-is-for-me))
 2. Build `fullDebug` (for testing) or a signed `fullRelease` with your own keystore
 3. Copy the APK to the phone and install it
 
