@@ -177,6 +177,13 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
+### 2026-11-11 (26) – Doku: Version 4.0.0 genannt, echter Screenshot
+
+- README und Anleitung nennen jetzt genau **AAPS 4.0.0** statt nur „AAPS 4“.
+- Die gezeichneten Beispielbilder sind entfernt. Stattdessen gibt es einen **echten Screenshot** des
+  Hauptbildschirms mit geöffnetem AutoISF-Chip.
+- Nur Doku, keine Änderung an der App.
+
 ### 2026-11-11 (24) – Sport-Version: Garmin-Schritte, SMB-Schwelle, Ketoazidose-Schutz (nur sport)
 
 - **Version** heißt `4.0.0-aisf3.2.1-sport`.
@@ -230,12 +237,6 @@ In der Testversion geprüft und jetzt in der normalen Version (und in sport):
 - Ein-/ausschaltbar mit dem Stift am BZ-Graph („BG parabola (AutoISF)“), nur mit AutoISF. Bei neuer
   Einstellung ist sie an; wer seine Graph-Einstellung schon gespeichert hat, schaltet sie dort ein.
 - Reine Anzeige, keine Änderung an der Dosierung.
-
-### 2026-11-10 (18) – AutoISF-Chip: Abstände
-
-- Über und unter dem AutoISF-Chip ist jetzt derselbe kleine Abstand (2 dp) wie zwischen IOB/COB
-  und Sensitivity. Ohne AutoISF bleibt die Hauptseite wie vorher.
-- Reine Anzeige.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->

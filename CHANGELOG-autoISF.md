@@ -5,6 +5,13 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-11 (26) – Doku: Version 4.0.0 genannt, echter Screenshot
+
+- README und Anleitung nennen jetzt genau **AAPS 4.0.0** statt nur „AAPS 4“.
+- Die gezeichneten Beispielbilder sind entfernt. Stattdessen gibt es einen **echten Screenshot** des
+  Hauptbildschirms mit geöffnetem AutoISF-Chip.
+- Nur Doku, keine Änderung an der App.
+
 ## 2026-11-11 (24) – Sport-Version: Garmin-Schritte, SMB-Schwelle, Ketoazidose-Schutz (nur sport)
 
 - **Version** heißt `4.0.0-aisf3.2.1-sport`.
