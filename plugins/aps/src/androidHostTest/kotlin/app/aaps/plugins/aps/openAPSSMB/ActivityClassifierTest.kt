@@ -26,13 +26,28 @@ class ActivityClassifierTest {
     }
 
     @Test fun `high steps without phone signal returns AEROBIC`() {
-        val result = ActivityClassifier.classify(steps15m = 200, avgHrLast15m = 0.0, phoneActivity = ActivityClassifier.PHONE_STILL)
+        val result = ActivityClassifier.classify(steps15m = 700, avgHrLast15m = 0.0, phoneActivity = ActivityClassifier.PHONE_STILL)
         assertThat(result).isEqualTo(ActivityClass.AEROBIC)
     }
 
-    @Test fun `steps at threshold 151 returns AEROBIC`() {
-        val result = ActivityClassifier.classify(steps15m = 151, avgHrLast15m = 0.0, phoneActivity = ActivityClassifier.PHONE_STILL)
+    @Test fun `steps just above the threshold of 600 return AEROBIC`() {
+        val result = ActivityClassifier.classify(steps15m = 601, avgHrLast15m = 0.0, phoneActivity = ActivityClassifier.PHONE_STILL)
         assertThat(result).isEqualTo(ActivityClass.AEROBIC)
+    }
+
+    @Test fun `slow walking of 600 steps in 15 minutes is not AEROBIC`() {
+        // 40 steps per minute: below the limit the steps alone do not count as endurance activity
+        assertThat(ActivityClassifier.classify(steps15m = 600, avgHrLast15m = 0.0, phoneActivity = ActivityClassifier.PHONE_STILL))
+            .isEqualTo(ActivityClass.REST)
+        assertThat(ActivityClassifier.classify(steps15m = 200, avgHrLast15m = 0.0, phoneActivity = ActivityClassifier.PHONE_STILL))
+            .isEqualTo(ActivityClass.REST)
+    }
+
+    @Test fun `RESISTANCE needs almost no steps in the whole 15 minutes`() {
+        assertThat(ActivityClassifier.classify(steps15m = 44, avgHrLast15m = 80.0, phoneActivity = ActivityClassifier.PHONE_STILL, restingHr = 60))
+            .isEqualTo(ActivityClass.RESISTANCE)
+        assertThat(ActivityClassifier.classify(steps15m = 45, avgHrLast15m = 80.0, phoneActivity = ActivityClassifier.PHONE_STILL, restingHr = 60))
+            .isEqualTo(ActivityClass.REST)
     }
 
     @Test fun `low steps and high HR returns RESISTANCE`() {
@@ -48,7 +63,7 @@ class ActivityClassifierTest {
     }
 
     @Test fun `high steps with high HR returns AEROBIC not RESISTANCE`() {
-        val result = ActivityClassifier.classify(steps15m = 200, avgHrLast15m = 90.0, phoneActivity = ActivityClassifier.PHONE_STILL, restingHr = 60)
+        val result = ActivityClassifier.classify(steps15m = 700, avgHrLast15m = 90.0, phoneActivity = ActivityClassifier.PHONE_STILL, restingHr = 60)
         assertThat(result).isEqualTo(ActivityClass.AEROBIC)
     }
 

@@ -279,11 +279,11 @@ open class OpenAPSAutoISFPlugin(
             val avgHrForActivity = persistenceLayer.getHeartRatesFromTime(dateUtil.now() - T.mins(15).msecs())
                 .map { it.beatsPerMinute }.average().takeIf { !it.isNaN() } ?: 0.0
             val activityClass = ActivityClassifier.classify(
-                steps15m = recentSteps15Minutes,
+                steps15m = recentSteps5Minutes + recentSteps10Minutes + recentSteps15Minutes,
                 avgHrLast15m = avgHrForActivity,
                 restingHr = preferences.get(IntKey.ActivityRestingHr)
             )
-            aapsLogger.debug(LTag.APS, "ActivityClass: $activityClass steps15m=$recentSteps15Minutes hr=$avgHrForActivity")
+            aapsLogger.debug(LTag.APS, "ActivityClass: $activityClass steps15m=${recentSteps5Minutes + recentSteps10Minutes + recentSteps15Minutes} hr=$avgHrForActivity")
 
             if (useActivityTargetOffset && activityClass.targetBgOffsetMgdl > 0.0) {
                 targetBg = (targetBg + activityClass.targetBgOffsetMgdl).coerceAtMost(180.0)

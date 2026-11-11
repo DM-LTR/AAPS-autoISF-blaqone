@@ -12,6 +12,18 @@ object ActivityClassifier {
 
     @Volatile var phoneActivity: Int = PHONE_STILL
 
+    /** AutoISF fork: steps in the last 15 minutes from which the steps alone count as endurance activity (40 per minute). */
+    const val AEROBIC_STEPS_15M = 600
+
+    /** AutoISF fork: below this many steps in the last 15 minutes an elevated heart rate counts as strength training. */
+    const val RESISTANCE_MAX_STEPS_15M = 45
+
+    /**
+     * [steps15m] is the SUM of the steps in the last 15 minutes. Before, the AutoISF plugin gave only one 5 minute
+     * block from 10 to 15 minutes ago: rule 3 then needed 150 steps in 5 minutes (30 per minute) and reacted
+     * 10 minutes late, and rule 4 fired on a single quiet block. The limits are now a little less sensitive
+     * than that: 40 steps per minute for rule 3, almost no steps (3 per minute) for rule 4.
+     */
     fun classify(
         steps15m: Int,
         avgHrLast15m: Double,
@@ -22,10 +34,10 @@ object ActivityClassifier {
         if (phoneActivity == PHONE_BICYCLE) return ActivityClass.AEROBIC
         // Rule 2: explicit OS signal
         if (phoneActivity == PHONE_WALKING || phoneActivity == PHONE_RUNNING) return ActivityClass.AEROBIC
-        // Rule 3: ~10 steps/min = slow walk (fallback from steps)
-        if (steps15m > 150) return ActivityClass.AEROBIC
-        // Rule 4: minimal movement + elevated HR = gym/strength training
-        if (steps15m < 30 && avgHrLast15m > 0.0 && avgHrLast15m > restingHr * 1.25) return ActivityClass.RESISTANCE
+        // Rule 3: brisk walking or more, from the steps alone
+        if (steps15m > AEROBIC_STEPS_15M) return ActivityClass.AEROBIC
+        // Rule 4: almost no steps + elevated HR = gym/strength training
+        if (steps15m < RESISTANCE_MAX_STEPS_15M && avgHrLast15m > 0.0 && avgHrLast15m > restingHr * 1.25) return ActivityClass.RESISTANCE
         return ActivityClass.REST
     }
 }
