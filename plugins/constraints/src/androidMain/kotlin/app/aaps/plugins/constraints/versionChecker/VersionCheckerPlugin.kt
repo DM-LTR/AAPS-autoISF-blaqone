@@ -14,7 +14,6 @@ import app.aaps.core.interfaces.plugin.PluginDescription
 import app.aaps.core.interfaces.resources.TextResolver
 import app.aaps.core.interfaces.utils.DateUtil
 import app.aaps.core.interfaces.versionChecker.VersionCheckerUtils
-import app.aaps.core.keys.LongComposedKey
 import app.aaps.core.keys.interfaces.Preferences
 import app.aaps.plugins.constraints.ConstraintsStrings
 import app.aaps.plugins.constraints.versionChecker.keys.VersionCheckerLongKey
@@ -48,12 +47,11 @@ class VersionCheckerPlugin(
     aapsLogger, rh, preferences, notificationManager
 ), PluginConstraints {
 
-    override suspend fun applyMaxIOBConstraints(maxIob: Constraint<Double>): Constraint<Double> {
-        versionCheckerUtils.triggerCheckVersion()
-        val endDate = preferences.get(LongComposedKey.AppExpiration, config.VERSION_NAME)
-        return if (endDate != 0L && dateUtil.now() > endDate)
-            maxIob.set(0.0, rh.gs(ConstraintsStrings.application_expired), this)
-        else
-            maxIob
-    }
+    /**
+     * AutoISF fork: the version check is off. This build is not an official AAPS version, so the check would
+     * compare it with the official releases and, some time after a new one, set max IOB to 0 ("application
+     * expired"), which ends closed looping. The rest of the class is unchanged on purpose, so merges from the
+     * normal branch stay simple.
+     */
+    override suspend fun applyMaxIOBConstraints(maxIob: Constraint<Double>): Constraint<Double> = maxIob
 }

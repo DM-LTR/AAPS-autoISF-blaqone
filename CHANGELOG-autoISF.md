@@ -5,6 +5,15 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-11 (23) – Farbige BZ-Punkte jede Minute, Versionsprüfung aus
+
+- **Farbige BZ-Punkte jede Minute** (in dev getestet): Mit 1-Minuten-CGM und UKF-Glättung zeigt der
+  BZ-Graph jede Minute einen farbigen Punkt (geglätteter Wert), nicht nur alle 5 Minuten. Gilt mit jedem
+  APS. Reine Anzeige, die Berechnung bleibt auf dem 5-Minuten-Raster.
+- **Versionsprüfung aus:** Diese Version ist keine offizielle AAPS-Version. Die Prüfung hätte sie mit den
+  offiziellen Versionen verglichen und einige Zeit nach einer neuen offiziellen Version Max IOB auf 0
+  gesetzt („Anwendung abgelaufen“) – das hätte den geschlossenen Loop beendet.
+
 ## 2026-11-10 (22) – Normale Version: AutoISF-Chip, pinke Parabel, langes Drücken
 
 In der Testversion geprüft und jetzt in der normalen Version (und in sport):
