@@ -161,6 +161,21 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
+### 2026-11-11 (29) – Update direkt von AutoISF 3.4.2.6 möglich
+
+Bisher ist die App beim Update über **AAPS 3.4.2.6 + AutoISF 3.2.1** bei jedem Start abgestürzt.
+
+- **Datenbank-Version 32 doppelt belegt:** AutoISF 3.4 nutzt Version 32 für seine Tabelle `autoIsfValues`,
+  AAPS 4 für die Spalte `carbInsulin` in den Tagesdosen (TDD). **Fix:** Fehlt die Spalte, wird der TDD-Cache
+  geleert (wird neu berechnet) und die Spalte angelegt; die alte Tabelle `autoIsfValues` wird gelöscht.
+  Bei einer normalen AAPS-4-Datenbank passiert nichts.
+- **Unbekannte Einträge im Benutzerprotokoll** (`AUTOISF_ENABLED`, `AUTOISF_DISABLED`, `IOB_TH_SET`,
+  `ACCE_WEIGHT_SET`) werden zu „UNKNOWN“, und jeder unbekannte Eintrag wird künftig als „UNKNOWN“ gelesen
+  statt abzustürzen.
+- Die übrige Historie bleibt erhalten. Vorher trotzdem **Einstellungen exportieren**; gleicher
+  Signaturschlüssel nötig. Zurück auf 3.4 geht nicht ohne Verlust der Datenbank.
+- Am besten zuerst auf einem **Zweithandy** testen.
+
 ### 2026-11-11 (26) – Doku: Version 4.0.0 genannt, echter Screenshot
 
 - README und Anleitung nennen jetzt genau **AAPS 4.0.0** statt nur „AAPS 4“.
@@ -200,12 +215,6 @@ In der Testversion geprüft und jetzt in der normalen Version (und in sport):
 - Ein-/ausschaltbar mit dem Stift am BZ-Graph („BG parabola (AutoISF)“), nur mit AutoISF. Bei neuer
   Einstellung ist sie an; wer seine Graph-Einstellung schon gespeichert hat, schaltet sie dort ein.
 - Reine Anzeige, keine Änderung an der Dosierung.
-
-### 2026-11-10 (18) – AutoISF-Chip: Abstände
-
-- Über und unter dem AutoISF-Chip ist jetzt derselbe kleine Abstand (2 dp) wie zwischen IOB/COB
-  und Sensitivity. Ohne AutoISF bleibt die Hauptseite wie vorher.
-- Reine Anzeige.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->
