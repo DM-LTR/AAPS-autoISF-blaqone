@@ -38,6 +38,9 @@ that send a value every minute (for example Libre 3 through Juggluco).
 
 - Based on AndroidAPS 4.0.0 and JetFoxy's branch `autoisf-3.2.1` – many thanks to JetFoxy!
 - Goal: AutoISF stays **as close to the original as possible**.
+- No version expiry: this is not an official AAPS version, so the official version check is off.
+  It would otherwise set max IOB to 0 some time after a new official release.
+- The version name shows the branch: `4.0.0-aisf3.2.1` (normal), `…-dev`, `…-sport`.
 - All changes in detail: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md) (German)
 
 ## Branches – which one is for me?
@@ -46,7 +49,7 @@ that send a value every minute (for example Libre 3 through Juggluco).
 |---|---|---|
 | [`aaps4-autoisf`](https://github.com/blaqone/AAPS-autoISF/tree/aaps4-autoisf) | **Normal version.** AutoISF 3.2.1 as close to the original as possible. | Start here. |
 | [`aaps4-autoisf-dev`](https://github.com/blaqone/AAPS-autoISF/tree/aaps4-autoisf-dev) | **Test version.** The normal version plus features that are still being tested (at the moment: the parabola comparison raw / smoothed). | Only for testers, may change at any time. |
-| [`aaps4-autoisf-sport`](https://github.com/blaqone/AAPS-autoISF/tree/aaps4-autoisf-sport) | **Sport version** (planned). Today the same as the normal version. Later: exercise mode in scenes and automations. | Not ready yet. |
+| [`aaps4-autoisf-sport`](https://github.com/blaqone/AAPS-autoISF/tree/aaps4-autoisf-sport) | **Sport version.** The normal version plus changes for sport: steps from a Garmin watch for the activity monitor, SMB threshold, ketoacidosis protection. More will follow. | For sport users. New, test it carefully. |
 
 How new things get in:
 
@@ -54,6 +57,8 @@ How new things get in:
    normal version.
 2. It is tested in `aaps4-autoisf-dev`.
 3. Only when it works well, it goes into `aaps4-autoisf` (and `aaps4-autoisf-sport`).
+
+Changes for sport are made only in `aaps4-autoisf-sport`. They do not go into the normal or the dev version.
 
 The dev version is never merged into the normal version as a whole, so the normal version only
 gets features that were tested.
