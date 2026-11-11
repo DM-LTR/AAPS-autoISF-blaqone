@@ -5,6 +5,27 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-11 (29) – Update direkt von AutoISF 3.4.2.6 möglich (nur dev, im Test)
+
+Bisher ist die App beim Update über **AAPS 3.4.2.6 + AutoISF 3.2.1** bei jedem Start abgestürzt.
+
+- **Grund 1 – Datenbank-Version 32 doppelt belegt:** AutoISF 3.4 nutzt Version 32 für seine Tabelle
+  `autoIsfValues`, AAPS 4 für die Spalte `carbInsulin` in den Tagesdosen (TDD). Die App sah „32“ und hat
+  einen Schritt übersprungen – danach fehlte die Spalte.
+  **Fix:** Am Anfang des Schritts 32→33 wird geprüft, ob `carbInsulin` fehlt. Wenn ja: TDD-Cache leeren
+  (wird neu berechnet) und die Spalte anlegen. Die alte Tabelle `autoIsfValues` wird gelöscht (die
+  AutoISF-Werte stehen jetzt in den APS-Ergebnissen). Bei einer normalen AAPS-4-Datenbank passiert nichts.
+- **Grund 2 – unbekannte Einträge im Benutzerprotokoll:** AutoISF 3.x schrieb `AUTOISF_ENABLED`,
+  `AUTOISF_DISABLED`, `IOB_TH_SET` und `ACCE_WEIGHT_SET`. Diese Version kennt sie nicht und wäre beim Lesen
+  (Protokoll, Nightscout-Upload) abgestürzt.
+  **Fix:** Diese Einträge werden zu „UNKNOWN“, und jeder unbekannte Eintrag wird künftig als „UNKNOWN“
+  gelesen statt abzustürzen.
+- Die übrige Historie (BZ, Boluse, Profile, TT …) bleibt erhalten.
+- Vor dem Update trotzdem **Einstellungen exportieren**. Gleicher Signaturschlüssel nötig, sonst muss die
+  alte App deinstalliert werden. Zurück auf 3.4 geht nicht ohne Verlust der Datenbank.
+- Bitte zuerst auf einem **Zweithandy** testen: 3.4.2.6 + AutoISF installieren, ein paar Stunden laufen
+  lassen, dann diese Version darüber installieren.
+
 ## 2026-11-11 (28) – Activity Monitor: Schritte von der Uhr (Wear OS, Garmin) (nur dev, im Test)
 
 Bisher hat der AutoISF Activity Monitor nur den Schrittsensor im Handy genutzt. Wer das Handy liegen
