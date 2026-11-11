@@ -580,8 +580,8 @@ open class OpenAPSAutoISFPlugin(
                 duration = 0,
                 timestamp = nowMillis,
                 steps5min = recentSteps5Minutes,
-                steps10min = recentSteps5Minutes + recentSteps10Minutes,
-                steps15min = recentSteps5Minutes + recentSteps10Minutes + recentSteps15Minutes,
+                steps10min = recentSteps10Minutes,
+                steps15min = recentSteps15Minutes,
                 steps30min = recentSteps30Minutes,
                 steps60min = recentSteps60Minutes,
                 steps180min = StepService.getRecentStepCount180Min(),
@@ -604,7 +604,7 @@ open class OpenAPSAutoISFPlugin(
         val existSleepState = automationStateService.hasStateValues("Sleeping")
         val useSleepState = automationStateService.inState("Sleeping", "True")
         aapsLogger.debug(LTag.APS, "State json for Sleep mode: {\"Sleeping\":\"${automationStateService.getState("Sleeping")}\"}")
-        if (useSleepState && (recentSteps5Minutes + recentSteps10Minutes + recentSteps15Minutes == recentSteps30Minutes)) {
+        if (useSleepState && recentSteps15Minutes == recentSteps30Minutes) {
             automationStateService.setState("query_got_up", "query_it")
         }
         aapsLogger.debug(LTag.APS, "State json for got up query: {\"query_got_up\":\"${automationStateService.getState("query_got_up")}\"}")
@@ -624,10 +624,12 @@ open class OpenAPSAutoISFPlugin(
                     || (now >= inactivity_idle_start && now < inactivity_idle_end))
                 && recentSteps60Minutes <= 200 && ignore_inactivity_overnight && !existSleepState) {
                 consoleLog.add("Activity monitor disabled inactivity detection: sleeping hours")
-            } else if (recentSteps5Minutes > 300 || recentSteps10Minutes > 300 || recentSteps15Minutes > 300 || recentSteps30Minutes > 1500 || recentSteps60Minutes > 2500) {
+            // AutoISF fork: 10 and 15 minutes are sums now (AAPS #5499), so their limits are 2 and 3 times the
+            // 5 minute limit - the same steps per minute as before. Before, they were single 5 minute blocks.
+            } else if (recentSteps5Minutes > 300 || recentSteps10Minutes > 600 || recentSteps15Minutes > 900 || recentSteps30Minutes > 1500 || recentSteps60Minutes > 2500) {
                 activityRatio = 1 - 0.3 * activity_scale_factor
                 consoleLog.add("Activity monitor detected activity, sensitivity ratio: $activityRatio")
-            } else if (recentSteps5Minutes > 200 || recentSteps10Minutes > 200 || recentSteps15Minutes > 200
+            } else if (recentSteps5Minutes > 200 || recentSteps10Minutes > 400 || recentSteps15Minutes > 600
                 || recentSteps30Minutes > 500 || recentSteps60Minutes > 800) {
                 activityRatio = 1 - 0.15 * activity_scale_factor
                 consoleLog.add("Activity monitor detected partial activity, sensitivity ratio: $activityRatio")

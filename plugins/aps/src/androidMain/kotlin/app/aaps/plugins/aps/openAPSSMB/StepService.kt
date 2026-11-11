@@ -42,19 +42,17 @@ actual object StepService : SensorEventListener {
         }
     }
 
-    actual fun getRecentStepCount5Min(): Int {
-        val now = currentTimeIn5Min() - 1
-        return if(stepsMap.contains(now)) stepsMap.getValue(now) else 0
-    }
+    // AutoISF fork: 5, 10 and 15 minutes count the last 1, 2 and 3 finished 5 minute blocks, like the watch
+    // (AAPS #5499). Before, 10 and 15 read only the one block 10 or 15 minutes ago.
+    actual fun getRecentStepCount5Min(): Int = getStepsInFinishedBlocks(1)
 
-    actual fun getRecentStepCount10Min(): Int {
-        val tenMinAgo = currentTimeIn5Min() - 2
-        return if(stepsMap.contains(tenMinAgo)) stepsMap.getValue(tenMinAgo) else 0
-    }
+    actual fun getRecentStepCount10Min(): Int = getStepsInFinishedBlocks(2)
 
-    actual fun getRecentStepCount15Min(): Int {
-        val fifteenMinAgo = currentTimeIn5Min() - 3
-        return if(stepsMap.contains(fifteenMinAgo)) stepsMap.getValue(fifteenMinAgo) else 0
+    actual fun getRecentStepCount15Min(): Int = getStepsInFinishedBlocks(3)
+
+    private fun getStepsInFinishedBlocks(count: Int): Int {
+        val lastFinished = currentTimeIn5Min() - 1
+        return (lastFinished - count + 1..lastFinished).sumOf { stepsMap[it] ?: 0 }
     }
 
     actual fun getRecentStepCount30Min(): Int {
