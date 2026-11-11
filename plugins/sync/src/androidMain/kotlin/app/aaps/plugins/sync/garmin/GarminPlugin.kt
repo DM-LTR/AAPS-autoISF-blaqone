@@ -23,6 +23,8 @@ import app.aaps.core.ui.compose.preference.PreferenceSubScreenDef
 import app.aaps.plugins.sync.SyncStrings
 import app.aaps.plugins.sync.garmin.keys.GarminBooleanKey
 import app.aaps.plugins.sync.garmin.keys.GarminIntKey
+import app.aaps.plugins.sync.garmin.keys.GarminIntNonKey
+import app.aaps.plugins.sync.garmin.keys.GarminLongNonKey
 import app.aaps.plugins.sync.garmin.keys.GarminStringKey
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -80,7 +82,7 @@ class GarminPlugin(
         .icon(IcPluginGarmin)
         .pluginName(SyncStrings.garmin)
         .description(SyncStrings.garmin_description),
-    ownPreferences = GarminStringKey.entries + GarminBooleanKey.entries + GarminIntKey.entries,
+    ownPreferences = GarminStringKey.entries + GarminBooleanKey.entries + GarminIntKey.entries + GarminIntNonKey.entries + GarminLongNonKey.entries,
     aapsLogger, rh, preferences, notificationManager
 ) {
 
@@ -366,6 +368,7 @@ class GarminPlugin(
             Instant.ofEpochSecond(samplingStartSec), Instant.ofEpochSecond(samplingEndSec),
             avg, device, test
         )
+        receiveSteps(msg, test)
     }
 
     @VisibleForTesting
@@ -378,6 +381,72 @@ class GarminPlugin(
             Instant.ofEpochSecond(samplingStartSec), Instant.ofEpochSecond(samplingEndSec),
             avg, device, getQueryParameter(uri, "test", false)
         )
+        receiveSteps(uri)
+    }
+
+    /**
+     * AutoISF fork (from swissalpine's sport mod): steps from a message of the Garmin connection. The keys
+     * are `stepsStart` and `stepsEnd` (epoch seconds) and `steps5` to `steps180` (steps in the last 5 to
+     * 180 minutes). Without the two times the last 5 minutes are used. Nothing is stored when all are 0.
+     */
+    @VisibleForTesting
+    fun receiveSteps(msg: Map<String, Any>, test: Boolean) {
+        val buckets = STEPS_KEYS.map { toInt(msg[it]) ?: 0 }
+        if (buckets.all { it == 0 }) return
+        val now = clock.instant().epochSecond
+        val start = toLong(msg["stepsStart"]).takeIf { it > 0 } ?: (now - 300)
+        val end = toLong(msg["stepsEnd"]).takeIf { it > 0 } ?: now
+        receiveSteps(Instant.ofEpochSecond(start), Instant.ofEpochSecond(end), buckets, msg["device"] as String?, test)
+    }
+
+    /**
+     * AutoISF fork (from swissalpine's sport mod): steps from the query of an HTTP request, same keys as
+     * the message. A watch face that sends only its day total (`steps=`) is handled by [receiveDayTotalSteps].
+     */
+    @VisibleForTesting
+    fun receiveSteps(uri: URI) {
+        val buckets = STEPS_KEYS.map { getQueryParameter(uri, it)?.toIntOrNull() ?: 0 }
+        val device = getQueryParameter(uri, "device")
+        val test = getQueryParameter(uri, "test", false)
+        if (buckets.any { it != 0 }) {
+            val now = clock.instant().epochSecond
+            val start = getQueryParameter(uri, "stepsStart", 0L).takeIf { it > 0 } ?: (now - 300)
+            val end = getQueryParameter(uri, "stepsEnd", 0L).takeIf { it > 0 } ?: now
+            receiveSteps(Instant.ofEpochSecond(start), Instant.ofEpochSecond(end), buckets, device, test)
+            return
+        }
+        getQueryParameter(uri, "steps")?.toIntOrNull()?.let { receiveDayTotalSteps(it, device, test) }
+    }
+
+    /** A day total of steps: stores the steps since the last total, see [stepsSinceLastTotal]. The total is the new starting point. */
+    private fun receiveDayTotalSteps(total: Int, device: String?, test: Boolean) {
+        val now = clock.millis()
+        val lastTotal = preferences.get(GarminIntNonKey.LastTotalSteps)
+        val lastTime = preferences.get(GarminLongNonKey.LastTotalStepsTime)
+        val steps = stepsSinceLastTotal(total, lastTotal, lastTime, now)
+        aapsLogger.info(LTag.GARMIN, "day total steps $total, last $lastTotal at $lastTime, steps since: $steps")
+        if (test) return
+        preferences.put(GarminIntNonKey.LastTotalSteps, total)
+        preferences.put(GarminLongNonKey.LastTotalStepsTime, now)
+        if (steps != null && steps > 0)
+            loopHub.storeStepsCount(Instant.ofEpochMilli(lastTime), Instant.ofEpochMilli(now), steps, 0, 0, 0, 0, 0, device)
+    }
+
+    private fun receiveSteps(samplingStart: Instant, samplingEnd: Instant, buckets: List<Int>, device: String?, test: Boolean) {
+        aapsLogger.info(LTag.GARMIN, "steps ${buckets.joinToString("/")} $samplingStart to $samplingEnd")
+        if (test) return
+        if (buckets.any { it < 0 } || samplingEnd <= samplingStart) {
+            aapsLogger.warn(LTag.GARMIN, "Skip saving invalid steps ${buckets.joinToString("/")} $samplingStart..$samplingEnd")
+            return
+        }
+        loopHub.storeStepsCount(samplingStart, samplingEnd, buckets[0], buckets[1], buckets[2], buckets[3], buckets[4], buckets[5], device)
+    }
+
+    /** Converts a message value to Int. Numbers and numeric strings are accepted, anything else gives null. */
+    private fun toInt(v: Any?): Int? = when (v) {
+        is Number -> v.toInt()
+        is String -> v.toDoubleOrNull()?.toInt()
+        else      -> null
     }
 
     private fun receiveHeartRate(
@@ -505,4 +574,25 @@ class GarminPlugin(
         icon = pluginDescription.icon
     )
 
+}
+
+/** The keys of the step counts a watch can send, for the last 5 to 180 minutes. */
+private val STEPS_KEYS = listOf("steps5", "steps10", "steps15", "steps30", "steps60", "steps180")
+
+/** Longest time between two day totals that still counts as one period of steps. */
+internal const val DAY_TOTAL_MAX_GAP_MS = 15 * 60_000L
+
+/**
+ * AutoISF fork: the steps since the last day total of a watch face, or null when they cannot be told:
+ * - no total before ([lastTotal] below 0 or no [lastTimeMs]),
+ * - the total went down (a new day, the watch counts from 0 again),
+ * - the last total is older than [DAY_TOTAL_MAX_GAP_MS]: the steps of a long gap would all count as
+ *   "just now" and look like activity, which gives less insulin.
+ */
+internal fun stepsSinceLastTotal(total: Int, lastTotal: Int, lastTimeMs: Long, nowMs: Long): Int? = when {
+    lastTotal < 0 || lastTimeMs <= 0L         -> null
+    total < lastTotal                         -> null
+    nowMs <= lastTimeMs                       -> null
+    nowMs - lastTimeMs > DAY_TOTAL_MAX_GAP_MS -> null
+    else                                      -> total - lastTotal
 }
