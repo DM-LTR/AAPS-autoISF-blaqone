@@ -413,6 +413,24 @@ enum class IntKey(
         dependency = BooleanKey.ActivityMonitorOvernight,
         sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
     ),
+    // AutoISF fork: where the activity monitor takes its steps from (0 phone, 1 watch, 2 watch when fresh, else phone)
+    ActivityMonitorStepSource(
+        key = "activity_monitor_step_source",
+        defaultValue = 2,
+        min = 0,
+        max = 2,
+        title = KeysStrings.activity_monitor_step_source_title,
+        summary = KeysStrings.activity_monitor_step_source_summary,
+        preferenceType = PreferenceType.LIST,
+        entriesRefs = mapOf(
+            0 to KeysStrings.activity_monitor_step_source_phone,
+            1 to KeysStrings.activity_monitor_step_source_watch,
+            2 to KeysStrings.activity_monitor_step_source_automatic
+        ),
+        defaultedBySM = true,
+        dependency = BooleanKey.ActivityMonitorDetection,
+        sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
+    ),
     ActivityRestingHr(
         key = "activity_resting_hr",
         defaultValue = 60,
