@@ -161,6 +161,13 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
+### 2026-11-11 (26) – Doku: Version 4.0.0 genannt, echter Screenshot
+
+- README und Anleitung nennen jetzt genau **AAPS 4.0.0** statt nur „AAPS 4“.
+- Die gezeichneten Beispielbilder sind entfernt. Stattdessen gibt es einen **echten Screenshot** des
+  Hauptbildschirms mit geöffnetem AutoISF-Chip.
+- Nur Doku, keine Änderung an der App.
+
 ### 2026-11-11 (25) – Activity Classifier: Schritte der ganzen 15 Minuten (nur dev, im Test)
 
 - ⚠ Der Activity Classifier bekam bisher nur die Schritte **eines 5-Minuten-Blocks von vor 10–15 Minuten**
@@ -201,15 +208,6 @@ In der Testversion geprüft und jetzt in der normalen Version (und in sport):
   Zahl steht in seiner Bereichsfarbe, und der **Rohwert folgt grau in Klammern**, z. B. `147 (raw 151)`.
   Sind beide gleich, steht nur ein Wert da. Ohne farbigen Punkt an der Stelle: Rohwert wie bisher.
 - Reine Anzeige.
-
-### 2026-11-10 (20) – Farbige BZ-Punkte jede Minute (nur dev, im Test)
-
-- Mit einem 1-Minuten-CGM und UKF-Glättung zeigt der BZ-Graph jetzt **jede Minute einen farbigen
-  Punkt** (geglätteter Wert, nach Bereich gefärbt). Vorher gab es ihn nur alle 5 Minuten. Die grauen
-  Ringe (Rohwerte) bleiben.
-- Gilt mit jedem APS, nicht nur mit AutoISF. Mit 5-Minuten-CGM oder ohne UKF bleibt alles wie vorher.
-- Auch das BZ-Punkte-Widget zeigt dann einen Punkt pro Minute.
-- Reine Anzeige: Autosens, IOB/COB und der Loop rechnen wie bisher.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->
