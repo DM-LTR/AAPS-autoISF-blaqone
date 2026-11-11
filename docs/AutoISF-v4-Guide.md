@@ -1,7 +1,7 @@
-# AutoISF 3.2.1 on AAPS 4 – guide
+# AutoISF 3.2.1 on AAPS 4.0.0 – guide
 
-This guide is for people who know AutoISF from AAPS 3.x and want to use it on AAPS 4. It explains
-**what is different in AAPS 4**, **where the settings are now** and **how to use the new parts**.
+This guide is for people who know AutoISF from AAPS 3.x and want to use it on AAPS 4.0.0. It explains
+**what is different in AAPS 4.0.0**, **where the settings are now** and **how to use the new parts**.
 
 It does not explain AutoISF itself again. For that, read the original documents first:
 
@@ -20,11 +20,9 @@ It does not explain AutoISF itself again. For that, read the original documents 
 
 ## 1. Which version?
 
-![The three versions](images/branches.svg)
-
 | You want to … | Use |
 |---|---|
-| use AutoISF on AAPS 4 | **`aaps4-autoisf` (normal)** – recommended |
+| use AutoISF on AAPS 4.0.0 | **`aaps4-autoisf` (normal)** – recommended |
 | test new things early and give feedback | `aaps4-autoisf-dev` |
 | use the sport changes (Garmin steps, SMB threshold, keto protection) | `aaps4-autoisf-sport` |
 
@@ -35,9 +33,9 @@ The version name in the app shows which one you have: `4.0.0-aisf3.2.1` (normal)
 ## 2. Coming from AAPS 3.x with AutoISF
 
 1. **Export your settings** in your old AAPS (Maintenance → Export settings).
-2. Install AAPS 4 + AutoISF. Best on a second phone or with the virtual pump first.
+2. Install AAPS 4.0.0 + AutoISF. Best on a second phone or with the virtual pump first.
 3. **Import the settings.** AutoISF settings, automations with the AutoISF actions and triggers, and the
-   **states** (for example "Sleeping") are read. In AAPS 4 an import is applied without restarting the app;
+   **states** (for example "Sleeping") are read. In AAPS 4.0.0 an import is applied without restarting the app;
    imported states count at once.
 4. In the **Config builder → APS** choose **AutoISF**.
 5. Check the settings described below, especially the new ones. Then start in **Open Loop**.
@@ -46,11 +44,9 @@ The version name in the app shows which one you have: `4.0.0-aisf3.2.1` (normal)
 
 ## 3. Where to find what
 
-![Where to find the settings](images/settings-map.svg)
-
 - **AutoISF settings** – open them from the AutoISF plugin (Config builder → APS → AutoISF → gear). The
   screen has the same parts as in 3.2.1: ISF weights (acce, bg, pp, dura), iobTH, SMB settings, activity
-  monitor. New in AAPS 4: the parabola switch and slider, and the CGM correction (see below).
+  monitor. New in AAPS 4.0.0: the parabola switch and slider, and the CGM correction (see below).
 - **Loop interval** – in the APS settings (AutoISF or SMB): 1–10 minutes, default 5.
 - **CGM correction** – in the xDrip source settings and in the AutoISF settings.
 - **Graphs** – the pencil on each graph of the main screen.
@@ -61,7 +57,7 @@ graph) is **only shown when AutoISF is the active APS**.
 
 ---
 
-## 4. What is new or different in AAPS 4
+## 4. What is new or different in AAPS 4.0.0
 
 ### 4.1 One-minute values and the loop
 
@@ -110,7 +106,10 @@ The activity monitor and the activity classifier are **off during every temp tar
 
 ### 4.6 Main screen
 
-![Main screen](images/main-screen.svg)
+![Main screen with the AutoISF chip opened](images/main-screen.png)
+
+*Screenshot from the app, AutoISF chip opened. The two parabola lines at the bottom of the chip (raw and
+smoothed) are only in the dev version.*
 
 1. **AutoISF chip** under the BG: the values of the last loop run.
    - Closed: one line with the values you pinned (default *final* and *iobTH*).
