@@ -161,6 +161,36 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
+### 2026-11-11 (28) – Activity Monitor: Schritte von der Uhr (Wear OS, Garmin) (nur dev, im Test)
+
+Bisher hat der AutoISF Activity Monitor nur den Schrittsensor im Handy genutzt. Wer das Handy liegen
+ließ und nur die Uhr trug, bekam keine Aktivität erkannt. Jetzt kann er auch die Schritte einer Uhr nutzen.
+
+- ⚠ **Neue Einstellung „Steps from“** (Activity Monitor): **Phone** / **Watch (Garmin, Wear OS)** /
+  **Automatic** (Standard).
+  - *Phone*: wie bisher, nur der Schrittsensor im Handy.
+  - *Watch*: nur die Uhr. Hat die Uhr in den letzten 10 Minuten nichts geschickt, ändert der Monitor nichts
+    (Faktor 1,0).
+  - *Automatic*: die Uhr, wenn sie in den letzten 10 Minuten Schritte geschickt hat, sonst das Handy.
+    Ohne Uhr ist also alles wie bisher.
+- **Woher die Uhr-Schritte kommen:** alles, was eine Uhr als Schritte speichert:
+  - **Wear OS**: die AAPS-Wear-App schickt die Schritte (mit Milos' Fix #5499 als Summen).
+  - **Garmin**: das Watchface kann die Schritte bei seinen Abfragen mitschicken (als Zeitfenster
+    5/10/15/30/60 min oder als Tagessumme). Nach einer Lücke über 15 Minuten oder nach Mitternacht wird
+    neu angefangen, damit alte Schritte nie wie „gerade aktiv“ aussehen. Das Watchface muss das
+    unterstützen.
+- **Nichts wird doppelt gezählt:** Es zählt immer nur die **neueste** Uhr-Zeile. Die Wear-Uhr schreibt
+  6 Zeilen gleichzeitig (eine pro Zeitfenster), davon wird nur die längste mit allen Werten genommen.
+  Die Handy-Zeilen (jede Minute) werden nie als Uhr-Schritte genommen.
+- **Die Monitor-Logik bleibt wie im Original AutoISF:** gleiche Grenzen (300/200 je 5-Minuten-Block,
+  1500/500 für 30 min, 2500/800 für 60 min), gleiche Faktoren, gleiche Nacht-Regeln. Die Summen der Uhr
+  werden dafür in 5-Minuten-Blöcke umgerechnet (10 min − 5 min usw.).
+- Mit Uhr-Schritten entfallen die Prüfung „Handy wird nicht getragen“ und die Wartezeit nach dem
+  App-Start – die gelten nur für den Handy-Sensor.
+- ⚠ Der Activity Classifier bekommt die Summe der letzten 15 Minuten aus derselben Quelle.
+- Im Log steht bei jeder Erkennung, ob die Schritte von „phone“ oder „watch“ kamen.
+- Gleiche Funktion wie in der sport-Version, aber **ohne** die Einstellung „Nacht ist“.
+
 ### 2026-11-11 (27) – Gemeldete Fehler: iobTH-Legende, Schritt-Automation, Log-Ordner (nur dev, im Test)
 
 - **IOB-Graph:** Ist iobTH eingeschaltet, zeigt eine Legende, welche Linie IOB und welche iobTH ist.
@@ -199,18 +229,6 @@ The newest changes. ⚠ = this change can affect insulin dosing.
 - **Versionsprüfung aus:** Diese Version ist keine offizielle AAPS-Version. Die Prüfung hätte sie mit den
   offiziellen Versionen verglichen und einige Zeit nach einer neuen offiziellen Version Max IOB auf 0
   gesetzt („Anwendung abgelaufen“) – das hätte den geschlossenen Loop beendet.
-
-### 2026-11-10 (22) – Normale Version: AutoISF-Chip, pinke Parabel, langes Drücken
-
-In der Testversion geprüft und jetzt in der normalen Version (und in sport):
-
-- **AutoISF-Chip** auf der Hauptseite, zum Aufklappen, mit anheftbaren Werten (siehe 16–18).
-- **Pinke BG-Parabel** im BZ-Graph wie in AutoISF 3.2.1 (siehe 19).
-- **Langes Drücken im BZ-Graph** zeigt den farbigen, geglätteten Wert in seiner Farbe und dahinter
-  grau in Klammern den Rohwert, z. B. `147 (raw 151)`. In der normalen Version gibt es die farbigen
-  Punkte nur alle 5 Minuten; zwischen ihnen zeigt das lange Drücken den Rohwert allein.
-- Die farbigen BZ-Punkte jede Minute bleiben vorerst in der Testversion.
-- Reine Anzeige, keine Änderung an der Dosierung.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->
