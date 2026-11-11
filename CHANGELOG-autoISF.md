@@ -5,6 +5,13 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-11 (26) – Doku: Version 4.0.0 genannt, echter Screenshot
+
+- README und Anleitung nennen jetzt genau **AAPS 4.0.0** statt nur „AAPS 4“.
+- Die gezeichneten Beispielbilder sind entfernt. Stattdessen gibt es einen **echten Screenshot** des
+  Hauptbildschirms mit geöffnetem AutoISF-Chip.
+- Nur Doku, keine Änderung an der App.
+
 ## 2026-11-11 (23) – Farbige BZ-Punkte jede Minute, Versionsprüfung aus
 
 - **Farbige BZ-Punkte jede Minute** (in dev getestet): Mit 1-Minuten-CGM und UKF-Glättung zeigt der
