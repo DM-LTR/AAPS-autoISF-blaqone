@@ -140,6 +140,15 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
+### 2026-11-11 (23) – Farbige BZ-Punkte jede Minute, Versionsprüfung aus
+
+- **Farbige BZ-Punkte jede Minute** (in dev getestet): Mit 1-Minuten-CGM und UKF-Glättung zeigt der
+  BZ-Graph jede Minute einen farbigen Punkt (geglätteter Wert), nicht nur alle 5 Minuten. Gilt mit jedem
+  APS. Reine Anzeige, die Berechnung bleibt auf dem 5-Minuten-Raster.
+- **Versionsprüfung aus:** Diese Version ist keine offizielle AAPS-Version. Die Prüfung hätte sie mit den
+  offiziellen Versionen verglichen und einige Zeit nach einer neuen offiziellen Version Max IOB auf 0
+  gesetzt („Anwendung abgelaufen“) – das hätte den geschlossenen Loop beendet.
+
 ### 2026-11-10 (22) – Normale Version: AutoISF-Chip, pinke Parabel, langes Drücken
 
 In der Testversion geprüft und jetzt in der normalen Version (und in sport):
@@ -179,16 +188,6 @@ In der Testversion geprüft und jetzt in der normalen Version (und in sport):
   Standard: final und iobTH). Auswahl und auf/zu werden gespeichert und kommen mit dem Export mit.
 - Farben: Faktor über 1 (stärker, mehr Insulin) orange/gelb, unter 1 (schwächer) grün.
 - Nur sichtbar, wenn AutoISF das aktive APS ist. Reine Anzeige, keine Änderung an der Dosierung.
-
-### 2026-11-10 (16) – AutoISF-Chip auf der Hauptseite
-
-- Die AutoISF-Werte des letzten Loop-Laufs (acce, bg, pp, dura, final, iobTH) stehen jetzt in einem
-  **eigenen Chip** über die ganze Breite, direkt unter BZ-Wert und Sensitivity-Chip. Gleiche Farbe
-  und Höhe wie der Sensitivity-Chip, Text rechtsbündig.
-- **Klick oder langer Klick** auf den Chip öffnet den AutoISF-Bildschirm (APS-Tab) mit der Berechnung.
-- Nur sichtbar, wenn AutoISF das aktive APS ist.
-- Die **graue Statuszeile** (letzter Loop, letzter SMB, TBR) ist wieder entfernt.
-- Reine Anzeige, keine Änderung an der Dosierung.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->
