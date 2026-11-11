@@ -160,6 +160,16 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
+### 2026-11-11 (25) – Activity Classifier: Schritte der ganzen 15 Minuten (nur dev, im Test)
+
+- ⚠ Der Activity Classifier bekam bisher nur die Schritte **eines 5-Minuten-Blocks von vor 10–15 Minuten**
+  statt der Schritte der letzten 15 Minuten. Dadurch reagierte er 10 Minuten zu spät, und „Kraftsport“
+  (wenig Schritte + hoher Puls) schlug schon bei einem einzelnen ruhigen Block an.
+- Jetzt zählt die **Summe der letzten 15 Minuten**, etwas unempfindlicher als bisher: Ausdauer allein aus
+  Schritten erst ab **600 Schritten in 15 min** (40/min, zügiges Gehen), Kraftsport nur unter
+  **45 Schritten in 15 min** bei erhöhtem Puls.
+- Gilt nur, wenn Activity Monitor und Classifier eingeschaltet sind.
+
 ### 2026-11-11 (23) – Farbige BZ-Punkte jede Minute, Versionsprüfung aus
 
 - **Farbige BZ-Punkte jede Minute** (in dev getestet): Mit 1-Minuten-CGM und UKF-Glättung zeigt der
@@ -197,18 +207,6 @@ In der Testversion geprüft und jetzt in der normalen Version (und in sport):
 - Gilt mit jedem APS, nicht nur mit AutoISF. Mit 5-Minuten-CGM oder ohne UKF bleibt alles wie vorher.
 - Auch das BZ-Punkte-Widget zeigt dann einen Punkt pro Minute.
 - Reine Anzeige: Autosens, IOB/COB und der Loop rechnen wie bisher.
-
-### 2026-11-10 (19) – Pinke BG-Parabel im BZ-Graph
-
-- Wie in AutoISF 3.2.1: Die Parabel, die AutoISF für acce_ISF an die BZ-Werte legt, wird als
-  **pinke Linie** im BZ-Graph gezeichnet. **Durchgezogen** über die Minuten, auf die sie gelegt wurde,
-  **gestrichelt** 20 Minuten in die Zukunft (nur wenn die Vorhersagen eingeschaltet sind).
-- **Glatt:** ein Punkt pro Minute, bei 1-Minuten-CGM also an jedem Wert. Die Linie wird **bei jedem
-  neuen Wert** neu berechnet, unabhängig vom Loop-Intervall. Sie zeigt die Parabel, die AutoISF
-  wirklich benutzt (roh oder geglättet, je nach Schalter).
-- Ein-/ausschaltbar mit dem Stift am BZ-Graph („BG parabola (AutoISF)“), nur mit AutoISF. Bei neuer
-  Einstellung ist sie an; wer seine Graph-Einstellung schon gespeichert hat, schaltet sie dort ein.
-- Reine Anzeige, keine Änderung an der Dosierung.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->

@@ -5,6 +5,16 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-11 (25) – Activity Classifier: Schritte der ganzen 15 Minuten (nur dev, im Test)
+
+- ⚠ Der Activity Classifier bekam bisher nur die Schritte **eines 5-Minuten-Blocks von vor 10–15 Minuten**
+  statt der Schritte der letzten 15 Minuten. Dadurch reagierte er 10 Minuten zu spät, und „Kraftsport“
+  (wenig Schritte + hoher Puls) schlug schon bei einem einzelnen ruhigen Block an.
+- Jetzt zählt die **Summe der letzten 15 Minuten**, etwas unempfindlicher als bisher: Ausdauer allein aus
+  Schritten erst ab **600 Schritten in 15 min** (40/min, zügiges Gehen), Kraftsport nur unter
+  **45 Schritten in 15 min** bei erhöhtem Puls.
+- Gilt nur, wenn Activity Monitor und Classifier eingeschaltet sind.
+
 ## 2026-11-11 (23) – Farbige BZ-Punkte jede Minute, Versionsprüfung aus
 
 - **Farbige BZ-Punkte jede Minute** (in dev getestet): Mit 1-Minuten-CGM und UKF-Glättung zeigt der
