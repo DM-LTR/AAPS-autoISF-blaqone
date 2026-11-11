@@ -165,9 +165,11 @@ The newest changes. ⚠ = this change can affect insulin dosing.
 - ⚠ Der Activity Classifier bekam bisher nur die Schritte **eines 5-Minuten-Blocks von vor 10–15 Minuten**
   statt der Schritte der letzten 15 Minuten. Dadurch reagierte er 10 Minuten zu spät, und „Kraftsport“
   (wenig Schritte + hoher Puls) schlug schon bei einem einzelnen ruhigen Block an.
-- Jetzt zählt die **Summe der letzten 15 Minuten**, etwas unempfindlicher als bisher: Ausdauer allein aus
-  Schritten erst ab **600 Schritten in 15 min** (40/min, zügiges Gehen), Kraftsport nur unter
-  **45 Schritten in 15 min** bei erhöhtem Puls.
+- Jetzt zählt die **Summe der letzten 15 Minuten**. Neue Einstellung **„ActivityClassifier sensitivity“**
+  (beim Activity Monitor), Schritte in 15 min für Ausdauer / Kraftsport nur unter:
+  - hoch: 450 / 90 (30 pro Minute – so wirkte er bisher tatsächlich)
+  - **mittel (Standard): 600 / 45** (40 pro Minute, zügiges Gehen)
+  - niedrig: 750 / 30 (50 pro Minute, eher Laufen)
 - Gilt nur, wenn Activity Monitor und Classifier eingeschaltet sind.
 
 ### 2026-11-11 (23) – Farbige BZ-Punkte jede Minute, Versionsprüfung aus
