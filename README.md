@@ -161,6 +161,17 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
+### 2026-11-11 (27) – Gemeldete Fehler: iobTH-Legende, Schritt-Automation, Log-Ordner (nur dev, im Test)
+
+- **IOB-Graph:** Ist iobTH eingeschaltet, zeigt eine Legende, welche Linie IOB und welche iobTH ist.
+  iobTH kann man nur noch im IOB-Graph wählen, nicht mehr in den Graphen 2–5.
+- **Automation „Schritte“ (AAPS #5499 von Milos):** liest jetzt die neueste Zeile. Mit Handy-Schritten hat
+  sie vorher nie ausgelöst. Von der Wear-Uhr sind 10 und 15 min jetzt Summen. **Eigene Automationen mit
+  Schritten bitte prüfen.**
+- **Activity Monitor:** unverändert, rechnet wie im Original AutoISF.
+- **Logdateien** liegen wie bei AutoISF 3.4 in `Documents/aapsLogs` (stündliches Zip, 30 Tage), damit
+  die AutoISF-Emulator-Werkzeuge sie lesen können.
+
 ### 2026-11-11 (26) – Doku: Version 4.0.0 genannt, echter Screenshot
 
 - README und Anleitung nennen jetzt genau **AAPS 4.0.0** statt nur „AAPS 4“.
@@ -200,14 +211,6 @@ In der Testversion geprüft und jetzt in der normalen Version (und in sport):
   Punkte nur alle 5 Minuten; zwischen ihnen zeigt das lange Drücken den Rohwert allein.
 - Die farbigen BZ-Punkte jede Minute bleiben vorerst in der Testversion.
 - Reine Anzeige, keine Änderung an der Dosierung.
-
-### 2026-11-10 (21) – Langes Drücken im BZ-Graph zeigt den geglätteten Wert
-
-- Langes Drücken auf einen Wert im BZ-Graph zeigte bisher den **Rohwert** (grauer Ring), auch wenn
-  dort ein farbiger Punkt lag. Jetzt sitzt der Punkt auf dem **farbigen (geglätteten) Wert**, die
-  Zahl steht in seiner Bereichsfarbe, und der **Rohwert folgt grau in Klammern**, z. B. `147 (raw 151)`.
-  Sind beide gleich, steht nur ein Wert da. Ohne farbigen Punkt an der Stelle: Rohwert wie bisher.
-- Reine Anzeige.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->
