@@ -5,6 +5,7 @@ import app.aaps.core.data.model.GV
 import app.aaps.core.data.model.GlucoseUnit
 import app.aaps.core.data.model.HR
 import app.aaps.core.data.model.RM
+import app.aaps.core.data.model.SC
 import app.aaps.core.data.ue.Action
 import app.aaps.core.data.ue.Sources
 import app.aaps.core.data.ue.ValueWithUnit
@@ -175,6 +176,27 @@ class LoopHubImpl(
         )
         appScope.launch {
             persistenceLayer.insertOrUpdateHeartRates(listOf(hr))
+        }
+    }
+
+    override fun storeStepsCount(
+        samplingStart: Instant, samplingEnd: Instant,
+        steps5min: Int, steps10min: Int, steps15min: Int, steps30min: Int, steps60min: Int, steps180min: Int,
+        device: String?
+    ) {
+        val sc = SC(
+            timestamp = samplingEnd.toEpochMilli(),
+            duration = samplingEnd.toEpochMilli() - samplingStart.toEpochMilli(),
+            steps5min = steps5min,
+            steps10min = steps10min,
+            steps15min = steps15min,
+            steps30min = steps30min,
+            steps60min = steps60min,
+            steps180min = steps180min,
+            device = device ?: "Garmin",
+        )
+        appScope.launch {
+            persistenceLayer.insertOrUpdateStepsCounts(listOf(sc))
         }
     }
 }

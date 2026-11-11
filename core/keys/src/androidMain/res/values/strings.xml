@@ -443,6 +443,16 @@
     <string name="activity_scale_factor_summary" formatted="false">Default: 1.0\nIf activity is detected then its default contribution of 15% or 30% is scaled up or down by this ratio\nA value of 0.0 disables activity contribution to sensitivity</string>
     <string name="inactivity_scale_factor_title">Scale factor for final inactivity sensitivity</string>
     <string name="inactivity_scale_factor_summary" formatted="false">Default: 1.0\nIf inactivity is detected then its default contribution of 10% or 20% is scaled up or down by this ratio\nA value of 0.0 disables inactivity contribution to sensitivity</string>
+    <string name="activity_monitor_step_source_title">Steps from</string>
+    <string name="activity_monitor_step_source_summary">Where the activity monitor takes the steps from. Automatic uses the watch when it sent steps in the last 10 minutes, otherwise the phone. With the watch only and no fresh steps, the monitor changes nothing.</string>
+    <string name="activity_monitor_step_source_phone">Phone</string>
+    <string name="activity_monitor_step_source_watch">Watch (Garmin, Wear OS)</string>
+    <string name="activity_monitor_step_source_automatic">Automatic</string>
+    <string name="activity_monitor_night_mode_title">Night is</string>
+    <string name="activity_monitor_night_mode_summary">At night inactivity does not give more insulin. Night hours need the switch below.</string>
+    <string name="activity_monitor_night_mode_time">Night hours</string>
+    <string name="activity_monitor_night_mode_state">State \"Sleeping\"</string>
+    <string name="activity_monitor_night_mode_both">Night hours or state \"Sleeping\"</string>
     <string name="ignore_inactivity_overnight_title">Disable inactivity detection during sleep</string>
     <string name="ignore_inactivity_overnight_summary">Stop inactivity adaptation during sleeping hours\nDefault is true, i.e. adaptation is off\n\nIf false, leave phone beside bed during short breaks to keep monitoring disabled</string>
     <string name="inactivity_idle_start_title">Start hour for disabling inactivity monitoring</string>
