@@ -1,4 +1,4 @@
-# AAPS 4 + AutoISF 3.2.1 (test version)
+# AAPS 4.0.0 + AutoISF 3.2.1 (test version)
 
 ---
 
@@ -45,11 +45,9 @@ that send a value every minute (for example Libre 3 through Juggluco).
 
 ## Branches – which one is for me?
 
-![Which version is for me](docs/images/branches.svg)
-
 | Branch | What it is | For whom |
 |---|---|---|
-| ⭐ [`aaps4-autoisf`](https://github.com/blaqone/AAPS-autoISF/tree/aaps4-autoisf) | **Normal version – recommended.** AutoISF 3.2.1 on AAPS 4, as close to the original as possible. Only features that were tested. | **Everyone who wants to use AutoISF. Start here.** |
+| ⭐ [`aaps4-autoisf`](https://github.com/blaqone/AAPS-autoISF/tree/aaps4-autoisf) | **Normal version – recommended.** AutoISF 3.2.1 on AAPS 4.0.0, as close to the original as possible. Only features that were tested. | **Everyone who wants to use AutoISF. Start here.** |
 | [`aaps4-autoisf-dev`](https://github.com/blaqone/AAPS-autoISF/tree/aaps4-autoisf-dev) | **Test version.** The normal version plus features that are still being tested. Changes often. | Only for testers. |
 | [`aaps4-autoisf-sport`](https://github.com/blaqone/AAPS-autoISF/tree/aaps4-autoisf-sport) | **Sport version – my personal mode.** The normal version plus my changes for sport: steps from a Garmin watch for the activity monitor, SMB threshold, ketoacidosis protection. More will follow. | Mainly for me. Use it only if you know what these changes do. |
 
@@ -67,14 +65,17 @@ gets features that were tested.
 
 ## Guide
 
-**New to AutoISF on AAPS 4?** Read the guide: [docs/AutoISF-v4-Guide.md](docs/AutoISF-v4-Guide.md) –
+**New to AutoISF on AAPS 4.0.0?** Read the guide: [docs/AutoISF-v4-Guide.md](docs/AutoISF-v4-Guide.md) –
 what is different from AutoISF on AAPS 3.x, where the settings are and how to use the new parts.
 
 For AutoISF itself see the original documents: the AutoISF Quick Guide and BerNie's guide for Full Closed
 Loop in [ga-zelle/autoISF](https://github.com/ga-zelle/autoISF), and the official AutoISF branch
 [T-o-b-i-a-s/AndroidAPS 3.4.2.6+aisf3.2.1](https://github.com/T-o-b-i-a-s/AndroidAPS/tree/3.4.2.6+aisf3.2.1).
 
-![Main screen](docs/images/main-screen.svg)
+<img src="docs/images/main-screen.png" alt="Main screen with the AutoISF chip opened" width="400">
+
+*Screenshot from the app, AutoISF chip opened. The two parabola lines at the bottom of the chip (raw and
+smoothed) are only in the dev version.*
 
 ## Sport version – what is different
 
