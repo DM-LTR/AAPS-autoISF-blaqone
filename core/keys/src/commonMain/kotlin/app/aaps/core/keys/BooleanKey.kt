@@ -201,6 +201,22 @@ enum class BooleanKey(
         KeysStrings.pref_summary_autoisf_parabola_smoothed,
         sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
     ),
+    // Sport fork: no SMB while BG is below a threshold
+    ApsAutoIsfSmbThresholdEnabled(
+        "autoisf_smb_threshold_enabled",
+        true,
+        KeysStrings.pref_title_autoisf_smb_threshold_enabled,
+        KeysStrings.pref_summary_autoisf_smb_threshold_enabled,
+        sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
+    ),
+    // Sport fork: a small temp basal instead of a zero or very low one
+    ApsAutoIsfKetoProtection(
+        "autoisf_keto_protection",
+        false,
+        KeysStrings.pref_title_autoisf_keto_protection,
+        KeysStrings.pref_summary_autoisf_keto_protection,
+        sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
+    ),
     ApsAutoIsfSmbOnEvenTarget(
         "Enable alternative activation of SMB always",
         false,

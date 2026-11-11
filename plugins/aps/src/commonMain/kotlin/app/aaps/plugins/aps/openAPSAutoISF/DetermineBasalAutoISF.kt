@@ -148,6 +148,7 @@ class DetermineBasalAutoISF(
         }
         if (rate < 0) rate = 0.0
         else if (rate > maxSafeBasal) rate = maxSafeBasal
+        if (duration > 0) rate = ketoProtected(rate, profile, rT)
 
         val suggestedRate = round_basal(rate)
         if (currenttemp.duration > (duration - 10) && currenttemp.duration <= 120 && suggestedRate <= currenttemp.rate * 1.2 && suggestedRate >= currenttemp.rate * 0.8 && duration > 0) {
@@ -177,6 +178,18 @@ class DetermineBasalAutoISF(
             rT.rate = suggestedRate
             return rT
         }
+    }
+
+    /**
+     * Sport fork, keto protection: a temp basal below [OapsProfileAutoIsf.keto_min_rate] is raised to it, so
+     * the pump never runs without insulin for long. Off when the value is 0. Not used where the run is given up
+     * because of bad CGM data or a broken value.
+     */
+    private fun ketoProtected(rate: Double, profile: OapsProfileAutoIsf, rT: RT): Double {
+        if (profile.keto_min_rate <= 0.0 || rate >= profile.keto_min_rate) return rate
+        consoleError.add("Keto protection: temp basal ${round(rate, 2)} raised to ${profile.keto_min_rate}U/h")
+        rT.reason.append(" Keto protection: ${profile.keto_min_rate}U/h instead of ${round(rate, 2)}U/h.")
+        return profile.keto_min_rate
     }
 
     /**
@@ -927,6 +940,12 @@ class DetermineBasalAutoISF(
         if (loop_wanted_smb == "fullLoop") {   // only if SMB specifically requested, e.g. for full loop
             maxDeltaPercentage = 0.3
         }
+        // Sport fork: no SMB while BG is below the SMB threshold
+        if (enableSMB && profile.smb_threshold > 0.0 && bg < profile.smb_threshold) {
+            consoleError.add("BG ${convert_bg(bg)} < SMB threshold ${convert_bg(profile.smb_threshold)} - disabling SMB")
+            rT.reason.append("BG < SMB threshold " + convert_bg(profile.smb_threshold) + ": SMB disabled; ")
+            enableSMB = false
+        }
         if (maxDelta > maxDeltaPercentage * bg) {
             consoleError.add("maxDelta ${convert_bg(maxDelta)} > ${100 * maxDeltaPercentage}% of BG ${convert_bg(bg)} - disabling SMB")
             rT.reason.append("maxDelta " + convert_bg(maxDelta) + " > " + 100 * maxDeltaPercentage + "% of BG " + convert_bg(bg) + ": SMB disabled; ")
@@ -1216,7 +1235,7 @@ class DetermineBasalAutoISF(
 
                 // if no zero temp is required, don't return yet; allow later code to set a high temp
                 if (durationReq > 0) {
-                    rT.rate = smbLowTempReq
+                    rT.rate = ketoProtected(smbLowTempReq, profile, rT)
                     rT.duration = durationReq
                     return rT
                 }

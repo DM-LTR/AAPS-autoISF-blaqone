@@ -21,6 +21,17 @@ enum class UnitDoubleKey(
 ) : UnitDoublePreferenceKey {
 
     OverviewLowMark(key = "low_mark", defaultValue = 72.0, minMgdl = 25, maxMgdl = 160, title = KeysStrings.pref_title_low_mark, sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)),
+    // Sport fork: below this BG no SMB is given
+    ApsAutoIsfSmbThreshold(
+        key = "autoisf_smb_threshold",
+        defaultValue = 140.0,
+        minMgdl = 72,
+        maxMgdl = 180,
+        title = KeysStrings.pref_title_autoisf_smb_threshold,
+        summary = KeysStrings.pref_summary_autoisf_smb_threshold,
+        dependency = BooleanKey.ApsAutoIsfSmbThresholdEnabled,
+        sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
+    ),
     OverviewHighMark(key = "high_mark", defaultValue = 180.0, minMgdl = 90, maxMgdl = 250, title = KeysStrings.pref_title_high_mark, sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)),
     ApsLgsThreshold(
         key = "lgsThreshold",

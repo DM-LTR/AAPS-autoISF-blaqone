@@ -94,8 +94,12 @@ aps_incarnation_no|DiaconnIntNonKey|true
 aps_link_to_docs|ApsIntentKey|false
 autoISF_max|DoubleKey|true
 autoISF_min|DoubleKey|true
+autoisf_keto_protection_percent|IntKey|true
+autoisf_keto_protection|BooleanKey|true
 autoisf_parabola_min_minutes|IntKey|true
 autoisf_parabola_smoothed|BooleanKey|true
+autoisf_smb_threshold_enabled|BooleanKey|true
+autoisf_smb_threshold|UnitDoubleKey|true
 autoisf_use_activity_classifier|BooleanKey|true
 autoisf_use_activity_target_offset|BooleanKey|true
 automation_state_service|StringNonKey|true

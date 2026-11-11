@@ -379,7 +379,11 @@ open class OpenAPSAutoISFPlugin(
             smb_max_range_extension = smbMaxRangeExtension,
             enableSMB_EvenOn_OddOff_always = enableSMB_EvenOn_OddOff_always,
             iob_threshold_percent = iobThresholdPercent,
-            profile_percentage = profile_percentage
+            profile_percentage = profile_percentage,
+            smb_threshold = if (preferences.get(BooleanKey.ApsAutoIsfSmbThresholdEnabled)) preferences.get(UnitDoubleKey.ApsAutoIsfSmbThreshold) else 0.0,
+            keto_min_rate = if (preferences.get(BooleanKey.ApsAutoIsfKetoProtection))
+                ketoProtectionRate(ch.fromPump(activePlugin.activePump.baseBasalRate), preferences.get(IntKey.ApsAutoIsfKetoProtectionPercent), activePlugin.activePump.pumpDescription)
+            else 0.0
         )
 
         // Refuse to run the algorithm with degenerate ISF inputs — division by these would produce NaN/Infinity in
@@ -1125,7 +1129,11 @@ open class OpenAPSAutoISFPlugin(
                     DoubleKey.ApsAutoIsfSmbDeliveryRatioMax,
                     DoubleKey.ApsAutoIsfSmbDeliveryRatioBgRange,
                     DoubleKey.ApsAutoIsfSmbMaxRangeExtension,
-                    BooleanKey.ApsAutoIsfSmbOnEvenTarget
+                    BooleanKey.ApsAutoIsfSmbOnEvenTarget,
+                    BooleanKey.ApsAutoIsfSmbThresholdEnabled,
+                    UnitDoubleKey.ApsAutoIsfSmbThreshold,
+                    BooleanKey.ApsAutoIsfKetoProtection,
+                    IntKey.ApsAutoIsfKetoProtectionPercent
                 )
             ),
             PreferenceSubScreenDef(

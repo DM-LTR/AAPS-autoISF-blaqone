@@ -244,8 +244,42 @@ class DetermineBasalAutoISFTest : TestBaseWithProfile() {
         assertThat(rT.duration).isEqualTo(30)
     }
 
+    @Test
+    fun `sport fork - keto protection raises a zero temp but not a cancel`() {
+        val protected = profile().copy(keto_min_rate = 0.1)
+        val zero = sut.setTempBasal(0.0, 30, protected, RT(algorithm = APSResult.Algorithm.AUTO_ISF, runningDynamicIsf = false), CurrentTemp(0, 0.0, null))
+        assertThat(zero.rate).isEqualTo(0.1)
+        assertThat(zero.duration).isEqualTo(30)
+        assertThat(zero.reason.toString()).contains("Keto protection")
+
+        val cancel = sut.setTempBasal(0.0, 0, protected, RT(algorithm = APSResult.Algorithm.AUTO_ISF, runningDynamicIsf = false), CurrentTemp(30, 0.5, null))
+        assertThat(cancel.rate).isEqualTo(0.0)
+
+        // off: the zero temp stays
+        val off = sut.setTempBasal(0.0, 30, profile(), RT(algorithm = APSResult.Algorithm.AUTO_ISF, runningDynamicIsf = false), CurrentTemp(0, 0.0, null))
+        assertThat(off.rate).isEqualTo(0.0)
+    }
+
+    @Test
+    fun `sport fork - keto protection raises the low temp next to an SMB`() {
+        val rT = runWithSmb(profile().copy(enableSMB_always = true, keto_min_rate = 0.1))
+        assertThat(rT.rate).isEqualTo(0.1)
+        assertThat(rT.duration).isEqualTo(30)
+    }
+
+    @Test
+    fun `sport fork - no SMB below the SMB threshold`() {
+        val bg = glucoseStatus().glucose
+        val below = runWithSmb(profile().copy(enableSMB_always = true, smb_threshold = bg + 1))
+        assertThat(below.units).isNull()
+        assertThat(below.reason.toString()).contains("SMB threshold")
+
+        val above = runWithSmb(profile().copy(enableSMB_always = true, smb_threshold = bg - 1))
+        assertThat(above.reason.toString()).doesNotContain("SMB threshold")
+    }
+
     /** BG high and rising so a bolus is wanted, with enough insulin acting that the worst case lands below target. */
-    private fun runWithSmb(): RT {
+    private fun runWithSmb(profile: OapsProfileAutoIsf = profile().copy(enableSMB_always = true)): RT {
         val iobs = Array(48) { i ->
             val time = currentTime + i * 5 * 60000L
             IobTotal(
@@ -260,7 +294,7 @@ class DetermineBasalAutoISFTest : TestBaseWithProfile() {
             glucose_status = glucoseStatus(),
             currenttemp = CurrentTemp(0, 0.0, null),
             iob_data_array = iobs,
-            profile = profile().copy(enableSMB_always = true),
+            profile = profile,
             autosens_data = AutosensResult(ratio = 1.0),
             meal_data = noMeal(),
             microBolusAllowed = true,
