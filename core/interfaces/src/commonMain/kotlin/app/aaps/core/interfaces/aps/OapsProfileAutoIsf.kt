@@ -74,5 +74,9 @@ data class OapsProfileAutoIsf(
     var smb_max_range_extension: Double,
     var enableSMB_EvenOn_OddOff_always: Boolean,
     var iob_threshold_percent: Int,
-    var profile_percentage: Int
+    var profile_percentage: Int,
+    /** Sport fork: no SMB while BG is below this value (mg/dl); 0 = off. */
+    var smb_threshold: Double = 0.0,
+    /** Sport fork: smallest temp basal rate the loop sets (U/h), keto protection; 0 = off. */
+    var keto_min_rate: Double = 0.0
 )

@@ -76,6 +76,14 @@
     <string name="pref_summary_aps_low_tt_lowers_sensitivity">Low temporary targets will decrease insulin sensitivity.</string>
     <string name="pref_title_aps_use_autoisf_weights">Enable AutoISF</string>
     <string name="pref_summary_aps_use_autoisf_weights">Enable AutoISF weight-based ISF adjustments.</string>
+    <string name="pref_title_autoisf_smb_threshold_enabled">No SMB below a BG threshold</string>
+    <string name="pref_summary_autoisf_smb_threshold_enabled">While BG is below the threshold, no SMB is given. Temp basals stay as before.</string>
+    <string name="pref_title_autoisf_smb_threshold">SMB threshold</string>
+    <string name="pref_summary_autoisf_smb_threshold">BG from which SMBs may be given. Default 140 mg/dl (7.8 mmol/l).</string>
+    <string name="pref_title_autoisf_keto_protection">Ketoacidosis protection</string>
+    <string name="pref_summary_autoisf_keto_protection">Instead of a zero or very low temp basal the loop gives a small one, so there is never no insulin at all. This also applies when a low is expected. Can change the insulin given.</string>
+    <string name="pref_title_autoisf_keto_protection_percent">Size of the protection temp basal</string>
+    <string name="pref_summary_autoisf_keto_protection_percent">Percent of the profile basal, but at least the smallest temp basal the pump can give (Dana 0.10 U/h, Medtrum 0.05 U/h).</string>
     <string name="pref_title_aps_smb_on_even_target">Enable SMB on even target</string>
     <string name="pref_summary_aps_smb_on_even_target">Alternative activation of SMB always based on target glucose value.</string>
 

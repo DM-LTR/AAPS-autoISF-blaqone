@@ -449,6 +449,18 @@ enum class IntKey(
         dependency = BooleanKey.ActivityMonitorDetection,
         sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
     ),
+    // Sport fork: size of the keto protection temp basal, percent of the profile basal
+    ApsAutoIsfKetoProtectionPercent(
+        key = "autoisf_keto_protection_percent",
+        defaultValue = 5,
+        min = 1,
+        max = 40,
+        title = KeysStrings.pref_title_autoisf_keto_protection_percent,
+        summary = KeysStrings.pref_summary_autoisf_keto_protection_percent,
+        dependency = BooleanKey.ApsAutoIsfKetoProtection,
+        unitType = UnitType.PERCENT,
+        sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
+    ),
     ActivityRestingHr(
         key = "activity_resting_hr",
         defaultValue = 60,
