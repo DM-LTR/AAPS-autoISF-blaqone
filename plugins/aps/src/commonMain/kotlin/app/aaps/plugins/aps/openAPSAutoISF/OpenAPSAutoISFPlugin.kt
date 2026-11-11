@@ -278,7 +278,8 @@ open class OpenAPSAutoISFPlugin(
             val activityClass = ActivityClassifier.classify(
                 steps15m = recentSteps5Minutes + recentSteps10Minutes + recentSteps15Minutes,
                 avgHrLast15m = avgHrForActivity,
-                restingHr = preferences.get(IntKey.ActivityRestingHr)
+                restingHr = preferences.get(IntKey.ActivityRestingHr),
+                limits = ActivityClassifier.limits(preferences.get(IntKey.ActivityClassifierSensitivity))
             )
             aapsLogger.debug(LTag.APS, "ActivityClass: $activityClass steps15m=${recentSteps5Minutes + recentSteps10Minutes + recentSteps15Minutes} hr=$avgHrForActivity")
 
@@ -1141,6 +1142,7 @@ open class OpenAPSAutoISFPlugin(
                     BooleanKey.ActivityMonitorShowStepsFromSmartphone,
                     BooleanKey.ApsAutoIsfUseActivityClassifier,
                     BooleanKey.ApsAutoIsfUseActivityTargetOffset,
+                    IntKey.ActivityClassifierSensitivity,
                     IntKey.ActivityRestingHr
                 )
             )
