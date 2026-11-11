@@ -5,6 +5,27 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-11 (24) – Sport-Version: Garmin-Schritte, SMB-Schwelle, Ketoazidose-Schutz (nur sport)
+
+- **Version** heißt `4.0.0-aisf3.2.1-sport`.
+- **Garmin:** Das Watchface kann mit seinen Abfragen die Schritte mitschicken (als Zeitfenster oder als
+  Tagessumme). Nach einer Lücke von über 15 Minuten oder nach Mitternacht wird nur neu angefangen, damit
+  alte Schritte nie wie „gerade aktiv“ aussehen.
+- ⚠ **Activity Monitor – „Schritte von“:** Handy / Uhr / automatisch (Standard: Uhr, wenn sie in den
+  letzten 10 Minuten Schritte geschickt hat, sonst Handy). Mit der Uhr entfällt die Prüfung
+  „Handy wird nicht getragen“.
+- ⚠ **Activity Monitor – „Nacht ist“:** Nachtstunden / State „Sleeping“ / beides (Standard beides).
+  Früher wurden die Nachtstunden ignoriert, sobald es den State gab; jetzt zählen beide – Inaktivität
+  gibt also nie in mehr Fällen mehr Insulin als vorher.
+- ⚠ **SMB-Schwelle** (Standard an, 140 mg/dl): Liegt der BZ darunter, gibt es keine SMBs. TBRs bleiben.
+  Gilt zusätzlich zur Regel gerade/ungerade.
+- ⚠ **Ketoazidose-Schutz** (Standard aus, 5 %, 1–40 %): Statt einer TBR von 0 oder einer sehr niedrigen TBR
+  gibt der Loop mindestens diesen Anteil der Basalrate – nie weniger als die Pumpe wirklich gibt (Dana
+  0,10 U/h, Medtrum 0,05 U/h) und nie mehr als die Basalrate selbst. Gilt auch, wenn ein Unterzucker
+  vorhergesagt ist; nicht bei kaputten CGM-Daten.
+- Exercise Mode und Aktivitätserkennung: Der Activity Monitor ist bei jedem TT aus, also auch, wenn
+  Exercise wirkt – keine doppelte Senkung.
+
 ## 2026-11-11 (23) – Farbige BZ-Punkte jede Minute, Versionsprüfung aus
 
 - **Farbige BZ-Punkte jede Minute** (in dev getestet): Mit 1-Minuten-CGM und UKF-Glättung zeigt der

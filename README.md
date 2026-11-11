@@ -76,6 +76,22 @@ Loop in [ga-zelle/autoISF](https://github.com/ga-zelle/autoISF), and the officia
 
 ![Main screen](docs/images/main-screen.svg)
 
+## Sport version – what is different
+
+This is the **sport branch** (`aaps4-autoisf-sport`), my personal mode. It is the normal version plus:
+
+- **Steps from a Garmin watch** for the AutoISF activity monitor. The watch face sends its steps with the
+  requests it already makes. Setting *Steps from*: phone, watch or automatic (watch when it sent steps in
+  the last 10 minutes, else phone).
+- **Night for the activity monitor**: setting *Night is* – night hours, state "Sleeping" or both.
+- ⚠ **SMB threshold** (on, 140 mg/dl): below it no SMB is given. Comes in addition to the even/odd target rule.
+- ⚠ **Ketoacidosis protection** (off by default, 5 %): instead of a zero or very low temp basal the loop
+  gives a small one – at least what the pump really gives (Dana 0.10 U/h, Medtrum 0.05 U/h), never more than
+  the profile basal.
+
+All of them are in the AutoISF settings. ⚠ = can change the insulin given. Planned next: an activity mode
+with big buttons, extending running scenes, a summary after an activity.
+
 ## Features
 
 ### AutoISF 3.2.1
@@ -160,6 +176,27 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
+### 2026-11-11 (24) – Sport-Version: Garmin-Schritte, SMB-Schwelle, Ketoazidose-Schutz (nur sport)
+
+- **Version** heißt `4.0.0-aisf3.2.1-sport`.
+- **Garmin:** Das Watchface kann mit seinen Abfragen die Schritte mitschicken (als Zeitfenster oder als
+  Tagessumme). Nach einer Lücke von über 15 Minuten oder nach Mitternacht wird nur neu angefangen, damit
+  alte Schritte nie wie „gerade aktiv“ aussehen.
+- ⚠ **Activity Monitor – „Schritte von“:** Handy / Uhr / automatisch (Standard: Uhr, wenn sie in den
+  letzten 10 Minuten Schritte geschickt hat, sonst Handy). Mit der Uhr entfällt die Prüfung
+  „Handy wird nicht getragen“.
+- ⚠ **Activity Monitor – „Nacht ist“:** Nachtstunden / State „Sleeping“ / beides (Standard beides).
+  Früher wurden die Nachtstunden ignoriert, sobald es den State gab; jetzt zählen beide – Inaktivität
+  gibt also nie in mehr Fällen mehr Insulin als vorher.
+- ⚠ **SMB-Schwelle** (Standard an, 140 mg/dl): Liegt der BZ darunter, gibt es keine SMBs. TBRs bleiben.
+  Gilt zusätzlich zur Regel gerade/ungerade.
+- ⚠ **Ketoazidose-Schutz** (Standard aus, 5 %, 1–40 %): Statt einer TBR von 0 oder einer sehr niedrigen TBR
+  gibt der Loop mindestens diesen Anteil der Basalrate – nie weniger als die Pumpe wirklich gibt (Dana
+  0,10 U/h, Medtrum 0,05 U/h) und nie mehr als die Basalrate selbst. Gilt auch, wenn ein Unterzucker
+  vorhergesagt ist; nicht bei kaputten CGM-Daten.
+- Exercise Mode und Aktivitätserkennung: Der Activity Monitor ist bei jedem TT aus, also auch, wenn
+  Exercise wirkt – keine doppelte Senkung.
+
 ### 2026-11-11 (23) – Farbige BZ-Punkte jede Minute, Versionsprüfung aus
 
 - **Farbige BZ-Punkte jede Minute** (in dev getestet): Mit 1-Minuten-CGM und UKF-Glättung zeigt der
@@ -198,16 +235,6 @@ In der Testversion geprüft und jetzt in der normalen Version (und in sport):
 - Über und unter dem AutoISF-Chip ist jetzt derselbe kleine Abstand (2 dp) wie zwischen IOB/COB
   und Sensitivity. Ohne AutoISF bleibt die Hauptseite wie vorher.
 - Reine Anzeige.
-
-### 2026-11-10 (17) – AutoISF-Chip zum Aufklappen
-
-- Der AutoISF-Chip ist jetzt **zugeklappt einzeilig**: AutoISF-Symbol und die angehefteten Werte,
-  rechtsbündig. **Tippen** klappt ihn auf und zu, **lang drücken** öffnet den AutoISF-Bildschirm.
-- **Aufgeklappt** stehen alle Werte (acce, bg, pp, dura, final, iobTH) in einem Raster.
-  **Antippen** eines Wertes heftet ihn an die zugeklappte Zeile an oder löst ihn (höchstens 4,
-  Standard: final und iobTH). Auswahl und auf/zu werden gespeichert und kommen mit dem Export mit.
-- Farben: Faktor über 1 (stärker, mehr Insulin) orange/gelb, unter 1 (schwächer) grün.
-- Nur sichtbar, wenn AutoISF das aktive APS ist. Reine Anzeige, keine Änderung an der Dosierung.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->
