@@ -161,6 +161,17 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
+### 2026-11-12 (34) – Activity Classifier entfernt
+
+- ⚠ **Der Activity Classifier ist ganz entfernt** – Code, die Einstellungen „Use ActivityClassifier“,
+  „activity target offset“, „ActivityClassifier sensitivity“ und „Resting heart rate“ sowie die
+  Aktivitätserkennung des Handys (Gehen/Laufen/Rad), die nur er genutzt hat. Er gehörte nicht zu AutoISF 3.4
+  (kam mit der AAPS-4-Basis) und hat Ziel und SMB-Größe verändert.
+- Der **Activity Monitor** (Schritte, Original AutoISF) bleibt unverändert, ebenso der Schrittzähler des Handys
+  und die Uhr-Schritte.
+- Der letzte Stand des Classifiers liegt weiter auf GitHub im Zweig `fix/activity-classifier-steps`,
+  wird aber in keine Version eingebaut.
+
 ### 2026-11-12 (32) – Gemeldete Fehler: AutoISF-Tab, BZ-Anzeige, iobTH-Legende, Classifier aus (nur dev, im Test)
 
 - **AutoISF-Tab** wie in AutoISF 3.4.2.6: zuerst das Ergebnis (Script Debug, Result, Request – offen), dann die
@@ -238,13 +249,6 @@ ließ und nur die Uhr trug, bekam keine Aktivität erkannt. Jetzt kann er auch d
 - **Activity Monitor:** unverändert, rechnet wie im Original AutoISF.
 - **Logdateien** liegen wie bei AutoISF 3.4 in `Documents/aapsLogs` (stündliches Zip, 30 Tage), damit
   die AutoISF-Emulator-Werkzeuge sie lesen können.
-
-### 2026-11-11 (26) – Doku: Version 4.0.0 genannt, echter Screenshot
-
-- README und Anleitung nennen jetzt genau **AAPS 4.0.0** statt nur „AAPS 4“.
-- Die gezeichneten Beispielbilder sind entfernt. Stattdessen gibt es einen **echten Screenshot** des
-  Hauptbildschirms mit geöffnetem AutoISF-Chip.
-- Nur Doku, keine Änderung an der App.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->
