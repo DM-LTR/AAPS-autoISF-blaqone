@@ -5,6 +5,19 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-12 (33) – Normale Version: Classifier-Fix, Schritt-Automation, Uhr-Schritte
+
+Aus dev übernommen (dort getestet):
+
+- ⚠ **Activity Classifier** (standardmäßig aus): wenn eingeschaltet, zählt er die Schritte der ganzen letzten
+  15 Minuten statt eines 5-Minuten-Blocks; Empfindlichkeit wählbar: hoch 450/90, **mittel 600/45**, niedrig 750/30.
+- **Automation „Schritte“ (AAPS #5499 von Milos):** liest die neueste Zeile, löst also auch mit Handy-Schritten aus;
+  von der Wear-Uhr sind 10 und 15 min jetzt Summen. **Eigene Automationen mit Schritten bitte prüfen.**
+- ⚠ **Activity Monitor mit Uhr-Schritten:** neue Einstellung **„Steps from“** – Phone / Watch (Garmin, Wear OS) /
+  **Automatic** (Standard: Uhr, wenn sie in den letzten 10 Minuten Schritte geschickt hat, sonst Handy). Es zählt
+  immer nur die neueste Uhr-Zeile, nichts doppelt. Die Monitor-Logik bleibt wie im Original AutoISF.
+  Garmin nur mit einem Watchface, das die Schritte mitschickt. Ohne Uhr bleibt alles wie bisher.
+
 ## 2026-11-12 (32) – Gemeldete Fehler: AutoISF-Tab, BZ-Anzeige, iobTH-Legende, Classifier aus, Logdateien
 
 - **AutoISF-Tab** wie in AutoISF 3.4.2.6: zuerst das Ergebnis (Script Debug, Result, Request – offen), dann die
