@@ -153,7 +153,7 @@ class GlucoseStatusCalculatorAutoIsf(
         var a1 = 0.0
         var a2 = 0.0
         //var b = 0.0
-        aapsLogger.debug(LTag.GLUCOSE, "BgReadings stamp=$fslDate; raw=$fslRaw; value=$fslValue; rawFit=$useRawFit; smoothedFit=${smoothedForFit != null}; fitMinutes=$fslMinDur; fslSmooth=$fslSmooth; " +
+        aapsLogger.debug(LTag.GLUCOSE, "BgReadings stamp=$fslDate; raw=$fslRaw; value=$fslValue; FitUsesRaw=$useRawFit; fitMinutes=$fslMinDur; fslSmooth=$fslSmooth; " +
             "BgBucketed value=$nowValue; recalc=$recalc; smooth=$smooth; filled=$filled; CGM=$cgm")
 
         if (sizeRecords > 3) {
