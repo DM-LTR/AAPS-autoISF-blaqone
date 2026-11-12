@@ -114,6 +114,7 @@ class SmsCommunicatorPluginTest : TestBaseWithProfile() {
         runBlocking { whenever(iobCobCalculator.getCobInfo("SMS COB")).thenReturn(CobInfo(0, 10.0, 2.0)) }
         whenever(iobCobCalculator.ads).thenReturn(autosensDataStore)
         whenever(autosensDataStore.lastBg()).thenReturn(InMemoryGlucoseValue.fromGv(reading))
+        whenever(autosensDataStore.statusDataHead(1)).thenReturn(listOf(InMemoryGlucoseValue.fromGv(reading)))
 
         whenever(preferences.get(StringKey.SmsAllowedNumbers)).thenReturn("1234;5678")
 

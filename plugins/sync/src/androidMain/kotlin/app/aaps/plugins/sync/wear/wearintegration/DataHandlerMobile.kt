@@ -1256,7 +1256,7 @@ class DataHandlerMobile(
             return
         }
         // SingleBg
-        iobCobCalculator.ads.lastBg()?.let { sendToWear(getSingleBG(it)) }
+        iobCobCalculator.ads.statusDataHead(1).firstOrNull()?.let { sendToWear(getSingleBG(it)) }
         // Preferences
         sendToWear(
             EventData.Preferences(
