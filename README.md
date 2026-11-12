@@ -161,6 +161,17 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
+### 2026-11-12 (34) – Activity Classifier entfernt
+
+- ⚠ **Der Activity Classifier ist ganz entfernt** – Code, die Einstellungen „Use ActivityClassifier“,
+  „activity target offset“, „ActivityClassifier sensitivity“ und „Resting heart rate“ sowie die
+  Aktivitätserkennung des Handys (Gehen/Laufen/Rad), die nur er genutzt hat. Er gehörte nicht zu AutoISF 3.4
+  (kam mit der AAPS-4-Basis) und hat Ziel und SMB-Größe verändert.
+- Der **Activity Monitor** (Schritte, Original AutoISF) bleibt unverändert, ebenso der Schrittzähler des Handys
+  und die Uhr-Schritte.
+- Der letzte Stand des Classifiers liegt weiter auf GitHub im Zweig `fix/activity-classifier-steps`,
+  wird aber in keine Version eingebaut.
+
 ### 2026-11-12 (33) – Normale Version: Classifier-Fix, Schritt-Automation, Uhr-Schritte
 
 Aus dev übernommen (dort getestet):
@@ -211,15 +222,6 @@ Bisher ist die App beim Update über **AAPS 3.4.2.6 + AutoISF 3.2.1** bei jedem 
 - Die gezeichneten Beispielbilder sind entfernt. Stattdessen gibt es einen **echten Screenshot** des
   Hauptbildschirms mit geöffnetem AutoISF-Chip.
 - Nur Doku, keine Änderung an der App.
-
-### 2026-11-11 (23) – Farbige BZ-Punkte jede Minute, Versionsprüfung aus
-
-- **Farbige BZ-Punkte jede Minute** (in dev getestet): Mit 1-Minuten-CGM und UKF-Glättung zeigt der
-  BZ-Graph jede Minute einen farbigen Punkt (geglätteter Wert), nicht nur alle 5 Minuten. Gilt mit jedem
-  APS. Reine Anzeige, die Berechnung bleibt auf dem 5-Minuten-Raster.
-- **Versionsprüfung aus:** Diese Version ist keine offizielle AAPS-Version. Die Prüfung hätte sie mit den
-  offiziellen Versionen verglichen und einige Zeit nach einer neuen offiziellen Version Max IOB auf 0
-  gesetzt („Anwendung abgelaufen“) – das hätte den geschlossenen Loop beendet.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->
