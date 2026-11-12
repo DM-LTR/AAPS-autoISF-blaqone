@@ -971,7 +971,8 @@ fun rememberSeriesColors(): SeriesColors {
             ppIsf = Color(0xFFFF69B4),
             duraIsf = Color(0xFF00FA9A),
             finalIsf = onSurface,                   // white in dark, black in light: gold was too close to bgISF orange
-            iobThEffective = Color(0xFF00BFFF),
+            // AutoISF fork: light violet. The sky blue it had was too close to the IOB blue it is drawn next to.
+            iobThEffective = Color(0xFFB388FF),
             parabolaRaw = Color(0xFF7FFF00),        // same green as acISF: it is the acceleration acISF comes from
             parabolaSmoothed = Color(0xFFFF69B4)    // pink, clearly different from the raw line
         )
