@@ -5,6 +5,22 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-12 (32) – Gemeldete Fehler: AutoISF-Tab, BZ-Anzeige, iobTH-Legende, Classifier aus (nur dev, im Test)
+
+- **AutoISF-Tab** wie in AutoISF 3.4.2.6: zuerst das Ergebnis (Script Debug, Result, Request – offen), dann die
+  Eingaben (zugeklappt, außer Glucose Status). Der **Glucose Status zeigt jetzt alle AutoISF-Werte** (duraISF,
+  Parabel a0–a2, corrSqu, deltaPl/deltaPn, bgAcceleration …), das **Profil die Schritte** (recent_steps 5–60,
+  phone_moved, activity_detection …).
+- **Log:** statt `rawFit=…; smoothedFit=…` steht nur noch `FitUsesRaw=…` (Gerhards Analyse-Werkzeug stürzte am Namen ab).
+- **Einheitlicher BZ-Wert:** Benachrichtigung/Statusleiste, Wear-Uhr, SMS und Tizen zeigen jetzt denselben, neuesten
+  Wert wie Hauptbildschirm und Loop. Vorher nahmen sie bei einem 1-Minuten-Sensor einen bis zu 4 Minuten alten
+  Wert (z. B. 81 in der Statusleiste, 74 im Hauptbildschirm). Nur Anzeige.
+- **IOB-Graph:** In der Legende ist iobTH jetzt gestrichelt wie seine Linie und hellviolett statt hellblau –
+  vorher kaum von IOB zu unterscheiden (gemeldet von Gerhard).
+- ⚠ **Activity Classifier ist jetzt standardmäßig aus.** Er gehört nicht zu AutoISF 3.4 (kam mit der AAPS-4-Basis)
+  und ändert Ziel und SMB-Größe – das soll niemand ungefragt haben. Wer ihn will, schaltet ihn in den
+  Activity-Monitor-Einstellungen ein; wer ihn schon selbst eingeschaltet hatte, behält ihn.
+
 ## 2026-11-11 (29) – Update direkt von AutoISF 3.4.2.6 möglich (nur dev, im Test)
 
 Bisher ist die App beim Update über **AAPS 3.4.2.6 + AutoISF 3.2.1** bei jedem Start abgestürzt.

@@ -161,6 +161,22 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
+### 2026-11-12 (32) – Gemeldete Fehler: AutoISF-Tab, BZ-Anzeige, iobTH-Legende, Classifier aus (nur dev, im Test)
+
+- **AutoISF-Tab** wie in AutoISF 3.4.2.6: zuerst das Ergebnis (Script Debug, Result, Request – offen), dann die
+  Eingaben (zugeklappt, außer Glucose Status). Der **Glucose Status zeigt jetzt alle AutoISF-Werte** (duraISF,
+  Parabel a0–a2, corrSqu, deltaPl/deltaPn, bgAcceleration …), das **Profil die Schritte** (recent_steps 5–60,
+  phone_moved, activity_detection …).
+- **Log:** statt `rawFit=…; smoothedFit=…` steht nur noch `FitUsesRaw=…` (Gerhards Analyse-Werkzeug stürzte am Namen ab).
+- **Einheitlicher BZ-Wert:** Benachrichtigung/Statusleiste, Wear-Uhr, SMS und Tizen zeigen jetzt denselben, neuesten
+  Wert wie Hauptbildschirm und Loop. Vorher nahmen sie bei einem 1-Minuten-Sensor einen bis zu 4 Minuten alten
+  Wert (z. B. 81 in der Statusleiste, 74 im Hauptbildschirm). Nur Anzeige.
+- **IOB-Graph:** In der Legende ist iobTH jetzt gestrichelt wie seine Linie und hellviolett statt hellblau –
+  vorher kaum von IOB zu unterscheiden (gemeldet von Gerhard).
+- ⚠ **Activity Classifier ist jetzt standardmäßig aus.** Er gehört nicht zu AutoISF 3.4 (kam mit der AAPS-4-Basis)
+  und ändert Ziel und SMB-Größe – das soll niemand ungefragt haben. Wer ihn will, schaltet ihn in den
+  Activity-Monitor-Einstellungen ein; wer ihn schon selbst eingeschaltet hatte, behält ihn.
+
 ### 2026-11-11 (29) – Update direkt von AutoISF 3.4.2.6 möglich (nur dev, im Test)
 
 Bisher ist die App beim Update über **AAPS 3.4.2.6 + AutoISF 3.2.1** bei jedem Start abgestürzt.
@@ -229,18 +245,6 @@ ließ und nur die Uhr trug, bekam keine Aktivität erkannt. Jetzt kann er auch d
 - Die gezeichneten Beispielbilder sind entfernt. Stattdessen gibt es einen **echten Screenshot** des
   Hauptbildschirms mit geöffnetem AutoISF-Chip.
 - Nur Doku, keine Änderung an der App.
-
-### 2026-11-11 (25) – Activity Classifier: Schritte der ganzen 15 Minuten (nur dev, im Test)
-
-- ⚠ Der Activity Classifier bekam bisher nur die Schritte **eines 5-Minuten-Blocks von vor 10–15 Minuten**
-  statt der Schritte der letzten 15 Minuten. Dadurch reagierte er 10 Minuten zu spät, und „Kraftsport“
-  (wenig Schritte + hoher Puls) schlug schon bei einem einzelnen ruhigen Block an.
-- Jetzt zählt die **Summe der letzten 15 Minuten**. Neue Einstellung **„ActivityClassifier sensitivity“**
-  (beim Activity Monitor), Schritte in 15 min für Ausdauer / Kraftsport nur unter:
-  - hoch: 450 / 90 (30 pro Minute – so wirkte er bisher tatsächlich)
-  - **mittel (Standard): 600 / 45** (40 pro Minute, zügiges Gehen)
-  - niedrig: 750 / 30 (50 pro Minute, eher Laufen)
-- Gilt nur, wenn Activity Monitor und Classifier eingeschaltet sind.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->
