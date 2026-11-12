@@ -394,8 +394,8 @@ class SmsCommunicatorPlugin(
     }
 
     private suspend fun processBG(receivedSms: Sms) {
-        val actualBG = iobCobCalculator.ads.actualBg()
-        val lastBG = iobCobCalculator.ads.lastBg()
+        val actualBG = iobCobCalculator.ads.actualStatusBg()
+        val lastBG = iobCobCalculator.ads.statusDataHead(1).firstOrNull()
         val parts = mutableListOf<String>()
         val units = profileUtil.units
         // Each part is a translated label and its value, so no text is joined in code

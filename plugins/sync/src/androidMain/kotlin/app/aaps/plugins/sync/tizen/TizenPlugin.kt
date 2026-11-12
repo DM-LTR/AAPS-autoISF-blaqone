@@ -149,7 +149,7 @@ class TizenPlugin(
     }
 
     private fun bgStatus(bundle: Bundle) {
-        val lastBG = iobCobCalculator.ads.lastBg() ?: return
+        val lastBG = iobCobCalculator.ads.statusDataHead(1).firstOrNull() ?: return
         val glucoseStatus = glucoseStatusProvider.glucoseStatusData ?: return
 
         bundle.putDouble("glucoseMgdl", lastBG.recalculated)   // last BG in mgdl

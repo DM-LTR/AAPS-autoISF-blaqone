@@ -247,7 +247,8 @@ class PersistentNotificationPlugin(
         var metricValue: Metric.MetricValue? = null
         var unreadConversationBuilder: NotificationCompat.CarExtender.UnreadConversation.Builder? = null
         if (profileFunction.isProfileValid("Notification")) {
-            val lastBG = iobCobCalculator.ads.lastBg()
+            // AutoISF fork: the newest reading, the same as the overview and the loop (the bucketed grid can be minutes older)
+            val lastBG = iobCobCalculator.ads.statusDataHead(1).firstOrNull()
             val glucoseStatus = glucoseStatusProvider.glucoseStatusData
             val units = profileFunction.getUnits()
             if (lastBG != null) {
