@@ -70,6 +70,7 @@ internal class TizenPluginTest : TestBaseWithProfile() {
         }
         whenever(iobCobCalculator.ads).thenReturn(autosensDataStore)
         whenever(autosensDataStore.lastBg()).thenReturn(InMemoryGlucoseValue(1000, 100.0, sourceSensor = SourceSensor.UNKNOWN))
+        whenever(autosensDataStore.statusDataHead(1)).thenReturn(listOf(InMemoryGlucoseValue(1000, 100.0, sourceSensor = SourceSensor.UNKNOWN)))
         runBlocking { whenever(profileFunction.getProfile()).thenReturn(effectiveProfile) }
         whenever(profileFunction.getUnits()).thenReturn(GlucoseUnit.MGDL)
         runBlocking { whenever(profileFunction.getProfileName()).thenReturn("TestProfile") }
