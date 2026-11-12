@@ -60,4 +60,15 @@ interface LoopHub {
         avgHeartRate: Int,
         device: String?
     )
+
+    /**
+     * Stores the steps a watch counted. Each `stepsNmin` is the number of steps in the last N minutes
+     * before [samplingEnd]. A watch face that sends only its day total gives the steps since its last
+     * request as [steps5min] and 0 for the others.
+     */
+    fun storeStepsCount(
+        samplingStart: Instant, samplingEnd: Instant,
+        steps5min: Int, steps10min: Int, steps15min: Int, steps30min: Int, steps60min: Int, steps180min: Int,
+        device: String?
+    )
 }
