@@ -5,8 +5,16 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
-## 2026-11-12 (32) – Classifier standardmäßig aus, Logdateien in Documents/aapsLogs
+## 2026-11-12 (32) – Gemeldete Fehler: AutoISF-Tab, BZ-Anzeige, iobTH-Legende, Classifier aus, Logdateien
 
+- **AutoISF-Tab** wie in AutoISF 3.4.2.6: zuerst das Ergebnis (Script Debug, Result, Request – offen), dann die
+  Eingaben (zugeklappt, außer Glucose Status). Der **Glucose Status zeigt alle AutoISF-Werte** (duraISF, Parabel
+  a0–a2, corrSqu, deltaPl/deltaPn, bgAcceleration …), das **Profil die Schritte** (recent_steps 5–60, phone_moved …).
+- **Log:** nur noch `FitUsesRaw=…` statt `rawFit=…; smoothedFit=…`.
+- **Einheitlicher BZ-Wert:** Benachrichtigung/Statusleiste, Wear-Uhr, SMS und Tizen zeigen denselben, neuesten Wert
+  wie Hauptbildschirm und Loop (vorher bei 1-Minuten-Sensoren bis zu 4 Minuten alt). Nur Anzeige.
+- **IOB-Graph:** Legende für IOB und iobTH, wenn iobTH eingeschaltet ist – iobTH gestrichelt wie seine Linie und
+  hellviolett. iobTH ist nur noch im IOB-Graph wählbar, nicht mehr in den Graphen 2–5.
 - ⚠ **Activity Classifier ist jetzt standardmäßig aus.** Er gehört nicht zu AutoISF 3.4 (kam mit der AAPS-4-Basis)
   und ändert Ziel und SMB-Größe – das soll niemand ungefragt haben. Wer ihn will, schaltet ihn in den
   Activity-Monitor-Einstellungen ein; wer ihn schon selbst eingeschaltet hatte, behält ihn.
