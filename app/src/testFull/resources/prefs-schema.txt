@@ -74,11 +74,9 @@ active_pump_change_timestamp|LongNonKey|false
 active_pump_serial_number|StringNonKey|false
 active_pump_type|StringNonKey|false
 active_scene|StringNonKey|false
-activity_classifier_sensitivity|IntKey|true
 activity_detection|BooleanKey|true
 activity_monitor_step_source|IntKey|true
 activity_ratio|DoubleKey|true
-activity_resting_hr|IntKey|true
 activity_scale_factor|DoubleKey|true
 actual_basal_profile|MedtrumStringNonKey|true
 age|StringKey|true
@@ -98,8 +96,6 @@ autoISF_max|DoubleKey|true
 autoISF_min|DoubleKey|true
 autoisf_parabola_min_minutes|IntKey|true
 autoisf_parabola_smoothed|BooleanKey|true
-autoisf_use_activity_classifier|BooleanKey|true
-autoisf_use_activity_target_offset|BooleanKey|true
 automation_state_service|StringNonKey|true
 automation_state_values|StringNonKey|true
 autosens_adjust_targets|BooleanKey|true
