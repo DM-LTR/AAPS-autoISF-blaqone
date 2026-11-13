@@ -158,4 +158,37 @@
     <string name="lgs_threshold_summary">Der BG-Wert, unter dem die Insulinzuführung ausgesetzt wird. Der Standardwert verwendet das Standard-Zielmodell. Der Benutzer kann einen Wert zwischen 60mg/dl (3.3 mmol/l) und 100mg/dl (5.5mmol/l) setzen. Werte unterhalb 65/3.6 führen zur Verwendung des Standardmodells</string>
     <!-- IntentKey preferences -->
     <!--    Appearance preferences-->
+    <!-- AutoISF fork: own German translations (Crowdin does not have these strings) -->
+    <string name="pref_title_loop_interval">Loop-Intervall</string>
+    <string name="pref_summary_loop_interval">Wie oft der Loop höchstens laufen darf. 5 min ist das normale Verhalten. Weniger als 5 min hilft nur mit einem CGM, das jede Minute einen Wert schickt. Mehr als 5 min lässt den Loop später reagieren, auch auf Unterzucker.</string>
+    <string name="pref_title_bg_correction">CGM-Korrektur (Steigung und Offset)</string>
+    <string name="pref_title_bg_correction_slope">CGM-Korrektur: Steigung</string>
+    <string name="pref_summary_bg_correction_slope">Nur eine feste Korrektur, keine Kalibrierung und keine Glättung: Jeder Wert, der über xDrip (auch Juggluco) kommt, wird als Wert × Steigung + Offset gespeichert. 1,00 = keine Änderung. Die Glättung bleibt beim Glättungs-Plugin (UKF). Gilt immer, egal welcher APS-Algorithmus aktiv ist, und zeigt sich auch in Nightscout. Ändert den BZ, mit dem der Loop dosiert.</string>
+    <string name="pref_title_bg_correction_offset">CGM-Korrektur: Offset (mg/dL)</string>
+    <string name="pref_summary_bg_correction_offset">Nur eine feste Korrektur, keine Kalibrierung und keine Glättung: wird nach der Steigung zu jedem Wert addiert, der über xDrip (auch Juggluco) kommt, in mg/dL (−50 bis +50). 0 = keine Änderung. Beispiel: Der Sensor misst 30 mg/dL zu niedrig, Offset +30. Gilt immer, egal welcher APS-Algorithmus aktiv ist. Ändert den BZ, mit dem der Loop dosiert.</string>
+    <string name="pref_title_autoisf_parabola_smoothed">Parabel auf geglätteten Werten</string>
+    <string name="pref_summary_autoisf_parabola_smoothed">Aus (Standard, Original AutoISF): Die Parabel für acce_ISF und dura_ISF nutzt die rohen 1-Minuten-Werte. Sie sieht einen Anstieg früher, ist aber nervöser. An: Sie nutzt die vom UKF geglätteten Werte. Ruhiger, aber später. Braucht die UKF-Glättung und ein 1-Minuten-CGM, sonst werden die rohen Werte genutzt. Kann die Insulinmenge ändern.</string>
+    <string name="pref_title_autoisf_parabola_min_minutes">Kürzeste Parabel (1-Minuten-CGM)</string>
+    <string name="pref_summary_autoisf_parabola_min_minutes">Wie viele Minuten die Parabel mindestens abdecken muss, bevor AutoISF sie nutzt (1-Minuten-CGM). 10 min ist das Original. Kürzer reagiert schneller, aber nervöser, länger ist ruhiger, aber später. Kann die Insulinmenge ändern.</string>
+    <string name="pref_title_aps_activity_detection">Activity Monitor (Schritte)</string>
+    <string name="steps_activity_detected_title">Aktivität durch Schritte erkannt</string>
+    <string name="steps_inactivity_detected_title">Inaktivität durch Schritte erkannt</string>
+    <string name="steps_graph_from_smartphone_title">Schritte-Graph vom Handy-Sensor</string>
+    <string name="steps_graph_from_smartphone_summary">Standard: an\nsonst vom Sensor der Uhr</string>
+    <string name="activity_ratio_title">Empfindlichkeitsfaktor Aktivität</string>
+    <string name="activity_scale_factor_title">Skalierung Aktivität</string>
+    <string name="activity_scale_factor_summary">Standard: 1.0\nWird Aktivität erkannt, wird ihr Standardanteil von 15 % oder 30 % mit diesem Faktor vergrößert oder verkleinert\n0.0 schaltet den Einfluss der Aktivität auf die Empfindlichkeit ab</string>
+    <string name="inactivity_scale_factor_title">Skalierung Inaktivität</string>
+    <string name="inactivity_scale_factor_summary">Standard: 1.0\nWird Inaktivität erkannt, wird ihr Standardanteil von 10 % oder 20 % mit diesem Faktor vergrößert oder verkleinert\n0.0 schaltet den Einfluss der Inaktivität auf die Empfindlichkeit ab</string>
+    <string name="activity_monitor_step_source_title">Schritte von</string>
+    <string name="activity_monitor_step_source_summary">Woher der Activity Monitor die Schritte nimmt. Automatisch nimmt die Uhr, wenn sie in den letzten 10 Minuten Schritte geschickt hat, sonst das Handy. Nur Uhr und keine frischen Schritte: Der Monitor ändert nichts.</string>
+    <string name="activity_monitor_step_source_phone">Handy</string>
+    <string name="activity_monitor_step_source_watch">Uhr (Garmin, Wear OS)</string>
+    <string name="activity_monitor_step_source_automatic">Automatisch</string>
+    <string name="ignore_inactivity_overnight_title">Inaktivität im Schlaf nicht erkennen</string>
+    <string name="ignore_inactivity_overnight_summary">Keine Anpassung bei Inaktivität während der Schlafzeit\nStandard ist an, d. h. die Anpassung ist aus\n\nIst es aus, das Handy bei kurzen Pausen neben das Bett legen, damit der Monitor aus bleibt</string>
+    <string name="inactivity_idle_start_title">Beginn der Schlafzeit (Stunde)</string>
+    <string name="inactivity_idle_start_summary">Stunde am Abend, ab der Inaktivität für den Schlaf nicht mehr erkannt wird\nStandard im 24-h-Format: 22</string>
+    <string name="inactivity_idle_end_title">Ende der Schlafzeit (Stunde)</string>
+    <string name="inactivity_idle_end_summary">Stunde am Morgen, ab der Inaktivität wieder erkannt wird\nStandard im 24-h-Format: 6</string>
 </resources>

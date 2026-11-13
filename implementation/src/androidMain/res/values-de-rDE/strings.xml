@@ -39,4 +39,7 @@
     <string name="metadata_label_encryption">Dateiverschlüsselung</string>
     <string name="metadata_format_new">Neues verschlüsseltes Format</string>
     <string name="metadata_format_other">Unbekanntes Export-Format</string>
+    <!-- AutoISF fork: own German translations (Crowdin does not have these strings) -->
+    <string name="permission_activity_recognition_title">Körperliche Aktivität</string>
+    <string name="permission_activity_recognition_description">Nötig, um Schritte zu zählen, damit AutoISF die Empfindlichkeit bei Bewegung anpassen kann</string>
 </resources>

@@ -1207,4 +1207,28 @@
     <string name="units_years">J.</string>
     <string name="prefs_range_title">Zielbereich für die Grafikanzeige</string>
     <string name="secrets_not_protected">Auf diesem Computer wurde kein System-Schlüsselspeicher gefunden. Die Schlüssel zum Schutz deiner Einstellungen und der Kopplung mit dem Master werden in Dateien zusammen mit den Daten gespeichert. Wer eine Kopie deiner Dateien erhält, hat daher auch Zugriff auf diese Schlüssel. Installiere und starte unter Linux einen Schlüsselbunddienst (z. B. GNOME Keyring oder KWallet) und starte anschließend AAPS neu.</string>
+    <!-- AutoISF fork: own German translations (Crowdin does not have these strings) -->
+    <string name="bgParabola_shortname">PARAB</string>
+    <string name="acceIsf_shortname">acISF</string>
+    <string name="bgIsf_shortname">bgISF</string>
+    <string name="ppIsf_shortname">ppISF</string>
+    <string name="duraIsf_shortname">duISF</string>
+    <string name="finalIsf_shortname">fISF</string>
+    <string name="iobThEffective_shortname">IOBth</string>
+    <string name="parabolaRaw_shortname">acc roh</string>
+    <string name="parabolaSmoothed_shortname">acc glatt</string>
+    <string name="graph_series_parabola_raw">Parabel-Beschleunigung (roh)</string>
+    <string name="graph_series_parabola_smoothed">Parabel-Beschleunigung (geglättet)</string>
+    <string name="graph_series_bg_parabola">BZ-Parabel (AutoISF)</string>
+    <string name="scene_wizard_autoisf_info">AutoISF-Einstellungen ändern, solange die Szene läuft. Am Ende gehen sie auf die Werte vor der Szene zurück. Wirkt nur mit OpenAPS AutoISF.</string>
+    <string name="scene_editor_change_autoisf">AutoISF ein- oder ausschalten</string>
+    <string name="scene_editor_change_acce_weight">acce weight ändern</string>
+    <string name="scene_editor_change_iobth">iobTH ändern</string>
+    <string name="scene_editor_acce_weight">acce weight</string>
+    <string name="scene_editor_iobth">iobTH</string>
+    <string name="scene_action_autoisf_on">AutoISF an</string>
+    <string name="scene_action_autoisf_off">AutoISF aus</string>
+    <string name="scene_action_acce_weight">acce weight %1$.2f</string>
+    <string name="scene_action_iobth">iobTH %1$d %%</string>
+    <string name="scene_revert_autoisf">AutoISF-Einstellungen gehen auf die Werte vor der Szene zurück</string>
 </resources>
