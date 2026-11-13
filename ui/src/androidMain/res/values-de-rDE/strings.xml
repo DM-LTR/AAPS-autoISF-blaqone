@@ -363,7 +363,7 @@
     <string name="overview_autoisf_title">AutoISF</string>
     <string name="overview_autoisf_value">%1$s %2$s</string>
     <string name="overview_autoisf_pinned">%1$d von %2$d angeheftet</string>
-    <string name="overview_autoisf_footer">AutoISF %1$s · %2$d von %3$d angeheftet</string>
+    <string name="overview_autoisf_footer">AutoISF v%1$s · %2$d von %3$d angeheftet</string>
     <string name="overview_autoisf_expand">Alle AutoISF-Werte zeigen</string>
     <string name="overview_autoisf_collapse">AutoISF-Werte ausblenden</string>
     <string name="overview_autoisf_pin">Diesen Wert im geschlossenen Chip zeigen</string>
