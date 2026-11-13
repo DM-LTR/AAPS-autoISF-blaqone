@@ -31,5 +31,7 @@ data class SensitivityUiState(
     val dialogText: String = "",
     val ratio: Double = 1.0,
     val isEnabled: Boolean = true,
-    val hasData: Boolean = false
+    val hasData: Boolean = false,
+    /** AutoISF fork: AutoISF is the active APS, the row names it on the right. */
+    val autoIsf: Boolean = false
 )

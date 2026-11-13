@@ -94,7 +94,9 @@ data class AutoIsfFactorsUiState(
     val values: List<AutoIsfValue> = emptyList(),
     val pinned: List<String> = emptyList(),
     val expanded: Boolean = false,
-    val apsPluginClassName: String? = null
+    val apsPluginClassName: String? = null,
+    /** AutoISF fork: the AutoISF version of the last loop run, for the line under the values. Empty when not known. */
+    val version: String = ""
 )
 
 /**
@@ -150,14 +152,10 @@ fun AutoIsfChip(
                     tint = ElementType.SENSITIVITY.color(),
                     modifier = Modifier.size(AapsSpacing.chipIconSize)
                 )
-                Text(
-                    text = stringResource(UiStrings.overview_autoisf_title),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    modifier = Modifier.padding(start = AapsSpacing.medium)
-                )
+                // No "AutoISF" title here: with three or four pinned values it took the room of the last one,
+                // which was then cut off. The name and the version are in the line under the open values.
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(AapsSpacing.large, Alignment.End),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .weight(1f)
@@ -168,7 +166,8 @@ fun AutoIsfChip(
                             text = stringResource(UiStrings.overview_autoisf_value, item.label, item.value),
                             style = MaterialTheme.typography.bodyMedium,
                             color = toneColor(item.tone),
-                            maxLines = 1
+                            maxLines = 1,
+                            softWrap = false
                         )
                     }
                 }
@@ -200,7 +199,9 @@ fun AutoIsfChip(
                         }
                     }
                     Text(
-                        text = stringResource(UiStrings.overview_autoisf_pinned, state.pinned.size, AUTOISF_MAX_PINNED),
+                        text = if (state.version.isNotEmpty())
+                            stringResource(UiStrings.overview_autoisf_footer, state.version, state.pinned.size, AUTOISF_MAX_PINNED)
+                        else stringResource(UiStrings.overview_autoisf_pinned, state.pinned.size, AUTOISF_MAX_PINNED),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         textAlign = TextAlign.End,

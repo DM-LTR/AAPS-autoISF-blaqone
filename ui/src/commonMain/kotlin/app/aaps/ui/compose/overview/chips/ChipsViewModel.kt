@@ -136,7 +136,8 @@ class ChipsViewModel(
             dialogText = data.lines.joinToString("\n"),
             ratio = data.ratio,
             isEnabled = data.isEnabled,
-            hasData = data.hasData
+            hasData = data.hasData,
+            autoIsf = isAutoIsfActive()
         )
     }
 
@@ -237,7 +238,8 @@ class ChipsViewModel(
             values = values,
             pinned = pinnedAutoIsfValues(values.map { it.key }),
             expanded = preferences.get(BooleanNonKey.OverviewAutoIsfChipExpanded),
-            apsPluginClassName = activePlugin.activeAPS?.let { it::class.simpleName }
+            apsPluginClassName = activePlugin.activeAPS?.let { it::class.simpleName },
+            version = loop.lastRun?.request?.oapsProfileAutoIsf?.autoISF_version.orEmpty()
         )
     }
 
