@@ -5,6 +5,21 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-13 (35) – Deutsche Texte, AutoISF-Chip, COB, SMB-Dreieck, Einstellungs-Fenster (nur dev, im Test)
+
+- **Deutsche Übersetzung** für alle Texte, die AutoISF4 selbst eingebaut hat (Einstellungen, AutoISF-Chip,
+  Automation, Szenen, Sport-Modus …). Diese Texte gibt es bei Crowdin nicht – deshalb waren sie bisher englisch.
+  Andere Sprachen zeigen sie weiter auf Englisch.
+- **AutoISF-Chip:** oben kein „AutoISF“-Text mehr – der letzte angeheftete Wert wurde dadurch abgeschnitten.
+  Die Werte verteilen sich jetzt über die ganze Breite. Unten im aufgeklappten Chip: „AutoISF 3.2.1 · 3 von 4 angeheftet“.
+- **ISF-Zeile:** rechts steht „AutoISF“, solange AutoISF der aktive Algorithmus ist.
+- **COB:** Bei 0 g (und keine KH nötig) verschwindet der COB-Chip, IOB hat dann die ganze Zeile.
+- **SMB-Dreieck im Loop-Symbol:** voll = SMB an und im letzten Loop-Lauf erlaubt; **hohl = SMB an, aber gerade
+  gesperrt** (ungerades Ziel, Max-IOB 0, IOB über iobTH, Unterzucker vorhergesagt, zu großer Delta); kein Dreieck =
+  SMB aus. Vorher zeigte das Dreieck nur die Einstellung. Nur Anzeige.
+- **Einstellungs-Fenster scrollen** (KH, Insulin, Füllen, Bolus-Rechner, Katheter-Wechsel …): Bei großer Schrift
+  oder Querformat waren die untersten Einstellungen nicht erreichbar (AAPS-Issue #5564).
+
 ## 2026-11-12 (34) – Activity Classifier entfernt
 
 - ⚠ **Der Activity Classifier ist ganz entfernt** – Code, die Einstellungen „Use ActivityClassifier“,

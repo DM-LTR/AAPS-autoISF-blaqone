@@ -161,6 +161,21 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
+### 2026-11-13 (35) – Deutsche Texte, AutoISF-Chip, COB, SMB-Dreieck, Einstellungs-Fenster (nur dev, im Test)
+
+- **Deutsche Übersetzung** für alle Texte, die AutoISF4 selbst eingebaut hat (Einstellungen, AutoISF-Chip,
+  Automation, Szenen, Sport-Modus …). Diese Texte gibt es bei Crowdin nicht – deshalb waren sie bisher englisch.
+  Andere Sprachen zeigen sie weiter auf Englisch.
+- **AutoISF-Chip:** oben kein „AutoISF“-Text mehr – der letzte angeheftete Wert wurde dadurch abgeschnitten.
+  Die Werte verteilen sich jetzt über die ganze Breite. Unten im aufgeklappten Chip: „AutoISF 3.2.1 · 3 von 4 angeheftet“.
+- **ISF-Zeile:** rechts steht „AutoISF“, solange AutoISF der aktive Algorithmus ist.
+- **COB:** Bei 0 g (und keine KH nötig) verschwindet der COB-Chip, IOB hat dann die ganze Zeile.
+- **SMB-Dreieck im Loop-Symbol:** voll = SMB an und im letzten Loop-Lauf erlaubt; **hohl = SMB an, aber gerade
+  gesperrt** (ungerades Ziel, Max-IOB 0, IOB über iobTH, Unterzucker vorhergesagt, zu großer Delta); kein Dreieck =
+  SMB aus. Vorher zeigte das Dreieck nur die Einstellung. Nur Anzeige.
+- **Einstellungs-Fenster scrollen** (KH, Insulin, Füllen, Bolus-Rechner, Katheter-Wechsel …): Bei großer Schrift
+  oder Querformat waren die untersten Einstellungen nicht erreichbar (AAPS-Issue #5564).
+
 ### 2026-11-12 (34) – Activity Classifier entfernt
 
 - ⚠ **Der Activity Classifier ist ganz entfernt** – Code, die Einstellungen „Use ActivityClassifier“,
@@ -238,17 +253,6 @@ ließ und nur die Uhr trug, bekam keine Aktivität erkannt. Jetzt kann er auch d
 - ⚠ Der Activity Classifier bekommt die Summe der letzten 15 Minuten aus derselben Quelle.
 - Im Log steht bei jeder Erkennung, ob die Schritte von „phone“ oder „watch“ kamen.
 - Gleiche Funktion wie in der sport-Version, aber **ohne** die Einstellung „Nacht ist“.
-
-### 2026-11-11 (27) – Gemeldete Fehler: iobTH-Legende, Schritt-Automation, Log-Ordner (nur dev, im Test)
-
-- **IOB-Graph:** Ist iobTH eingeschaltet, zeigt eine Legende, welche Linie IOB und welche iobTH ist.
-  iobTH kann man nur noch im IOB-Graph wählen, nicht mehr in den Graphen 2–5.
-- **Automation „Schritte“ (AAPS #5499 von Milos):** liest jetzt die neueste Zeile. Mit Handy-Schritten hat
-  sie vorher nie ausgelöst. Von der Wear-Uhr sind 10 und 15 min jetzt Summen. **Eigene Automationen mit
-  Schritten bitte prüfen.**
-- **Activity Monitor:** unverändert, rechnet wie im Original AutoISF.
-- **Logdateien** liegen wie bei AutoISF 3.4 in `Documents/aapsLogs` (stündliches Zip, 30 Tage), damit
-  die AutoISF-Emulator-Werkzeuge sie lesen können.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->
