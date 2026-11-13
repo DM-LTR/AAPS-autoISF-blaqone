@@ -16,6 +16,7 @@ import app.aaps.core.interfaces.InterfacesStrings
 import app.aaps.core.interfaces.alerts.EatReminder
 import app.aaps.core.interfaces.alerts.EatReminderAction
 import app.aaps.core.interfaces.alerts.EatReminderState
+import app.aaps.core.interfaces.aps.RT
 import app.aaps.core.interfaces.aps.Loop
 import app.aaps.core.interfaces.automation.Automation
 import app.aaps.core.interfaces.bolus.BatchAction
@@ -268,9 +269,20 @@ class MainViewModel(
             runningModeRecordId = chip.runningModeRecordId,
             tbrState = chip.tbrState,
             smbEnabled = ev.smbEnabled,
+            smbBlocked = ev.smbEnabled && smbBlockedNow(),
             quickWizardItems = chip.quickWizardItems
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), MainUiState())
+
+    /**
+     * AutoISF fork: SMB is set on, but the last loop run did not allow it (odd target, max IOB 0, IOB above iobTH,
+     * a low projected, a big delta). Only from a run of the last 15 minutes; other APS do not say it, then false.
+     */
+    private fun smbBlockedNow(): Boolean {
+        val run = loop.lastRun ?: return false
+        if (run.lastAPSRun < dateUtil.now() - T.mins(15).msecs()) return false
+        return (run.request?.rawData() as? RT)?.autoIsf?.smbOn == false
+    }
 
     init {
         preferences.observe(BooleanKey.GeneralSimpleMode)

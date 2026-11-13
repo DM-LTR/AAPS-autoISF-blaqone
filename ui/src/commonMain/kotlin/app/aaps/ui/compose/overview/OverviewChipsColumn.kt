@@ -35,6 +35,7 @@ fun OverviewChipsColumn(
     runningModeProgress: Float,
     runningModeSceneManaged: Boolean = false,
     smbEnabled: Boolean = false,
+    smbBlocked: Boolean = false,
     profileName: String,
     isProfileModified: Boolean,
     profileProgress: Float,
@@ -67,6 +68,7 @@ fun OverviewChipsColumn(
             runningModeProgress = runningModeProgress,
             runningModeSceneManaged = runningModeSceneManaged,
             smbEnabled = smbEnabled,
+            smbBlocked = smbBlocked,
             profileName = profileName,
             isProfileModified = isProfileModified,
             profileProgress = profileProgress,
@@ -101,6 +103,7 @@ private fun NarrowChips(
     runningModeProgress: Float,
     runningModeSceneManaged: Boolean,
     smbEnabled: Boolean,
+    smbBlocked: Boolean = false,
     profileName: String,
     isProfileModified: Boolean,
     profileProgress: Float,
@@ -126,6 +129,7 @@ private fun NarrowChips(
                 remaining = runningModeRemaining,
                 sceneManaged = runningModeSceneManaged,
                 smbEnabled = smbEnabled,
+                smbBlocked = smbBlocked,
                 enabled = commandsAllowed && LocalClientRole.current.allows(ElementType.RUNNING_MODE.role),
                 onClick = { onNavigate(NavigationRequest.Element(ElementType.RUNNING_MODE)) }
             )

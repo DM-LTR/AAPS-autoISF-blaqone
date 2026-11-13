@@ -21,7 +21,10 @@ data class AutoIsfFactors(
     var finalIsf: Double? = null,
     var iobThEffective: Double? = null,
     var parabolaRaw: Double? = null,
-    var parabolaSmoothed: Double? = null
+    var parabolaSmoothed: Double? = null,
+    /** AutoISF fork: whether this run allowed SMBs (null: not known), and if not, why - for the triangle in the loop chip. */
+    var smbOn: Boolean? = null,
+    var smbOffReason: String? = null
 ) {
 
     /**
@@ -36,7 +39,9 @@ data class AutoIsfFactors(
         finalIsf = finalIsf.finiteOrNull(),
         iobThEffective = iobThEffective.finiteOrNull(),
         parabolaRaw = parabolaRaw.finiteOrNull(),
-        parabolaSmoothed = parabolaSmoothed.finiteOrNull()
+        parabolaSmoothed = parabolaSmoothed.finiteOrNull(),
+        smbOn = smbOn,
+        smbOffReason = smbOffReason
     )
 
     private fun Double?.finiteOrNull(): Double? = this?.takeIf { it.isFinite() }

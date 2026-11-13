@@ -82,6 +82,13 @@ class DetermineBasalAutoISF(
     //if (profile.out_units === "mmol/L") round(value / 18, 1).toFixed(1);
     //else Math.round(value);
 
+    /** AutoISF fork: whether the last run allowed SMBs, and the reason when it did not. */
+    var lastSmbOn: Boolean? = null
+        private set
+    var lastSmbOffReason: String? = null
+        private set
+
+
     fun enable_smb(profile: OapsProfileAutoIsf, microBolusAllowed: Boolean, meal_data: MealData, target_bg: Double): Boolean {
         // disable SMB when a high temptarget is set
         if (!microBolusAllowed) {
@@ -931,6 +938,14 @@ class DetermineBasalAutoISF(
             consoleError.add("maxDelta ${convert_bg(maxDelta)} > ${100 * maxDeltaPercentage}% of BG ${convert_bg(bg)} - disabling SMB")
             rT.reason.append("maxDelta " + convert_bg(maxDelta) + " > " + 100 * maxDeltaPercentage + "% of BG " + convert_bg(bg) + ": SMB disabled; ")
             enableSMB = false
+        }
+
+        // AutoISF fork: the SMB decision of this run, for the triangle in the loop chip of the overview
+        lastSmbOn = enableSMB
+        lastSmbOffReason = if (enableSMB) null else when (loop_wanted_smb) {
+            "blocked" -> "SMB disabled: odd target or max IOB 0"
+            "iobTH"   -> "SMB disabled: IOB above iobTH"
+            else      -> consoleError.lastOrNull { it.contains("SMB", ignoreCase = true) && it.contains("disabl", ignoreCase = true) }
         }
 
         consoleError.add("BG projected to remain above ${convert_bg(min_bg)} for $minutesAboveMinBG minutes")

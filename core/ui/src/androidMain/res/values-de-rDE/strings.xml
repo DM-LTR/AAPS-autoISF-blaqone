@@ -1231,4 +1231,5 @@
     <string name="scene_action_acce_weight">acce weight %1$.2f</string>
     <string name="scene_action_iobth">iobTH %1$d %%</string>
     <string name="scene_revert_autoisf">AutoISF-Einstellungen gehen auf die Werte vor der Szene zurück</string>
+    <string name="smb_blocked_shortname">SMB pausiert</string>
 </resources>
