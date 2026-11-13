@@ -385,7 +385,7 @@
     <string name="overview_autoisf_title">AutoISF</string>
     <string name="overview_autoisf_value" comment="One AutoISF value in the overview chip. %1$s = short name like final or iobTH, %2$s = value, maybe with unit. Example: final 1.34">%1$s %2$s</string>
     <string name="overview_autoisf_pinned" comment="In the open AutoISF chip. %1$d = how many values are pinned, %2$d = how many can be pinned. Example: Pinned 2 of 4">Pinned %1$d of %2$d</string>
-    <string name="overview_autoisf_footer" comment="Under the open AutoISF chip. %1$s = AutoISF version, %2$d = how many values are pinned, %3$d = how many can be pinned. Example: AutoISF 3.2.1 · Pinned 3 of 4">AutoISF %1$s · Pinned %2$d of %3$d</string>
+    <string name="overview_autoisf_footer" comment="Under the open AutoISF chip. %1$s = AutoISF version, %2$d = how many values are pinned, %3$d = how many can be pinned. Example: AutoISF v3.2.1 · Pinned 3 of 4">AutoISF v%1$s · Pinned %2$d of %3$d</string>
     <string name="overview_autoisf_expand">Show all AutoISF values</string>
     <string name="overview_autoisf_collapse">Hide AutoISF values</string>
     <string name="overview_autoisf_pin">Show this value when the chip is closed</string>
