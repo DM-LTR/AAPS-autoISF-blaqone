@@ -1,7 +1,6 @@
 package app.aaps.ui.compose.overview.chips
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -113,16 +112,17 @@ fun RunningModeChip(
                         )
                         if (smbEnabled) {
                             // Only a small drawn triangle; named so the chip reads "Closed Loop, SMB".
-                            // AutoISF fork: hollow while the last loop run did not allow SMBs (odd target, iobTH ...).
+                            // AutoISF fork: yellow while the last loop run did not allow SMBs (odd target, iobTH ...). A hollow
+                            // triangle was too hard to see.
                             val smbLabel = stringResource(if (smbBlocked) CoreUiStrings.smb_blocked_shortname else CoreUiStrings.smb_shortname)
                             Box(
                                 modifier = Modifier
                                     .align(Alignment.BottomEnd)
                                     .offset(x = 4.dp, y = 4.dp)
                                     .size(13.dp)
-                                    .then(
-                                        if (smbBlocked) Modifier.border(1.5.dp, AapsTheme.elementColors.insulin, TriangleShape)
-                                        else Modifier.background(AapsTheme.elementColors.insulin, TriangleShape)
+                                    .background(
+                                        if (smbBlocked) AapsTheme.generalColors.statusWarning else AapsTheme.elementColors.insulin,
+                                        TriangleShape
                                     )
                                     .semantics { contentDescription = smbLabel }
                             )
