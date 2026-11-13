@@ -17,6 +17,11 @@ fun IobCobChipsRow(
     onIobChipClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    // AutoISF fork: no carbs on board and none required - the COB chip would only say "0 g", so it is left out
+    if (cobUiState.cobValue <= 0.0 && cobUiState.carbsReq <= 0) {
+        IobChip(state = iobUiState, onClick = onIobChipClick, showIcon = true, modifier = modifier)
+        return
+    }
     val spacingDp = AapsSpacing.small
     SubcomposeLayout(
         modifier = modifier.fillMaxWidth()

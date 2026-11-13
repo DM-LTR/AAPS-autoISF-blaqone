@@ -1,5 +1,8 @@
 package app.aaps.core.ui.compose.preference
 
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import app.aaps.core.ui.compose.consumeOverscroll
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,13 +27,19 @@ import androidx.compose.ui.Modifier
 @Composable
 fun PreferenceSheetContent(
     settingsDef: PreferenceSubScreenDef,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    /**
+     * True: the sheet scrolls itself, so its last rows stay reachable in a short window (large font, landscape,
+     * keyboard). False only where the caller already puts it in a scrolling column - a scroll inside a scroll
+     * gets an endless height and Compose throws.
+     */
+    scrollable: Boolean = true
 ) {
     // Without it a key's own visibility rule is skipped, and the sheet showed rows the settings screen
     // hides (insulin age and battery age thresholds on a patch pump).
     val visibilityContext = LocalVisibilityContext.current
     ProvidePreferenceTheme {
-        Column(modifier) {
+        Column(if (scrollable) modifier.consumeOverscroll().verticalScroll(rememberScrollState()) else modifier) {
             val groups = settingsDef.items.filterIsInstance<PreferenceSubScreenDef>()
             if (groups.isEmpty()) {
                 // Single flat list → one always-expanded card titled by the def itself.

@@ -1,5 +1,7 @@
 package app.aaps.ui.compose.overview.chips
 
+import androidx.compose.foundation.layout.fillMaxWidth
+import app.aaps.ui.UiStrings
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -69,7 +71,9 @@ internal fun SensitivityChip(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = AapsSpacing.medium, vertical = AapsSpacing.small)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = AapsSpacing.medium, vertical = AapsSpacing.small)
         ) {
             Icon(
                 imageVector = icon,
@@ -104,6 +108,15 @@ internal fun SensitivityChip(
                     text = state.isfTo,
                     style = MaterialTheme.typography.bodyMedium,
                     color = textColor
+                )
+            }
+            // AutoISF fork: the free room on the right names the algorithm that made this ISF
+            if (state.autoIsf) {
+                Spacer(Modifier.weight(1f))
+                Text(
+                    text = stringResource(UiStrings.overview_autoisf_title),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = ElementType.SENSITIVITY.color()
                 )
             }
         }

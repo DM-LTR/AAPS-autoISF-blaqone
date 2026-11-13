@@ -311,7 +311,8 @@ internal fun TreatmentSettingsContent(
                 )
             }
         }
-        PreferenceSheetContent(settingsDef = settingsDef)
+        // This column scrolls already
+        PreferenceSheetContent(settingsDef = settingsDef, scrollable = false)
     }
 }
 
