@@ -49,6 +49,8 @@ data class MainUiState(
     val tbrState: TbrState = TbrState.NONE,
     // SMB enabled in APS preferences — drives a small triangle marker on the running-mode chip
     val smbEnabled: Boolean = false,
+    /** AutoISF fork: SMB is on, but the last loop run did not allow it - the triangle is drawn hollow. */
+    val smbBlocked: Boolean = false,
     // QuickWizard entries for treatment bottom sheet
     val quickWizardItems: List<QuickWizardItem> = emptyList(),
     // Navigation-triggered dialogs

@@ -1207,4 +1207,5 @@
     <string name="units_years">J.</string>
     <string name="prefs_range_title">Zielbereich für die Grafikanzeige</string>
     <string name="secrets_not_protected">Auf diesem Computer wurde kein System-Schlüsselspeicher gefunden. Die Schlüssel zum Schutz deiner Einstellungen und der Kopplung mit dem Master werden in Dateien zusammen mit den Daten gespeichert. Wer eine Kopie deiner Dateien erhält, hat daher auch Zugriff auf diese Schlüssel. Installiere und starte unter Linux einen Schlüsselbunddienst (z. B. GNOME Keyring oder KWallet) und starte anschließend AAPS neu.</string>
+    <string name="smb_blocked_shortname">SMB pausiert</string>
 </resources>

@@ -276,6 +276,7 @@ fun MainScreen(
                         runningModeRecordId = uiState.runningModeRecordId,
                         tbrState = uiState.tbrState,
                         smbEnabled = uiState.smbEnabled,
+                        smbBlocked = uiState.smbBlocked,
                         isSimpleMode = uiState.isSimpleMode,
                         calcProgress = calcProgress,
                         graphViewModel = graphViewModel,

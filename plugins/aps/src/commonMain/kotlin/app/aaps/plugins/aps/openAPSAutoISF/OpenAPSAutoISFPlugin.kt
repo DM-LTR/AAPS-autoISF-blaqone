@@ -441,6 +441,8 @@ open class OpenAPSAutoISFPlugin(
             auto_isf_consoleLog = consoleLog,
             activity = activity
         ).also {
+            autoIsfFactors.smbOn = determineBasalAutoISF.lastSmbOn
+            autoIsfFactors.smbOffReason = determineBasalAutoISF.lastSmbOffReason
             it.autoIsf = autoIsfFactors.finiteOnly()
             val determineBasalResult = apsResultProvider().with(it)
             // Preserve input data

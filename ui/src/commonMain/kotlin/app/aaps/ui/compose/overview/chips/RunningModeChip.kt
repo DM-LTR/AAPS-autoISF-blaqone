@@ -1,6 +1,7 @@
 package app.aaps.ui.compose.overview.chips
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -70,6 +71,8 @@ fun RunningModeChip(
     remaining: String = "",
     sceneManaged: Boolean = false,
     smbEnabled: Boolean = false,
+    /** AutoISF fork: SMB is on but the last loop run did not allow it - the triangle is drawn hollow. */
+    smbBlocked: Boolean = false,
     enabled: Boolean = true,
     onClick: () -> Unit = {}
 ) {
@@ -110,13 +113,17 @@ fun RunningModeChip(
                         )
                         if (smbEnabled) {
                             // Only a small drawn triangle; named so the chip reads "Closed Loop, SMB".
-                            val smbLabel = stringResource(CoreUiStrings.smb_shortname)
+                            // AutoISF fork: hollow while the last loop run did not allow SMBs (odd target, iobTH ...).
+                            val smbLabel = stringResource(if (smbBlocked) CoreUiStrings.smb_blocked_shortname else CoreUiStrings.smb_shortname)
                             Box(
                                 modifier = Modifier
                                     .align(Alignment.BottomEnd)
                                     .offset(x = 4.dp, y = 4.dp)
                                     .size(13.dp)
-                                    .background(AapsTheme.elementColors.insulin, TriangleShape)
+                                    .then(
+                                        if (smbBlocked) Modifier.border(1.5.dp, AapsTheme.elementColors.insulin, TriangleShape)
+                                        else Modifier.background(AapsTheme.elementColors.insulin, TriangleShape)
+                                    )
                                     .semantics { contentDescription = smbLabel }
                             )
                         }

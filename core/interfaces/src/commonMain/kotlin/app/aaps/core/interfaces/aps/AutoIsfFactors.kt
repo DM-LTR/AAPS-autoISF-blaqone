@@ -17,7 +17,10 @@ data class AutoIsfFactors(
     var ppIsf: Double? = null,
     var duraIsf: Double? = null,
     var finalIsf: Double? = null,
-    var iobThEffective: Double? = null
+    var iobThEffective: Double? = null,
+    /** AutoISF fork: whether this run allowed SMBs (null: not known), and if not, why - for the triangle in the loop chip. */
+    var smbOn: Boolean? = null,
+    var smbOffReason: String? = null
 ) {
 
     /**
@@ -30,7 +33,9 @@ data class AutoIsfFactors(
         ppIsf = ppIsf.finiteOrNull(),
         duraIsf = duraIsf.finiteOrNull(),
         finalIsf = finalIsf.finiteOrNull(),
-        iobThEffective = iobThEffective.finiteOrNull()
+        iobThEffective = iobThEffective.finiteOrNull(),
+        smbOn = smbOn,
+        smbOffReason = smbOffReason
     )
 
     private fun Double?.finiteOrNull(): Double? = this?.takeIf { it.isFinite() }
