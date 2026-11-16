@@ -491,7 +491,6 @@ statuslights_sage_warning|IntKey|true
 statuslights_sbat_critical|IntKey|true
 statuslights_sbat_warning|IntKey|true
 steps_activity_detected|BooleanKey|true
-steps_graph_from_smartphone|BooleanKey|true
 steps_inactivity_detected|BooleanKey|true
 sw_version|MedtrumStringNonKey|true
 synced_pref_modified_%s|LongComposedKey|false

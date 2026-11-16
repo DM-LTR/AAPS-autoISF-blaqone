@@ -15,10 +15,9 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.SingleIn
 
 /**
- * Registers the step-counter sensor ([StepService]) that feeds the AutoISF activity monitor - including the existing
- * "steps_graph_from_smartphone" preference (BooleanKey.ActivityMonitorShowStepsFromSmartphone),
- * which is meant to let a user without a paired watch feed step data from the phone instead. Neither
- * worked because the sensor was never actually registered.
+ * Registers the step-counter sensor ([StepService]) that feeds the AutoISF activity monitor when its step
+ * source is the phone (setting "Steps from": Phone, or Automatic without a watch). It did not work before
+ * because the sensor was never actually registered.
  *
  * It requires `ACTIVITY_RECOGNITION` on Android 10+. The app only asks for it through the
  * Permissions sheet, which the user can act on at any point in the app's lifetime - not only at

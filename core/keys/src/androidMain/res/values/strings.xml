@@ -431,8 +431,6 @@
     <string name="pref_title_aps_activity_detection">Activity monitor (steps)</string>
     <string name="steps_activity_detected_title">Steps activity detected</string>
     <string name="steps_inactivity_detected_title">Steps inactivity detected</string>
-    <string name="steps_graph_from_smartphone_title">Steps graph from smartphone sensor</string>
-    <string name="steps_graph_from_smartphone_summary">Default: true\notherwise from watch sensor</string>
     <string name="activity_ratio_title">Activity sensitivity ratio</string>
     <string name="activity_scale_factor_title">Scale factor for final activity sensitivity</string>
     <string name="activity_scale_factor_summary" formatted="false">Default: 1.0\nIf activity is detected then its default contribution of 15% or 30% is scaled up or down by this ratio\nA value of 0.0 disables activity contribution to sensitivity</string>
