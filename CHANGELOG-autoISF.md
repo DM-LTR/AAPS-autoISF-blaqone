@@ -5,6 +5,11 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-16 (36) – duISF-Linie in Cyan (nur dev, im Test)
+
+- **AutoISF-Graph:** die **duISF-Linie** ist jetzt **cyan (türkis)** statt mintgrün. Vorher sah sie fast gleich
+  aus wie die grüne acISF-Linie (Issue #4). Die anderen Farben bleiben.
+
 ## 2026-11-13 (35) – Deutsche Texte, AutoISF-Chip, COB, SMB-Dreieck, Einstellungs-Fenster (nur dev, im Test)
 
 - **Deutsche Übersetzung** für alle Texte, die AutoISF4 selbst eingebaut hat (Einstellungen, AutoISF-Chip,
