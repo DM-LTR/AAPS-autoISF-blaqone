@@ -82,8 +82,12 @@ smoothed) are only in the dev version.*
 ### AutoISF 3.2.1
 - acce_ISF, bg_ISF, pp_ISF, dura_ISF, iobTH – as in the original
 - can be enabled without engineering mode
-- activity detection (activity monitor / classifier) with safety limits: activity never gives more
+- activity monitor (steps, as in the original) with safety limits: activity never gives more
   insulin than autosens, inactivity never overrules an autosens that says "more sensitive"
+- steps from the phone or from a watch (Wear OS, Garmin with a watch face that sends steps):
+  setting **"Steps from"** – Phone / Watch / Automatic (watch when it sent steps in the last 10
+  minutes, else phone)
+- update straight from AutoISF 3.4.2.6 (AAPS 3.x) keeps the database
 - AutoISF values are stored in the loop result, no own database table
 
 ### One-minute values and loop interval
@@ -98,8 +102,6 @@ smoothed) are only in the dev version.*
 - switch: parabola on **UKF-smoothed values** (calmer, but later)
 - slider: **shortest parabola** 5–20 minutes (default 10)
 - when the switch is on, the APS tab shows which values the parabola uses
-- *dev version only:* raw and smoothed fit side by side on the main screen, in the APS tab and as
-  a graph
 
 ### CGM correction
 - **Only slope and offset – no calibration, no extra smoothing**
@@ -117,12 +119,21 @@ smoothed) are only in the dev version.*
 ### Display
 - BG age in seconds
 - AutoISF chip on the main screen, under the BG: closed one line with the values you pinned, a tap
-  opens all values (pin up to 4), a long press opens the AutoISF screen with the calculation
+  opens all values (pin up to 4), a long press opens the AutoISF screen with the calculation;
+  under the open values: AutoISF version and how many values are pinned
+- the ISF row names "AutoISF" on the right while AutoISF runs
+- **SMB triangle** at the loop chip turns **yellow** when SMB is on but the last AutoISF run did not
+  allow it (odd target, max IOB 0, IOB above iobTH …) – display only
+- **basal rate as a number** in the temp basal chip: profile rate in grey, a temp basal with its percent
+- the COB chip is hidden at 0 g when no carbs are required
+- settings sheets scroll, so the last rows are reachable also with a large font
 - pink BG parabola on the BG graph, as in AutoISF 3.2.1: solid over the fitted minutes, dashed
   20 minutes ahead
 - holding a point of the BG graph shows the smoothed value and the raw value in brackets
 - coloured BG dots every minute with a 1 minute CGM and UKF smoothing (display only)
-- graphs for the AutoISF factors and iobTH (also in the IOB graph)
+- graphs for the AutoISF factors and iobTH (also in the IOB graph); duISF is cyan, so it is not mixed
+  up with the green acISF
+- German texts for everything this fork added
 
 Everything that only concerns AutoISF (graph lines, scene section, automations, main screen
 lines) is hidden when AutoISF is not the active APS plugin.
@@ -161,9 +172,14 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
+### 2026-11-16 (41) – Doku: Feature-Liste der normalen Version aktualisiert
+
+- README: die Feature-Liste nennt jetzt alles, was in der normalen Version drin ist (Schritt-Quelle, Update von
+  3.4.2.6, SMB-Dreieck, Basalrate, AutoISF-Chip, ISF-Zeile, duISF-Farbe, deutsche Texte).
+
 ### 2026-11-16 (38) – Normale Version: Oberfläche, SMB-Dreieck, duISF-Farbe, Basalrate
 
-Aus dev übernommen (dort getestet):
+Aus dev übernommen:
 
 - **AutoISF-Chip:** kein Titel mehr in der geschlossenen Zeile, die Werte verteilen sich über die Breite (der letzte
   wurde vorher abgeschnitten). Unter den offenen Werten steht „AutoISF v3.2.1 · 3 von 4 angeheftet“.
@@ -216,21 +232,6 @@ Aus dev übernommen (dort getestet):
   Activity-Monitor-Einstellungen ein; wer ihn schon selbst eingeschaltet hatte, behält ihn.
 - **Logdateien** liegen jetzt auch in der normalen Version in `Documents/aapsLogs` (stündliches Zip, 30 Tage),
   wie bei AutoISF 3.4 – damit die AutoISF-Emulator-Werkzeuge sie lesen können.
-
-### 2026-11-11 (29) – Update direkt von AutoISF 3.4.2.6 möglich
-
-Bisher ist die App beim Update über **AAPS 3.4.2.6 + AutoISF 3.2.1** bei jedem Start abgestürzt.
-
-- **Datenbank-Version 32 doppelt belegt:** AutoISF 3.4 nutzt Version 32 für seine Tabelle `autoIsfValues`,
-  AAPS 4 für die Spalte `carbInsulin` in den Tagesdosen (TDD). **Fix:** Fehlt die Spalte, wird der TDD-Cache
-  geleert (wird neu berechnet) und die Spalte angelegt; die alte Tabelle `autoIsfValues` wird gelöscht.
-  Bei einer normalen AAPS-4-Datenbank passiert nichts.
-- **Unbekannte Einträge im Benutzerprotokoll** (`AUTOISF_ENABLED`, `AUTOISF_DISABLED`, `IOB_TH_SET`,
-  `ACCE_WEIGHT_SET`) werden zu „UNKNOWN“, und jeder unbekannte Eintrag wird künftig als „UNKNOWN“ gelesen
-  statt abzustürzen.
-- Die übrige Historie bleibt erhalten. Vorher trotzdem **Einstellungen exportieren**; gleicher
-  Signaturschlüssel nötig. Zurück auf 3.4 geht nicht ohne Verlust der Datenbank.
-- Am besten zuerst auf einem **Zweithandy** testen.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->
