@@ -85,12 +85,10 @@ smoothed) are only in the dev version.*
 - activity monitor (steps, as in the original) with safety limits: activity never gives more
   insulin than autosens, inactivity never overrules an autosens that says "more sensitive"
 - steps from the phone or from a watch (Wear OS, Garmin with a watch face that sends steps):
-  one setting **"Steps from"** – Phone / Watch / Automatic (watch when it sent steps in the last 10
+  setting **"Steps from"** – Phone / Watch / Automatic (watch when it sent steps in the last 10
   minutes, else phone)
 - *dev version only:* phone steps are stored only when the monitor uses them, so the steps graph, the
-  steps automation and Nightscout show the same steps the monitor works with (the old switch
-  "Steps graph from smartphone sensor" is gone)
-- the activity classifier that came with the AAPS 4 base is removed (it was not part of AutoISF)
+  steps automation and Nightscout show the same steps the monitor works with
 - update straight from AutoISF 3.4.2.6 (AAPS 3.x) keeps the database
 - AutoISF values are stored in the loop result, no own database table
 
@@ -182,8 +180,8 @@ The newest changes. ⚠ = this change can affect insulin dosing.
 
 ### 2026-11-16 (40) – Doku: Feature-Liste aktualisiert (dev)
 
-- README: die Feature-Liste nennt jetzt alles, was zuletzt eingebaut wurde (Schritt-Quelle, Classifier entfernt,
-  Update von 3.4.2.6, SMB-Dreieck, Basalrate, AutoISF-Chip, duISF-Farbe, Icons, IOB-Legende, deutsche Texte).
+- README: die Feature-Liste nennt jetzt alles, was zuletzt eingebaut wurde (Schritt-Quelle, Update von 3.4.2.6,
+  SMB-Dreieck, Basalrate, AutoISF-Chip, duISF-Farbe, Icons, IOB-Legende, deutsche Texte).
 
 ### 2026-11-16 (39) – Gerhards Rückmeldungen: Icons, IOB-Legende, ein Schalter für die Schritt-Quelle (nur dev, im Test)
 
