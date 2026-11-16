@@ -469,7 +469,13 @@ enum class TbrState {
 data class TbrDisplayData(
     val state: TbrState,
     val timestamp: Long,                 // When TBR started (0 if none)
-    val duration: Long                   // TBR duration in ms (0 if none)
+    val duration: Long,                  // TBR duration in ms (0 if none)
+    /** AutoISF fork: the basal rate running now in U/h - the temp basal if one runs, else the profile basal. */
+    val rate: Double = 0.0,
+    /** AutoISF fork: the profile basal rate now in U/h, to show a running temp basal in percent. */
+    val profileRate: Double = 0.0,
+    /** AutoISF fork: when this was calculated, so the chip can follow the hourly steps of the basal profile. */
+    val calculatedAt: Long = 0L
 )
 
 // ============================================================================

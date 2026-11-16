@@ -275,6 +275,8 @@ fun MainScreen(
                         runningModeProgress = uiState.runningModeProgress,
                         runningModeRecordId = uiState.runningModeRecordId,
                         tbrState = uiState.tbrState,
+                        tbrRate = uiState.tbrRate,
+                        tbrPercent = uiState.tbrPercent,
                         smbEnabled = uiState.smbEnabled,
                         smbBlocked = uiState.smbBlocked,
                         isSimpleMode = uiState.isSimpleMode,

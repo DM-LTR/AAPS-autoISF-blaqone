@@ -1,13 +1,16 @@
 package app.aaps.ui.compose.overview.chips
 
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalMinimumInteractiveComponentSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Alignment
@@ -41,7 +44,11 @@ import app.aaps.core.ui.compose.stringResourceOrNull
 fun TbrChip(
     state: TbrState,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    /** AutoISF fork: the basal rate running now in U/h. 0 shows the icon alone (no profile yet). */
+    rate: Double = 0.0,
+    /** AutoISF fork: a running temp basal in percent of the profile basal; null when none runs. */
+    percent: Int? = null
 ) {
     val iconColor = AapsTheme.elementColors.tempBasal
     val containerColor = iconColor.copy(alpha = 0.2f)
@@ -63,8 +70,11 @@ fun TbrChip(
                 .height(AapsSpacing.chipHeight * LocalAapsScale.current)
                 .semantics { stateDescription = tbrState }
         ) {
-            Box(
-                contentAlignment = Alignment.Center,
+            // AutoISF fork: the running basal rate as a number beside the icon, as in AAPS 3.
+            // The profile rate is grey, a temp basal is in the basal colour with its percent.
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(AapsSpacing.small),
                 modifier = Modifier.padding(horizontal = AapsSpacing.medium)
             ) {
                 Icon(
@@ -73,6 +83,22 @@ fun TbrChip(
                     tint = iconColor,
                     modifier = Modifier.size(AapsSpacing.chipIconSize)
                 )
+                if (rate > 0.0) {
+                    Text(
+                        text = stringResource(CoreUiStrings.pump_base_basal_rate, rate),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = if (state == TbrState.NONE) MaterialTheme.colorScheme.onSurfaceVariant else iconColor,
+                        maxLines = 1
+                    )
+                }
+                if (percent != null && state != TbrState.NONE) {
+                    Text(
+                        text = stringResource(CoreUiStrings.units_format_percent, percent),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1
+                    )
+                }
             }
         }
     }
