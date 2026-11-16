@@ -958,7 +958,8 @@ fun rememberSeriesColors(): SeriesColors {
             acceIsf = Color(0xFF7FFF00),
             bgIsf = Color(0xFFFFA500),
             ppIsf = Color(0xFFFF69B4),
-            duraIsf = Color(0xFF00FA9A),
+            // AutoISF fork (issue #4): cyan. The mint green it had looked the same as the acISF green.
+            duraIsf = Color(0xFF00E5FF),
             finalIsf = onSurface,                   // white in dark, black in light: gold was too close to bgISF orange
             // AutoISF fork: light violet. The sky blue it had was too close to the IOB blue it is drawn next to.
             iobThEffective = Color(0xFFB388FF)
