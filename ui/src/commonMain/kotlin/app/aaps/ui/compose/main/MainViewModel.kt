@@ -1,5 +1,6 @@
 package app.aaps.ui.compose.main
 
+import kotlin.math.roundToInt
 import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
@@ -267,6 +268,8 @@ class MainViewModel(
             runningModeProgress = chip.runningModeProgress,
             runningModeRecordId = chip.runningModeRecordId,
             tbrState = chip.tbrState,
+            tbrRate = chip.tbrRate,
+            tbrPercent = chip.tbrPercent,
             smbEnabled = ev.smbEnabled,
             quickWizardItems = chip.quickWizardItems
         )
@@ -313,6 +316,12 @@ class MainViewModel(
         val tbrExpired = tbrData != null && tbrData.state != TbrState.NONE && tbrData.duration > 0
             && now >= tbrData.timestamp + tbrData.duration
         if (tbrExpired) overviewDataCache.refreshTbr()
+        // AutoISF fork: the profile basal changes on the hour (half hour in some time zones) without
+        // any database event. Read it again when a new half hour has started since the last read.
+        val basalBlockChanged = tbrData != null && tbrData.calculatedAt > 0
+            && now / T.mins(30).msecs() != tbrData.calculatedAt / T.mins(30).msecs()
+        if (!tbrExpired && basalBlockChanged) overviewDataCache.refreshTbr()
+        val tbrRunning = !tbrExpired && tbrData != null && tbrData.state != TbrState.NONE
 
         // TT progress and display text
         val ttProgress = if (ttIsFinite && !ttExpired) {
@@ -382,6 +391,8 @@ class MainViewModel(
             runningModeProgress = rmProgress,
             runningModeRecordId = if (rmExpired) 0 else rmData?.recordId ?: 0,
             tbrState = if (tbrExpired) TbrState.NONE else tbrData?.state ?: TbrState.NONE,
+            tbrRate = (if (tbrExpired) tbrData?.profileRate else tbrData?.rate) ?: 0.0,
+            tbrPercent = tbrData?.takeIf { tbrRunning && it.profileRate > 0 }?.let { (it.rate / it.profileRate * 100).roundToInt() },
             quickWizardItems = computeQuickWizardItems(rmData?.mode)
         )
     }
@@ -1057,5 +1068,7 @@ private data class ChipState(
     val runningModeProgress: Float = 0f,
     val runningModeRecordId: Long = 0,
     val tbrState: TbrState = TbrState.NONE,
+    val tbrRate: Double = 0.0,
+    val tbrPercent: Int? = null,
     val quickWizardItems: List<QuickWizardItem> = emptyList()
 )

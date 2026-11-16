@@ -45,6 +45,8 @@ fun OverviewChipsColumn(
     tempTargetReason: TT.Reason?,
     tempTargetSceneManaged: Boolean = false,
     tbrState: TbrState,
+    tbrRate: Double = 0.0,
+    tbrPercent: Int? = null,
     iobUiState: IobUiState,
     cobUiState: CobUiState,
     sensitivityUiState: SensitivityUiState,
@@ -77,6 +79,8 @@ fun OverviewChipsColumn(
             tempTargetReason = tempTargetReason,
             tempTargetSceneManaged = tempTargetSceneManaged,
             tbrState = tbrState,
+            tbrRate = tbrRate,
+            tbrPercent = tbrPercent,
             onNavigate = onNavigate,
             onTbrChipClick = onTbrChipClick,
             commandsAllowed = commandsAllowed
@@ -111,6 +115,8 @@ private fun NarrowChips(
     tempTargetReason: TT.Reason?,
     tempTargetSceneManaged: Boolean,
     tbrState: TbrState,
+    tbrRate: Double = 0.0,
+    tbrPercent: Int? = null,
     onNavigate: (NavigationRequest) -> Unit,
     onTbrChipClick: () -> Unit,
     commandsAllowed: Boolean
@@ -160,6 +166,8 @@ private fun NarrowChips(
         }
         TbrChip(
             state = tbrState,
+            rate = tbrRate,
+            percent = tbrPercent,
             onClick = onTbrChipClick
         )
     }
