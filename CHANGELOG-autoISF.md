@@ -5,6 +5,22 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-16 (38) – Normale Version: Oberfläche, SMB-Dreieck, duISF-Farbe, Basalrate
+
+Aus dev übernommen:
+
+- **AutoISF-Chip:** kein Titel mehr in der geschlossenen Zeile, die Werte verteilen sich über die Breite (der letzte
+  wurde vorher abgeschnitten). Unter den offenen Werten steht „AutoISF v3.2.1 · 3 von 4 angeheftet“.
+- **ISF-Zeile:** rechts steht „AutoISF“, wenn AutoISF läuft.
+- **COB-Chip** fällt weg bei 0 g und wenn keine Carbs nötig sind.
+- **Einstellungs-Fenster scrollen** (AAPS #5564): die letzten Zeilen sind auch bei großer Schrift erreichbar.
+- **SMB-Dreieck gelb** am Loop-Chip, wenn SMB eingeschaltet ist, der letzte AutoISF-Lauf aber kein SMB erlaubt hat
+  (ungerades Ziel, max IOB 0, IOB über iobTH …). Nur Anzeige.
+- **duISF-Linie cyan** statt mintgrün (Issue #4).
+- **Basal-Chip zeigt die Basalrate als Zahl:** ohne TBR die Profilrate grau, mit TBR die Rate mit Prozent.
+  Nur Anzeige.
+- **Deutsche Übersetzung** für alle Texte, die AutoISF4 selbst eingebaut hat.
+
 ## 2026-11-12 (34) – Activity Classifier entfernt
 
 - ⚠ **Der Activity Classifier ist ganz entfernt** – Code, die Einstellungen „Use ActivityClassifier“,
