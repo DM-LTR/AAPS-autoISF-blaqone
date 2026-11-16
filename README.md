@@ -161,6 +161,17 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
+### 2026-11-16 (39) – Gerhards Rückmeldungen: Icons, IOB-Legende, ein Schalter für die Schritt-Quelle (nur dev, im Test)
+
+- **Automation:** die Aktionen und Auslöser für **iobTH** und **acce_weight** haben jetzt eigene Symbole
+  (aus dem Repo des AutoISF-Teams), statt alle dasselbe AutoISF-Symbol.
+- **IOB-Graph:** in der Legende steht **iobTH oben**, IOB darunter – wie im Graph, wo iobTH der Deckel über IOB ist.
+- ⚠ **Schritt-Quelle:** der alte Schalter **„Steps graph from smartphone sensor“ ist weg**. Es gibt nur noch
+  **„Steps from“** (Phone / Watch / Automatic). Handy-Schritte kommen nur noch in die Schritt-Tabelle, wenn der
+  Activity Monitor sie benutzt (Phone, oder Automatic ohne frische Uhr-Schritte). So zeigen Schritte-Graph,
+  Automation „Schritte“ und Nightscout immer dieselben Schritte, mit denen der Monitor rechnet.
+  Bei „Watch“ werden keine Handy-Schritte mehr gespeichert.
+
 ### 2026-11-16 (37) – Basalrate als Zahl im Basal-Chip (nur dev, im Test)
 
 - **Hauptbildschirm:** der Basal-Chip zeigt wieder die **Basalrate als Zahl** (wie in AAPS 3), nicht nur das Symbol.
@@ -198,22 +209,6 @@ The newest changes. ⚠ = this change can affect insulin dosing.
   und die Uhr-Schritte.
 - Der letzte Stand des Classifiers liegt weiter auf GitHub im Zweig `fix/activity-classifier-steps`,
   wird aber in keine Version eingebaut.
-
-### 2026-11-12 (32) – Gemeldete Fehler: AutoISF-Tab, BZ-Anzeige, iobTH-Legende, Classifier aus (nur dev, im Test)
-
-- **AutoISF-Tab** wie in AutoISF 3.4.2.6: zuerst das Ergebnis (Script Debug, Result, Request – offen), dann die
-  Eingaben (zugeklappt, außer Glucose Status). Der **Glucose Status zeigt jetzt alle AutoISF-Werte** (duraISF,
-  Parabel a0–a2, corrSqu, deltaPl/deltaPn, bgAcceleration …), das **Profil die Schritte** (recent_steps 5–60,
-  phone_moved, activity_detection …).
-- **Log:** statt `rawFit=…; smoothedFit=…` steht nur noch `FitUsesRaw=…` (Gerhards Analyse-Werkzeug stürzte am Namen ab).
-- **Einheitlicher BZ-Wert:** Benachrichtigung/Statusleiste, Wear-Uhr, SMS und Tizen zeigen jetzt denselben, neuesten
-  Wert wie Hauptbildschirm und Loop. Vorher nahmen sie bei einem 1-Minuten-Sensor einen bis zu 4 Minuten alten
-  Wert (z. B. 81 in der Statusleiste, 74 im Hauptbildschirm). Nur Anzeige.
-- **IOB-Graph:** In der Legende ist iobTH jetzt gestrichelt wie seine Linie und hellviolett statt hellblau –
-  vorher kaum von IOB zu unterscheiden (gemeldet von Gerhard).
-- ⚠ **Activity Classifier ist jetzt standardmäßig aus.** Er gehört nicht zu AutoISF 3.4 (kam mit der AAPS-4-Basis)
-  und ändert Ziel und SMB-Größe – das soll niemand ungefragt haben. Wer ihn will, schaltet ihn in den
-  Activity-Monitor-Einstellungen ein; wer ihn schon selbst eingeschaltet hatte, behält ihn.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->

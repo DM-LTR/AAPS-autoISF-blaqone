@@ -5,6 +5,17 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-16 (39) – Gerhards Rückmeldungen: Icons, IOB-Legende, ein Schalter für die Schritt-Quelle (nur dev, im Test)
+
+- **Automation:** die Aktionen und Auslöser für **iobTH** und **acce_weight** haben jetzt eigene Symbole
+  (aus dem Repo des AutoISF-Teams), statt alle dasselbe AutoISF-Symbol.
+- **IOB-Graph:** in der Legende steht **iobTH oben**, IOB darunter – wie im Graph, wo iobTH der Deckel über IOB ist.
+- ⚠ **Schritt-Quelle:** der alte Schalter **„Steps graph from smartphone sensor“ ist weg**. Es gibt nur noch
+  **„Steps from“** (Phone / Watch / Automatic). Handy-Schritte kommen nur noch in die Schritt-Tabelle, wenn der
+  Activity Monitor sie benutzt (Phone, oder Automatic ohne frische Uhr-Schritte). So zeigen Schritte-Graph,
+  Automation „Schritte“ und Nightscout immer dieselben Schritte, mit denen der Monitor rechnet.
+  Bei „Watch“ werden keine Handy-Schritte mehr gespeichert.
+
 ## 2026-11-16 (37) – Basalrate als Zahl im Basal-Chip (nur dev, im Test)
 
 - **Hauptbildschirm:** der Basal-Chip zeigt wieder die **Basalrate als Zahl** (wie in AAPS 3), nicht nur das Symbol.
