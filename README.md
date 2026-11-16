@@ -174,15 +174,6 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
-### 2026-11-16 (42) – Doku: Dank an ga-zelle und swissalpine
-
-- README: Dank an [ga-zelle](https://github.com/ga-zelle) und [swissalpine](https://github.com/swissalpine), neben JetFoxy.
-
-### 2026-11-16 (41) – Doku: Feature-Liste der normalen Version aktualisiert
-
-- README: die Feature-Liste nennt jetzt alles, was in der normalen Version drin ist (Schritt-Quelle, Update von
-  3.4.2.6, SMB-Dreieck, Basalrate, AutoISF-Chip, ISF-Zeile, duISF-Farbe, deutsche Texte).
-
 ### 2026-11-16 (38) – Normale Version: Oberfläche, SMB-Dreieck, duISF-Farbe, Basalrate
 
 Aus dev übernommen:
@@ -222,6 +213,37 @@ Aus dev übernommen (dort getestet):
   **Automatic** (Standard: Uhr, wenn sie in den letzten 10 Minuten Schritte geschickt hat, sonst Handy). Es zählt
   immer nur die neueste Uhr-Zeile, nichts doppelt. Die Monitor-Logik bleibt wie im Original AutoISF.
   Garmin nur mit einem Watchface, das die Schritte mitschickt. Ohne Uhr bleibt alles wie bisher.
+
+### 2026-11-12 (32) – Gemeldete Fehler: AutoISF-Tab, BZ-Anzeige, iobTH-Legende, Classifier aus, Logdateien
+
+- **AutoISF-Tab** wie in AutoISF 3.4.2.6: zuerst das Ergebnis (Script Debug, Result, Request – offen), dann die
+  Eingaben (zugeklappt, außer Glucose Status). Der **Glucose Status zeigt alle AutoISF-Werte** (duraISF, Parabel
+  a0–a2, corrSqu, deltaPl/deltaPn, bgAcceleration …), das **Profil die Schritte** (recent_steps 5–60, phone_moved …).
+- **Log:** nur noch `FitUsesRaw=…` statt `rawFit=…; smoothedFit=…`.
+- **Einheitlicher BZ-Wert:** Benachrichtigung/Statusleiste, Wear-Uhr, SMS und Tizen zeigen denselben, neuesten Wert
+  wie Hauptbildschirm und Loop (vorher bei 1-Minuten-Sensoren bis zu 4 Minuten alt). Nur Anzeige.
+- **IOB-Graph:** Legende für IOB und iobTH, wenn iobTH eingeschaltet ist – iobTH gestrichelt wie seine Linie und
+  hellviolett. iobTH ist nur noch im IOB-Graph wählbar, nicht mehr in den Graphen 2–5.
+- ⚠ **Activity Classifier ist jetzt standardmäßig aus.** Er gehört nicht zu AutoISF 3.4 (kam mit der AAPS-4-Basis)
+  und ändert Ziel und SMB-Größe – das soll niemand ungefragt haben. Wer ihn will, schaltet ihn in den
+  Activity-Monitor-Einstellungen ein; wer ihn schon selbst eingeschaltet hatte, behält ihn.
+- **Logdateien** liegen jetzt auch in der normalen Version in `Documents/aapsLogs` (stündliches Zip, 30 Tage),
+  wie bei AutoISF 3.4 – damit die AutoISF-Emulator-Werkzeuge sie lesen können.
+
+### 2026-11-11 (29) – Update direkt von AutoISF 3.4.2.6 möglich
+
+Bisher ist die App beim Update über **AAPS 3.4.2.6 + AutoISF 3.2.1** bei jedem Start abgestürzt.
+
+- **Datenbank-Version 32 doppelt belegt:** AutoISF 3.4 nutzt Version 32 für seine Tabelle `autoIsfValues`,
+  AAPS 4 für die Spalte `carbInsulin` in den Tagesdosen (TDD). **Fix:** Fehlt die Spalte, wird der TDD-Cache
+  geleert (wird neu berechnet) und die Spalte angelegt; die alte Tabelle `autoIsfValues` wird gelöscht.
+  Bei einer normalen AAPS-4-Datenbank passiert nichts.
+- **Unbekannte Einträge im Benutzerprotokoll** (`AUTOISF_ENABLED`, `AUTOISF_DISABLED`, `IOB_TH_SET`,
+  `ACCE_WEIGHT_SET`) werden zu „UNKNOWN“, und jeder unbekannte Eintrag wird künftig als „UNKNOWN“ gelesen
+  statt abzustürzen.
+- Die übrige Historie bleibt erhalten. Vorher trotzdem **Einstellungen exportieren**; gleicher
+  Signaturschlüssel nötig. Zurück auf 3.4 geht nicht ohne Verlust der Datenbank.
+- Am besten zuerst auf einem **Zweithandy** testen.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->
