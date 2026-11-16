@@ -180,15 +180,6 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
-### 2026-11-16 (42) – Doku: Dank an ga-zelle und swissalpine
-
-- README: Dank an [ga-zelle](https://github.com/ga-zelle) und [swissalpine](https://github.com/swissalpine), neben JetFoxy.
-
-### 2026-11-16 (40) – Doku: Feature-Liste aktualisiert (dev)
-
-- README: die Feature-Liste nennt jetzt alles, was zuletzt eingebaut wurde (Schritt-Quelle, Update von 3.4.2.6,
-  SMB-Dreieck, Basalrate, AutoISF-Chip, duISF-Farbe, Icons, IOB-Legende, deutsche Texte).
-
 ### 2026-11-16 (39) – Gerhards Rückmeldungen: Icons, IOB-Legende, ein Schalter für die Schritt-Quelle (nur dev, im Test)
 
 - **Automation:** die Aktionen und Auslöser für **iobTH** und **acce_weight** haben jetzt eigene Symbole
@@ -211,6 +202,32 @@ The newest changes. ⚠ = this change can affect insulin dosing.
 
 - **AutoISF-Graph:** die **duISF-Linie** ist jetzt **cyan (türkis)** statt mintgrün. Vorher sah sie fast gleich
   aus wie die grüne acISF-Linie (Issue #4). Die anderen Farben bleiben.
+
+### 2026-11-13 (35) – Deutsche Texte, AutoISF-Chip, COB, SMB-Dreieck, Einstellungs-Fenster (nur dev, im Test)
+
+- **Deutsche Übersetzung** für alle Texte, die AutoISF4 selbst eingebaut hat (Einstellungen, AutoISF-Chip,
+  Automation, Szenen, Sport-Modus …). Diese Texte gibt es bei Crowdin nicht – deshalb waren sie bisher englisch.
+  Andere Sprachen zeigen sie weiter auf Englisch.
+- **AutoISF-Chip:** oben kein „AutoISF“-Text mehr – der letzte angeheftete Wert wurde dadurch abgeschnitten.
+  Die Werte verteilen sich jetzt über die ganze Breite. Unten im aufgeklappten Chip: „AutoISF v3.2.1 · 3 von 4 angeheftet“.
+- **ISF-Zeile:** rechts steht „AutoISF“, solange AutoISF der aktive Algorithmus ist.
+- **COB:** Bei 0 g (und keine KH nötig) verschwindet der COB-Chip, IOB hat dann die ganze Zeile.
+- **SMB-Dreieck im Loop-Symbol:** voll = SMB an und im letzten Loop-Lauf erlaubt; **gelb = SMB an, aber gerade
+  gesperrt** (ungerades Ziel, Max-IOB 0, IOB über iobTH, Unterzucker vorhergesagt, zu großer Delta); kein Dreieck =
+  SMB aus. Vorher zeigte das Dreieck nur die Einstellung. Nur Anzeige.
+- **Einstellungs-Fenster scrollen** (KH, Insulin, Füllen, Bolus-Rechner, Katheter-Wechsel …): Bei großer Schrift
+  oder Querformat waren die untersten Einstellungen nicht erreichbar (AAPS-Issue #5564).
+
+### 2026-11-12 (34) – Activity Classifier entfernt
+
+- ⚠ **Der Activity Classifier ist ganz entfernt** – Code, die Einstellungen „Use ActivityClassifier“,
+  „activity target offset“, „ActivityClassifier sensitivity“ und „Resting heart rate“ sowie die
+  Aktivitätserkennung des Handys (Gehen/Laufen/Rad), die nur er genutzt hat. Er gehörte nicht zu AutoISF 3.4
+  (kam mit der AAPS-4-Basis) und hat Ziel und SMB-Größe verändert.
+- Der **Activity Monitor** (Schritte, Original AutoISF) bleibt unverändert, ebenso der Schrittzähler des Handys
+  und die Uhr-Schritte.
+- Der letzte Stand des Classifiers liegt weiter auf GitHub im Zweig `fix/activity-classifier-steps`,
+  wird aber in keine Version eingebaut.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->
