@@ -82,8 +82,16 @@ smoothed) are only in the dev version.*
 ### AutoISF 3.2.1
 - acce_ISF, bg_ISF, pp_ISF, dura_ISF, iobTH – as in the original
 - can be enabled without engineering mode
-- activity detection (activity monitor / classifier) with safety limits: activity never gives more
+- activity monitor (steps, as in the original) with safety limits: activity never gives more
   insulin than autosens, inactivity never overrules an autosens that says "more sensitive"
+- steps from the phone or from a watch (Wear OS, Garmin with a watch face that sends steps):
+  one setting **"Steps from"** – Phone / Watch / Automatic (watch when it sent steps in the last 10
+  minutes, else phone)
+- *dev version only:* phone steps are stored only when the monitor uses them, so the steps graph, the
+  steps automation and Nightscout show the same steps the monitor works with (the old switch
+  "Steps graph from smartphone sensor" is gone)
+- the activity classifier that came with the AAPS 4 base is removed (it was not part of AutoISF)
+- update straight from AutoISF 3.4.2.6 (AAPS 3.x) keeps the database
 - AutoISF values are stored in the loop result, no own database table
 
 ### One-minute values and loop interval
@@ -113,16 +121,27 @@ smoothed) are only in the dev version.*
   the old values come back automatically at the end
 - automation actions: enable/disable AutoISF, set acce weight, set iobTH
 - automation triggers: acce weight, iobTH (compatible with rules from AutoISF 3.2.1)
+- *dev version only:* iobTH and acce weight have their own icons in the automation list
 
 ### Display
 - BG age in seconds
 - AutoISF chip on the main screen, under the BG: closed one line with the values you pinned, a tap
-  opens all values (pin up to 4), a long press opens the AutoISF screen with the calculation
+  opens all values (pin up to 4), a long press opens the AutoISF screen with the calculation;
+  under the open values: AutoISF version and how many values are pinned
+- the ISF row names "AutoISF" on the right while AutoISF runs
+- **SMB triangle** at the loop chip turns **yellow** when SMB is on but the last AutoISF run did not
+  allow it (odd target, max IOB 0, IOB above iobTH …) – display only
+- **basal rate as a number** in the temp basal chip: profile rate in grey, a temp basal with its percent
+- the COB chip is hidden at 0 g when no carbs are required
+- settings sheets scroll, so the last rows are reachable also with a large font
 - pink BG parabola on the BG graph, as in AutoISF 3.2.1: solid over the fitted minutes, dashed
   20 minutes ahead
 - holding a point of the BG graph shows the smoothed value and the raw value in brackets
 - coloured BG dots every minute with a 1 minute CGM and UKF smoothing (display only)
-- graphs for the AutoISF factors and iobTH (also in the IOB graph)
+- graphs for the AutoISF factors and iobTH (also in the IOB graph); duISF is cyan, so it is not mixed
+  up with the green acISF
+- *dev version only:* in the IOB graph legend iobTH is named above IOB, as its line is the lid above IOB
+- German texts for everything this fork added
 
 Everything that only concerns AutoISF (graph lines, scene section, automations, main screen
 lines) is hidden when AutoISF is not the active APS plugin.
@@ -161,6 +180,11 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
+### 2026-11-16 (40) – Doku: Feature-Liste aktualisiert (dev)
+
+- README: die Feature-Liste nennt jetzt alles, was zuletzt eingebaut wurde (Schritt-Quelle, Classifier entfernt,
+  Update von 3.4.2.6, SMB-Dreieck, Basalrate, AutoISF-Chip, duISF-Farbe, Icons, IOB-Legende, deutsche Texte).
+
 ### 2026-11-16 (39) – Gerhards Rückmeldungen: Icons, IOB-Legende, ein Schalter für die Schritt-Quelle (nur dev, im Test)
 
 - **Automation:** die Aktionen und Auslöser für **iobTH** und **acce_weight** haben jetzt eigene Symbole
@@ -198,17 +222,6 @@ The newest changes. ⚠ = this change can affect insulin dosing.
   SMB aus. Vorher zeigte das Dreieck nur die Einstellung. Nur Anzeige.
 - **Einstellungs-Fenster scrollen** (KH, Insulin, Füllen, Bolus-Rechner, Katheter-Wechsel …): Bei großer Schrift
   oder Querformat waren die untersten Einstellungen nicht erreichbar (AAPS-Issue #5564).
-
-### 2026-11-12 (34) – Activity Classifier entfernt
-
-- ⚠ **Der Activity Classifier ist ganz entfernt** – Code, die Einstellungen „Use ActivityClassifier“,
-  „activity target offset“, „ActivityClassifier sensitivity“ und „Resting heart rate“ sowie die
-  Aktivitätserkennung des Handys (Gehen/Laufen/Rad), die nur er genutzt hat. Er gehörte nicht zu AutoISF 3.4
-  (kam mit der AAPS-4-Basis) und hat Ziel und SMB-Größe verändert.
-- Der **Activity Monitor** (Schritte, Original AutoISF) bleibt unverändert, ebenso der Schrittzähler des Handys
-  und die Uhr-Schritte.
-- Der letzte Stand des Classifiers liegt weiter auf GitHub im Zweig `fix/activity-classifier-steps`,
-  wird aber in keine Version eingebaut.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->

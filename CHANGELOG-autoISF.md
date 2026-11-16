@@ -5,6 +5,11 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-16 (40) – Doku: Feature-Liste aktualisiert (dev)
+
+- README: die Feature-Liste nennt jetzt alles, was zuletzt eingebaut wurde (Schritt-Quelle, Classifier entfernt,
+  Update von 3.4.2.6, SMB-Dreieck, Basalrate, AutoISF-Chip, duISF-Farbe, Icons, IOB-Legende, deutsche Texte).
+
 ## 2026-11-16 (39) – Gerhards Rückmeldungen: Icons, IOB-Legende, ein Schalter für die Schritt-Quelle (nur dev, im Test)
 
 - **Automation:** die Aktionen und Auslöser für **iobTH** und **acce_weight** haben jetzt eigene Symbole
