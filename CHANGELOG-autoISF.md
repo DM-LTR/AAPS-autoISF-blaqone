@@ -5,6 +5,10 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-16 (42) – Doku: Dank an ga-zelle und swissalpine
+
+- README: Dank an [ga-zelle](https://github.com/ga-zelle) und [swissalpine](https://github.com/swissalpine), neben JetFoxy.
+
 ## 2026-11-16 (41) – Doku: Feature-Liste der normalen Version aktualisiert
 
 - README: die Feature-Liste nennt jetzt alles, was in der normalen Version drin ist (Schritt-Quelle, Update von
