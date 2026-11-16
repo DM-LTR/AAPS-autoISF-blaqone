@@ -5,6 +5,13 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-16 (37) – Basalrate als Zahl im Basal-Chip (nur dev, im Test)
+
+- **Hauptbildschirm:** der Basal-Chip zeigt wieder die **Basalrate als Zahl** (wie in AAPS 3), nicht nur das Symbol.
+  Ohne TBR die Profilrate grau (z. B. „0,85 U/h“), bei laufender TBR die Rate in Basal-Farbe mit Prozent
+  (z. B. „1,20 U/h 140%“). Die Rate folgt auch den Stundenwechseln im Basalprofil.
+- Nur Anzeige, keine Änderung an Loop oder Dosierung.
+
 ## 2026-11-16 (36) – duISF-Linie in Cyan (nur dev, im Test)
 
 - **AutoISF-Graph:** die **duISF-Linie** ist jetzt **cyan (türkis)** statt mintgrün. Vorher sah sie fast gleich
