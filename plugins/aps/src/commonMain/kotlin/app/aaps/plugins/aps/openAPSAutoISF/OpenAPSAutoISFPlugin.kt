@@ -554,7 +554,10 @@ open class OpenAPSAutoISFPlugin(
     }
 
     suspend fun activityMonitor(steps: MonitorSteps?, isTempTarget: Boolean, bg: Double, target_bg: Double, now: Int): Double {
-        if (preferences.get(BooleanKey.ActivityMonitorShowStepsFromSmartphone)) {
+        // AutoISF fork: the phone steps go into the step table only when the monitor uses them (source Phone, or
+        // Automatic without fresh watch steps). So the steps graph, the steps automation and Nightscout show the
+        // same steps the monitor works with. This replaces the old switch "Steps graph from smartphone sensor".
+        if (steps != null && !steps.fromWatch) {
             val nowMillis = dateUtil.now()
             val phone = phoneSteps()
             val stepsCount = SC(
@@ -1122,8 +1125,7 @@ open class OpenAPSAutoISFPlugin(
                     DoubleKey.InactivityScaleFactor,
                     BooleanKey.ActivityMonitorOvernight,
                     IntKey.ActivityMonitorIdleStart,
-                    IntKey.ActivityMonitorIdleEnd,
-                    BooleanKey.ActivityMonitorShowStepsFromSmartphone
+                    IntKey.ActivityMonitorIdleEnd
                 )
             )
         ),

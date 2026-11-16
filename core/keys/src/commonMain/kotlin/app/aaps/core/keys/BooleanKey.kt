@@ -223,14 +223,6 @@ enum class BooleanKey(
     ),
     ActivityMonitorStepsActive("steps_activity_detected", false, KeysStrings.steps_activity_detected_title, defaultedBySM = true),
     ActivityMonitorStepsInactive("steps_inactivity_detected", false, KeysStrings.steps_inactivity_detected_title, defaultedBySM = true),
-    ActivityMonitorShowStepsFromSmartphone(
-        "steps_graph_from_smartphone",
-        true,
-        KeysStrings.steps_graph_from_smartphone_title,
-        KeysStrings.steps_graph_from_smartphone_summary,
-        defaultedBySM = true,
-        sync = SyncSpec(SyncChannel.Cold, SyncDirection.Bidirectional)
-    ),
 
     MaintenanceEnableFabric("enable_fabric2", true, KeysStrings.pref_title_maintenance_enable_fabric, defaultedBySM = true, hideParentScreenIfHidden = true),
 

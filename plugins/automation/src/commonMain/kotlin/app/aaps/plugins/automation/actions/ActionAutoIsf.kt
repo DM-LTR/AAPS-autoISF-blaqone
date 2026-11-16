@@ -9,6 +9,8 @@ import app.aaps.core.keys.DoubleKey
 import app.aaps.core.keys.IntKey
 import app.aaps.core.keys.interfaces.Preferences
 import app.aaps.core.keys.interfaces.TextRef
+import app.aaps.core.ui.compose.icons.IcAcceWeight
+import app.aaps.core.ui.compose.icons.IcIobTh
 import app.aaps.core.ui.compose.icons.IcAs
 import app.aaps.core.utils.lenientDoubleOrNull
 import app.aaps.core.utils.lenientIntOrNull
@@ -94,7 +96,7 @@ class ActionSetAcceWeight(
 
     override fun friendlyName(): TextRef = AutomationStrings.autoisf_set_acce_weight
     override fun shortDescription(): String = rh.gs(AutomationStrings.autoisf_set_acce_weight_to, weight)
-    override fun composeIcon() = IcAs
+    override fun composeIcon() = IcAcceWeight
     override fun elementType() = ElementType.INSULIN
 
     override suspend fun doAction(): PumpEnactResult {
@@ -136,7 +138,7 @@ class ActionSetIobTH(
 
     override fun friendlyName(): TextRef = AutomationStrings.autoisf_set_iobth
     override fun shortDescription(): String = rh.gs(AutomationStrings.autoisf_set_iobth_to, percent)
-    override fun composeIcon() = IcAs
+    override fun composeIcon() = IcIobTh
     override fun elementType() = ElementType.INSULIN
 
     override suspend fun doAction(): PumpEnactResult {

@@ -690,7 +690,8 @@ fun GraphsSection(
                 // AutoISF fork: IOB and iobTH share one axis and differ only by color, so name them
                 if (iobSeries.size > 1) {
                     SeriesLegend(
-                        seriesTypes = iobSeries,
+                        // iobTH first: it is the lid above the IOB line, so it is named above it too (Gerhard)
+                        seriesTypes = iobSeries.reversed(),
                         modifier = Modifier.padding(start = 40.dp, top = 2.dp, bottom = 6.dp)
                     )
                 }

@@ -173,8 +173,6 @@
     <string name="pref_title_aps_activity_detection">Activity Monitor (Schritte)</string>
     <string name="steps_activity_detected_title">Aktivität durch Schritte erkannt</string>
     <string name="steps_inactivity_detected_title">Inaktivität durch Schritte erkannt</string>
-    <string name="steps_graph_from_smartphone_title">Schritte-Graph vom Handy-Sensor</string>
-    <string name="steps_graph_from_smartphone_summary">Standard: an\nsonst vom Sensor der Uhr</string>
     <string name="activity_ratio_title">Empfindlichkeitsfaktor Aktivität</string>
     <string name="activity_scale_factor_title">Skalierung Aktivität</string>
     <string name="activity_scale_factor_summary">Standard: 1.0\nWird Aktivität erkannt, wird ihr Standardanteil von 15 % oder 30 % mit diesem Faktor vergrößert oder verkleinert\n0.0 schaltet den Einfluss der Aktivität auf die Empfindlichkeit ab</string>

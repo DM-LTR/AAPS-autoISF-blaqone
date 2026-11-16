@@ -5,7 +5,8 @@ import app.aaps.core.interfaces.navigation.ElementType
 import app.aaps.core.keys.DoubleKey
 import app.aaps.core.keys.IntKey
 import app.aaps.core.keys.interfaces.TextRef
-import app.aaps.core.ui.compose.icons.IcAs
+import app.aaps.core.ui.compose.icons.IcAcceWeight
+import app.aaps.core.ui.compose.icons.IcIobTh
 import app.aaps.core.utils.lenientDoubleOrNull
 import app.aaps.core.utils.lenientIntOrNull
 import app.aaps.core.utils.lenientStringOrNull
@@ -56,7 +57,7 @@ class TriggerBgAcceWeight(deps: TriggerDeps) : Trigger(deps) {
     override fun friendlyDescription(): String =
         rh.gs(AutomationStrings.autoisf_acce_weight_compared, rh.gs(comparator.value.stringRes), acceWeight)
 
-    override fun composeIcon() = IcAs
+    override fun composeIcon() = IcAcceWeight
     override fun elementType() = ElementType.SENSITIVITY
 
     override fun duplicate(): Trigger = TriggerBgAcceWeight(deps, this)
@@ -100,7 +101,7 @@ class TriggerIobTH(deps: TriggerDeps) : Trigger(deps) {
     override fun friendlyDescription(): String =
         rh.gs(AutomationStrings.autoisf_iobth_compared, rh.gs(comparator.value.stringRes), percent)
 
-    override fun composeIcon() = IcAs
+    override fun composeIcon() = IcIobTh
     override fun elementType() = ElementType.SENSITIVITY
 
     override fun duplicate(): Trigger = TriggerIobTH(deps, this)
