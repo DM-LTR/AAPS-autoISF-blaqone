@@ -136,7 +136,7 @@ smoothed) are only in the dev version.*
   20 minutes ahead
 - holding a point of the BG graph shows the smoothed value and the raw value in brackets
 - coloured BG dots every minute with a 1 minute CGM and UKF smoothing (display only)
-- graphs for the AutoISF factors and iobTH (also in the IOB graph); duISF is cyan, so it is not mixed
+- graphs for the AutoISF factors and iobTH (also in the IOB graph); duISF is blue, so it is not mixed
   up with the green acISF
 - *dev version only:* in the IOB graph legend iobTH is named above IOB, as its line is the lid above IOB
 - German texts for everything this fork added
