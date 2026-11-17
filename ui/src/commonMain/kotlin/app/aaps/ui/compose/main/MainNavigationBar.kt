@@ -41,12 +41,9 @@ fun MainNavigationBar(
     modifier: Modifier = Modifier,
     /** On a client, hide the mutating nav buttons (Treatments + Scenes) until paired. Always true on master. */
     masterOrPairedClient: Boolean = true,
-    quickWizardCount: Int = 0,
     onAutomationClick: () -> Unit = {},
     /** Total scenes + automation items defined — drives whether the nav button is shown at all. */
     automationTotal: Int = 0,
-    /** Subset of [automationTotal] that the user can activate right now — drives the badge. */
-    automationCount: Int = 0,
     pumpSetupPlugin: PluginBase? = null,
     bgSetupPlugin: PluginBase? = null,
     bgQualityBadgeIcon: ImageVector? = null,
@@ -85,28 +82,17 @@ fun MainNavigationBar(
         // Treatment action button (opens bottom sheet) — hidden on an unpaired client (its bolus/carbs
         // ride the Client-Control channel and would be dropped); always shown on a master.
         if (masterOrPairedClient && role.allows(ElementType.TREATMENT.role)) {
+            // AutoISF fork: no count of QuickWizard entries here. A number on a button reads as "something new
+            // to look at", but this one was a fixed count. Badges stay only where something needs attention.
             NavigationBarItem(
                 selected = false,
-                modifier = Modifier.badgeState(
-                    if (quickWizardCount > 0) stringResource(UiStrings.a11y_badge_available, quickWizardCount) else null
-                ),
                 onClick = onTreatmentClick,
                 icon = {
-                    BadgedBox(
-                        badge = {
-                            if (quickWizardCount > 0) {
-                                Badge(containerColor = AapsTheme.generalColors.statusNormal, contentColor = Color.Black) {
-                                    Text(text = quickWizardCount.toString())
-                                }
-                            }
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Fastfood,
-                            contentDescription = stringResource(CoreUiStrings.treatments),
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
+                    Icon(
+                        imageVector = Icons.Default.Fastfood,
+                        contentDescription = stringResource(CoreUiStrings.treatments),
+                        modifier = Modifier.size(24.dp)
+                    )
                 },
                 label = { Text(text = stringResource(CoreUiStrings.treatments), textAlign = TextAlign.Center) },
                 colors = navColors
@@ -114,31 +100,18 @@ fun MainNavigationBar(
         }
 
         // Scenes/automation button — visible whenever scenes or automation items exist on a paired
-        // client (regardless of pump/loop/profile state). The badge counts only items the user can act
-        // on right now; gated items are visible inside the sheet, dimmed with reason.
+        // client (regardless of pump/loop/profile state). Gated items are visible inside the sheet, dimmed
+        // with reason. AutoISF fork: no count badge - it was a fixed number that looked like a notification.
         if (masterOrPairedClient && role.allows(ElementType.SCENE.role) && automationTotal > 0) {
             NavigationBarItem(
                 selected = false,
-                modifier = Modifier.badgeState(
-                    if (automationCount > 0) stringResource(UiStrings.a11y_badge_available, automationCount) else null
-                ),
                 onClick = onAutomationClick,
                 icon = {
-                    BadgedBox(
-                        badge = {
-                            if (automationCount > 0) {
-                                Badge(containerColor = AapsTheme.generalColors.statusNormal, contentColor = Color.Black) {
-                                    Text(text = automationCount.toString())
-                                }
-                            }
-                        }
-                    ) {
-                        Icon(
-                            imageVector = IcAutomation,
-                            contentDescription = stringResource(CoreUiStrings.scenes),
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
+                    Icon(
+                        imageVector = IcAutomation,
+                        contentDescription = stringResource(CoreUiStrings.scenes),
+                        modifier = Modifier.size(24.dp)
+                    )
                 },
                 label = { Text(text = stringResource(CoreUiStrings.scenes), textAlign = TextAlign.Center) },
                 colors = navColors

@@ -41,7 +41,7 @@ class MainNavigationBarTest {
     @get:Rule
     val compose = createComposeRule()
 
-    private lateinit var availableThree: String
+    private lateinit var availableOne: String
     private lateinit var objectivesProgress: String
 
     @Before
@@ -52,7 +52,7 @@ class MainNavigationBarTest {
         val app = RuntimeEnvironment.getApplication()
         // Taken from the resources rather than hard coded, so editing the wording cannot make the
         // test lie about what is spoken.
-        availableThree = app.getString(R.string.a11y_badge_available, 3)
+        availableOne = app.getString(R.string.a11y_badge_available, 1)
         objectivesProgress = app.getString(R.string.a11y_objectives_progress, 9, 10)
     }
 
@@ -84,24 +84,24 @@ class MainNavigationBarTest {
     fun aCountingBadgeIsSpokenAsAStateOnTheItem() {
         compose.setContent {
             MaterialTheme {
-                MainNavigationBar(onManageClick = {}, onTreatmentClick = {}, quickWizardCount = 3)
+                MainNavigationBar(onManageClick = {}, onTreatmentClick = {}, loopActionAvailable = true)
             }
         }
 
-        compose.onNode(hasStateDescription(availableThree)).assertIsDisplayed()
+        compose.onNode(hasStateDescription(availableOne)).assertIsDisplayed()
     }
 
     @Test
     fun anItemWithoutABadgeGetsNoState() {
         compose.setContent {
             MaterialTheme {
-                MainNavigationBar(onManageClick = {}, onTreatmentClick = {}, quickWizardCount = 0)
+                MainNavigationBar(onManageClick = {}, onTreatmentClick = {}, automationTotal = 3)
             }
         }
 
-        // Treatments has no badge at a count of zero, and Manage never has one. A state on either
+        // Treatments, Scenes and Manage have no badge (AutoISF fork: no fixed counts). A state on them
         // would be read out on every pass over the bar for no reason.
-        val availableZero = RuntimeEnvironment.getApplication().getString(R.string.a11y_badge_available, 0)
-        compose.onAllNodes(hasStateDescription(availableZero)).assertCountEquals(0)
+        val availableThree = RuntimeEnvironment.getApplication().getString(R.string.a11y_badge_available, 3)
+        compose.onAllNodes(hasStateDescription(availableThree)).assertCountEquals(0)
     }
 }
