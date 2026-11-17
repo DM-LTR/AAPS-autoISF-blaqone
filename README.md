@@ -89,8 +89,11 @@ smoothed) are only in the dev version.*
 - steps from the phone or from a watch (Wear OS, Garmin with a watch face that sends steps):
   setting **"Steps from"** – Phone / Watch / Automatic (watch when it sent steps in the last 10
   minutes, else phone)
+<<<<<<< HEAD
 - *dev version only:* phone steps are stored only when the monitor uses them, so the steps graph, the
   steps automation and Nightscout show the same steps the monitor works with
+=======
+>>>>>>> fix/bg-age-2min
 - update straight from AutoISF 3.4.2.6 (AAPS 3.x) keeps the database
 - AutoISF values are stored in the loop result, no own database table
 
@@ -106,8 +109,6 @@ smoothed) are only in the dev version.*
 - switch: parabola on **UKF-smoothed values** (calmer, but later)
 - slider: **shortest parabola** 5–20 minutes (default 10)
 - when the switch is on, the APS tab shows which values the parabola uses
-- *dev version only:* raw and smoothed fit side by side on the main screen, in the APS tab and as
-  a graph
 
 ### CGM correction
 - **Only slope and offset – no calibration, no extra smoothing**
@@ -140,7 +141,10 @@ smoothed) are only in the dev version.*
 - coloured BG dots every minute with a 1 minute CGM and UKF smoothing (display only)
 - graphs for the AutoISF factors and iobTH (also in the IOB graph); duISF is cyan, so it is not mixed
   up with the green acISF
+<<<<<<< HEAD
 - *dev version only:* in the IOB graph legend iobTH is named above IOB, as its line is the lid above IOB
+=======
+>>>>>>> fix/bg-age-2min
 - German texts for everything this fork added
 
 Everything that only concerns AutoISF (graph lines, scene section, automations, main screen
@@ -180,6 +184,13 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
+### 2026-11-17 (40) – BZ-Alter: Sekunden nur unter 2 Minuten (nur dev, im Test)
+
+- **Hauptbildschirm:** das Alter des letzten BZ-Werts steht nur noch **unter 2 Minuten in Sekunden**
+  („Vor 119s“), ab 2 Minuten in Minuten („Vor 2m“, „Vor 3m“ …). Vorher zählte es bis 10 Minuten in Sekunden.
+  Ein 1-Minuten-Sensor zeigt so weiter immer Sekunden, bei einem 5-Minuten-Sensor ist weniger Bewegung.
+  Nur Anzeige.
+
 ### 2026-11-16 (39) – Gerhards Rückmeldungen: Icons, IOB-Legende, ein Schalter für die Schritt-Quelle (nur dev, im Test)
 
 - **Automation:** die Aktionen und Auslöser für **iobTH** und **acce_weight** haben jetzt eigene Symbole
@@ -217,17 +228,6 @@ The newest changes. ⚠ = this change can affect insulin dosing.
   SMB aus. Vorher zeigte das Dreieck nur die Einstellung. Nur Anzeige.
 - **Einstellungs-Fenster scrollen** (KH, Insulin, Füllen, Bolus-Rechner, Katheter-Wechsel …): Bei großer Schrift
   oder Querformat waren die untersten Einstellungen nicht erreichbar (AAPS-Issue #5564).
-
-### 2026-11-12 (34) – Activity Classifier entfernt
-
-- ⚠ **Der Activity Classifier ist ganz entfernt** – Code, die Einstellungen „Use ActivityClassifier“,
-  „activity target offset“, „ActivityClassifier sensitivity“ und „Resting heart rate“ sowie die
-  Aktivitätserkennung des Handys (Gehen/Laufen/Rad), die nur er genutzt hat. Er gehörte nicht zu AutoISF 3.4
-  (kam mit der AAPS-4-Basis) und hat Ziel und SMB-Größe verändert.
-- Der **Activity Monitor** (Schritte, Original AutoISF) bleibt unverändert, ebenso der Schrittzähler des Handys
-  und die Uhr-Schritte.
-- Der letzte Stand des Classifiers liegt weiter auf GitHub im Zweig `fix/activity-classifier-steps`,
-  wird aber in keine Version eingebaut.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->
