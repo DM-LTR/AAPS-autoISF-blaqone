@@ -178,6 +178,11 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
+### 2026-11-17 (42) – duISF-Linie in Blau (nur dev, im Test)
+
+- **AutoISF-Graph:** die **duISF-Linie** ist jetzt **blau** statt cyan. Cyan war im hellen Design auf Weiß zu blass.
+  Blau ist gut zu sehen, auf dunklem und hellem Hintergrund, und keine andere Linie dieses Graphen ist blau.
+
 ### 2026-11-17 (41) – Keine Zahl mehr auf den Knöpfen Behandlungen und Szenen (nur dev, im Test)
 
 - **Hauptbildschirm:** die Knöpfe **Behandlungen** und **Szenen** zeigen keine Zahl mehr. Sie zählte nur, wie viele
@@ -208,11 +213,6 @@ The newest changes. ⚠ = this change can affect insulin dosing.
   Ohne TBR die Profilrate grau (z. B. „0,85 U/h“), bei laufender TBR die Rate in Basal-Farbe mit Prozent
   (z. B. „1,20 U/h 140%“). Die Rate folgt auch den Stundenwechseln im Basalprofil.
 - Nur Anzeige, keine Änderung an Loop oder Dosierung.
-
-### 2026-11-16 (36) – duISF-Linie in Cyan (nur dev, im Test)
-
-- **AutoISF-Graph:** die **duISF-Linie** ist jetzt **cyan (türkis)** statt mintgrün. Vorher sah sie fast gleich
-  aus wie die grüne acISF-Linie (Issue #4). Die anderen Farben bleiben.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->
