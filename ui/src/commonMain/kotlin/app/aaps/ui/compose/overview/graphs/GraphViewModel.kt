@@ -281,8 +281,10 @@ class GraphViewModel(
     }
 
     /**
-     * Age of the BG value: in seconds up to [BG_AGE_SECONDS_LIMIT_MS] (a 1 minute CGM sends a new value
-     * every minute, so whole minutes say too little), above it in minutes.
+     * Age of the BG value: in seconds below [BG_AGE_SECONDS_LIMIT_MS] (a 1 minute CGM sends a new value
+     * every minute, so whole minutes say too little), from 2 minutes on in minutes. With 2 minutes a running
+     * 1 minute CGM always shows seconds, and a 5 minute CGM counts seconds only shortly, then "2m", "3m" -
+     * less movement on the screen. The same limit as `DateUtil.minOrSecAgo`.
      */
     private fun bgAgeText(timestamp: Long?, now: Long): String {
         if (timestamp == null) return ""
@@ -293,6 +295,6 @@ class GraphViewModel(
 
     private companion object {
 
-        const val BG_AGE_SECONDS_LIMIT_MS = 10 * 60 * 1000L
+        const val BG_AGE_SECONDS_LIMIT_MS = 2 * 60 * 1000L
     }
 }
