@@ -89,11 +89,8 @@ smoothed) are only in the dev version.*
 - steps from the phone or from a watch (Wear OS, Garmin with a watch face that sends steps):
   setting **"Steps from"** – Phone / Watch / Automatic (watch when it sent steps in the last 10
   minutes, else phone)
-<<<<<<< HEAD
 - *dev version only:* phone steps are stored only when the monitor uses them, so the steps graph, the
   steps automation and Nightscout show the same steps the monitor works with
-=======
->>>>>>> fix/bg-age-2min
 - update straight from AutoISF 3.4.2.6 (AAPS 3.x) keeps the database
 - AutoISF values are stored in the loop result, no own database table
 
@@ -141,10 +138,7 @@ smoothed) are only in the dev version.*
 - coloured BG dots every minute with a 1 minute CGM and UKF smoothing (display only)
 - graphs for the AutoISF factors and iobTH (also in the IOB graph); duISF is cyan, so it is not mixed
   up with the green acISF
-<<<<<<< HEAD
 - *dev version only:* in the IOB graph legend iobTH is named above IOB, as its line is the lid above IOB
-=======
->>>>>>> fix/bg-age-2min
 - German texts for everything this fork added
 
 Everything that only concerns AutoISF (graph lines, scene section, automations, main screen
