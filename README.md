@@ -174,6 +174,13 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
+### 2026-11-17 (40) – BZ-Alter: Sekunden nur unter 2 Minuten
+
+- **Hauptbildschirm:** das Alter des letzten BZ-Werts steht nur noch **unter 2 Minuten in Sekunden**
+  („Vor 119s“), ab 2 Minuten in Minuten („Vor 2m“, „Vor 3m“ …). Vorher zählte es bis 10 Minuten in Sekunden.
+  Ein 1-Minuten-Sensor zeigt so weiter immer Sekunden, bei einem 5-Minuten-Sensor ist weniger Bewegung.
+  Nur Anzeige.
+
 ### 2026-11-16 (38) – Normale Version: Oberfläche, SMB-Dreieck, duISF-Farbe, Basalrate
 
 Aus dev übernommen:
@@ -229,21 +236,6 @@ Aus dev übernommen (dort getestet):
   Activity-Monitor-Einstellungen ein; wer ihn schon selbst eingeschaltet hatte, behält ihn.
 - **Logdateien** liegen jetzt auch in der normalen Version in `Documents/aapsLogs` (stündliches Zip, 30 Tage),
   wie bei AutoISF 3.4 – damit die AutoISF-Emulator-Werkzeuge sie lesen können.
-
-### 2026-11-11 (29) – Update direkt von AutoISF 3.4.2.6 möglich
-
-Bisher ist die App beim Update über **AAPS 3.4.2.6 + AutoISF 3.2.1** bei jedem Start abgestürzt.
-
-- **Datenbank-Version 32 doppelt belegt:** AutoISF 3.4 nutzt Version 32 für seine Tabelle `autoIsfValues`,
-  AAPS 4 für die Spalte `carbInsulin` in den Tagesdosen (TDD). **Fix:** Fehlt die Spalte, wird der TDD-Cache
-  geleert (wird neu berechnet) und die Spalte angelegt; die alte Tabelle `autoIsfValues` wird gelöscht.
-  Bei einer normalen AAPS-4-Datenbank passiert nichts.
-- **Unbekannte Einträge im Benutzerprotokoll** (`AUTOISF_ENABLED`, `AUTOISF_DISABLED`, `IOB_TH_SET`,
-  `ACCE_WEIGHT_SET`) werden zu „UNKNOWN“, und jeder unbekannte Eintrag wird künftig als „UNKNOWN“ gelesen
-  statt abzustürzen.
-- Die übrige Historie bleibt erhalten. Vorher trotzdem **Einstellungen exportieren**; gleicher
-  Signaturschlüssel nötig. Zurück auf 3.4 geht nicht ohne Verlust der Datenbank.
-- Am besten zuerst auf einem **Zweithandy** testen.
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->
