@@ -5,6 +5,12 @@ Testversion. Nur mit virtueller Pumpe oder im Open Loop testen.
 
 ---
 
+## 2026-11-17 (41) – Keine Zahl mehr auf den Knöpfen Behandlungen und Szenen (nur dev, im Test)
+
+- **Hauptbildschirm:** die Knöpfe **Behandlungen** und **Szenen** zeigen keine Zahl mehr. Sie zählte nur, wie viele
+  QuickWizard-Einträge bzw. Szenen gerade verfügbar sind, sah aber wie eine Benachrichtigung aus.
+  Hinweise, die wirklich Aufmerksamkeit brauchen, bleiben: Objectives, Loop-Vorschlag annehmen, fehlende Berechtigungen.
+
 ## 2026-11-17 (40) – BZ-Alter: Sekunden nur unter 2 Minuten (nur dev, im Test)
 
 - **Hauptbildschirm:** das Alter des letzten BZ-Werts steht nur noch **unter 2 Minuten in Sekunden**

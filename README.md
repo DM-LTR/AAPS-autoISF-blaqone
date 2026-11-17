@@ -178,6 +178,12 @@ This program comes with ABSOLUTELY NO WARRANTY, to the extent permitted by appli
 
 The newest changes. ⚠ = this change can affect insulin dosing.
 
+### 2026-11-17 (41) – Keine Zahl mehr auf den Knöpfen Behandlungen und Szenen (nur dev, im Test)
+
+- **Hauptbildschirm:** die Knöpfe **Behandlungen** und **Szenen** zeigen keine Zahl mehr. Sie zählte nur, wie viele
+  QuickWizard-Einträge bzw. Szenen gerade verfügbar sind, sah aber wie eine Benachrichtigung aus.
+  Hinweise, die wirklich Aufmerksamkeit brauchen, bleiben: Objectives, Loop-Vorschlag annehmen, fehlende Berechtigungen.
+
 ### 2026-11-17 (40) – BZ-Alter: Sekunden nur unter 2 Minuten (nur dev, im Test)
 
 - **Hauptbildschirm:** das Alter des letzten BZ-Werts steht nur noch **unter 2 Minuten in Sekunden**
@@ -207,21 +213,6 @@ The newest changes. ⚠ = this change can affect insulin dosing.
 
 - **AutoISF-Graph:** die **duISF-Linie** ist jetzt **cyan (türkis)** statt mintgrün. Vorher sah sie fast gleich
   aus wie die grüne acISF-Linie (Issue #4). Die anderen Farben bleiben.
-
-### 2026-11-13 (35) – Deutsche Texte, AutoISF-Chip, COB, SMB-Dreieck, Einstellungs-Fenster (nur dev, im Test)
-
-- **Deutsche Übersetzung** für alle Texte, die AutoISF4 selbst eingebaut hat (Einstellungen, AutoISF-Chip,
-  Automation, Szenen, Sport-Modus …). Diese Texte gibt es bei Crowdin nicht – deshalb waren sie bisher englisch.
-  Andere Sprachen zeigen sie weiter auf Englisch.
-- **AutoISF-Chip:** oben kein „AutoISF“-Text mehr – der letzte angeheftete Wert wurde dadurch abgeschnitten.
-  Die Werte verteilen sich jetzt über die ganze Breite. Unten im aufgeklappten Chip: „AutoISF v3.2.1 · 3 von 4 angeheftet“.
-- **ISF-Zeile:** rechts steht „AutoISF“, solange AutoISF der aktive Algorithmus ist.
-- **COB:** Bei 0 g (und keine KH nötig) verschwindet der COB-Chip, IOB hat dann die ganze Zeile.
-- **SMB-Dreieck im Loop-Symbol:** voll = SMB an und im letzten Loop-Lauf erlaubt; **gelb = SMB an, aber gerade
-  gesperrt** (ungerades Ziel, Max-IOB 0, IOB über iobTH, Unterzucker vorhergesagt, zu großer Delta); kein Dreieck =
-  SMB aus. Vorher zeigte das Dreieck nur die Einstellung. Nur Anzeige.
-- **Einstellungs-Fenster scrollen** (KH, Insulin, Füllen, Bolus-Rechner, Katheter-Wechsel …): Bei großer Schrift
-  oder Querformat waren die untersten Einstellungen nicht erreichbar (AAPS-Issue #5564).
 
 All changes: [CHANGELOG-autoISF.md](CHANGELOG-autoISF.md)
 <!-- changelog:end -->
